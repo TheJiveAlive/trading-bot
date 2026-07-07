@@ -32,6 +32,10 @@ def score_candidates(cfg, insider_hits, sector_ranks, snapshot, research=None,
         r_sc = reddit_score((reddit_data or {}).get(ticker))
         if r_sc:
             parts["reddit"] = round(r_sc * w.get("reddit_weight", 0.75), 2)
+        from bot.signals.finnhub_data import insider_sentiment_bonus
+        fh_sent = insider_sentiment_bonus(ticker)
+        if fh_sent:
+            parts["insider_sentiment"] = fh_sent
         if ticker in watchlist:
             parts["watchlist"] = 1.0
         bias = risk.sector_bias_bonus(research, info.get("sector"))

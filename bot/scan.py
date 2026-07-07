@@ -133,11 +133,23 @@ def run_scan():
     research = risk.load_research()
     report = ["=== scan {} (mode: {}) ===".format(ledger.now(), cfg["mode"])]
 
+    from bot.signals.regime import quant_regime, blend_conservative
+    q_regime, q_detail = quant_regime()
+    if q_regime:
+        report.append("  quant regime: {} (VIX {}, SPY>200dma: {}, credit rising: {})".format(
+            q_regime, q_detail["vix"], q_detail["spy_above_200dma"],
+            q_detail["credit_appetite_rising"]))
+        blended = blend_conservative(risk.regime(research), q_regime)
+        if blended != risk.regime(research):
+            report.append("  ! quant layer more cautious — regime overridden to {}".format(blended))
+        research = dict(research or {})
+        research["market_regime"] = blended
+
     if research.get("_stale"):
         report.append("  ! research.json stale (from {}) — running neutral".format(
             research.get("date")))
-        research = {}
-    elif research:
+        research = {k: v for k, v in research.items() if k == "market_regime"}
+    elif research.get("date"):
         report.append("  research {} | regime: {} | watchlist: {}".format(
             research.get("date"), risk.regime(research),
             ", ".join(risk.watchlist_tickers(research)) or "(none)"))

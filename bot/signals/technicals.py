@@ -16,7 +16,12 @@ from bot.signals.reddit import pump_risk
 
 
 def days_to_earnings(ticker):
-    """Days until next earnings report, or None if unknown/not scheduled."""
+    """Days until next earnings report, or None if unknown/not scheduled.
+    Prefers Finnhub (reliable) when a key is configured; falls back to Yahoo."""
+    from bot.signals.finnhub_data import next_earnings_days
+    fh = next_earnings_days(ticker)
+    if fh is not None:
+        return fh
     try:
         cal = yf.Ticker(ticker).calendar
         dates = cal.get("Earnings Date") if isinstance(cal, dict) else None
