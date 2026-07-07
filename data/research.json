@@ -1,0 +1,13 @@
+{
+  "date": "2026-07-07",
+  "market_regime": "risk_on",
+  "regime_reason": "S&P 500, Nasdaq, and Dow are all at or near record highs (Dow above 53,000) on a strong week of gains, with VIX around 16.3, a calm/low volatility reading.",
+  "sector_bias": {
+    "Technology": -0.3,
+    "Healthcare": 0.6,
+    "Financial Services": 0.5
+  },
+  "watchlist": [],
+  "avoid": ["VMAR", "SNAL", "NVVE", "SHPH"],
+  "notes": "Held position VMAR (42 sh @ $1.41) did a 1-for-10 reverse split on June 17 to avoid Nasdaq delisting, and a top insider (HRT Financial LP) sold ~$52k of shares on July 2 -- both material red flags despite the insider-buy signal that originally triggered the position; financials remain weak with ~9.3x debt/equity. Broader market is at records but rotating out of tech into healthcare/financials, so tech-heavy candidates should be discounted for now."
+}

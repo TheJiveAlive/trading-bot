@@ -1,0 +1,87 @@
+name: trading-scan
+on:
+  schedule:
+    # hourly triggers across both summer/winter US market windows (UTC);
+    # the market-hours guard below skips anything outside 9:30-16:00 ET
+    - cron: '33 13-21 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+concurrency:
+  group: scan
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: market hours guard
+        run: |
+          H=$(TZ=America/New_York date +%H)
+          M=$(TZ=America/New_York date +%M)
+          DOW=$(TZ=America/New_York date +%u)
+          if [ "$DOW" -gt 5 ] || [ "$H" -lt 9 ] || [ "$H" -ge 16 ] || { [ "$H" -eq 9 ] && [ "$M" -lt 30 ]; }; then
+            echo "US market closed — skipping"
+            echo "SKIP=1" >> "$GITHUB_ENV"
+          fi
+
+      - uses: actions/checkout@v4
+        if: env.SKIP != '1'
+
+      - uses: actions/setup-python@v5
+        if: env.SKIP != '1'
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: install dependencies
+        if: env.SKIP != '1'
+        run: pip install -r requirements.txt
+
+      - name: materialize email secrets
+        if: env.SKIP != '1'
+        env:
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: |
+          mkdir -p data logs publish
+          python3 -c "
+          import json, os
+          json.dump({'smtp_host':'smtp.gmail.com','smtp_port':465,
+                     'smtp_user':os.environ.get('SMTP_USER',''),
+                     'smtp_app_password':os.environ.get('SMTP_APP_PASSWORD',''),
+                     'email_to':os.environ.get('EMAIL_TO','')},
+                    open('data/secrets.json','w'))"
+
+      - name: run scan
+        if: env.SKIP != '1'
+        run: python run.py scan
+
+      - name: persist ledger state
+        if: env.SKIP != '1'
+        run: |
+          rm -f data/secrets.json
+          git config user.name "trading-bot"
+          git config user.email "trading-bot@users.noreply.github.com"
+          git add -A data dashboard.html
+          git commit -m "scan state $(date -u '+%Y-%m-%d %H:%M') UTC" || echo "no changes"
+          git pull --rebase origin main || true
+          git push
+
+      - name: publish dashboard to Pages repo
+        if: env.SKIP != '1' && vars.DASHBOARD_REPO != ''
+        run: |
+          echo "${{ secrets.DASHBOARD_DEPLOY_KEY }}" > /tmp/dk
+          chmod 600 /tmp/dk
+          export GIT_SSH_COMMAND="ssh -i /tmp/dk -o StrictHostKeyChecking=no"
+          git clone --depth 1 "git@github.com:${{ vars.DASHBOARD_REPO }}.git" /tmp/dash
+          cp publish/index.html /tmp/dash/index.html
+          cd /tmp/dash
+          git config user.name "trading-bot"
+          git config user.email "trading-bot@users.noreply.github.com"
+          git add -A
+          git commit -m "dashboard $(date -u '+%H:%M') UTC" || exit 0
+          git push

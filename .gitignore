@@ -1,0 +1,12 @@
+# NEVER commit credentials
+data/secrets.json
+data/secrets.example.json
+
+# local-only artifacts
+data/cache/
+data/review_input.json
+logs/
+publish/
+__pycache__/
+*.pyc
+.DS_Store

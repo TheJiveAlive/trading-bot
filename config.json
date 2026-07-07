@@ -1,0 +1,52 @@
+{
+  "mode": "paper",
+  "_mode_comment": "paper = simulated fills in local ledger. live = orders queued to pending_orders.json for the robinhood-trading connector (requires connector auth).",
+
+  "monthly_deposit_usd": 127.0,
+  "deposit_day_of_month": 1,
+
+  "universe": {
+    "price_min": 1.0,
+    "price_max": 20.0,
+    "min_avg_dollar_volume": 2000000,
+    "exclude_etfs": true
+  },
+
+  "buying": {
+    "max_buys_per_week": 2,
+    "min_composite_score": 3.0,
+    "max_positions": 6,
+    "max_position_usd": 15000.0,
+    "_sizing_note": "$100k test scale. Before live: set max_position_usd back to ~45 to match the real £100/month account."
+  },
+
+  "confluence": {
+    "min_checks_passed": 4,
+    "rvol_min": 1.5,
+    "max_spread_pct": 2.0,
+    "hard_fail_spread_pct": 3.0,
+    "max_iv": 2.0,
+    "momentum_min_5d_pct": 0.0,
+    "max_extension_pct": 25.0,
+    "avoid_earnings_days": 5
+  },
+
+  "selling": {
+    "trailing_stop_pct": 10.0,
+    "take_profit_pct": 25.0,
+    "min_hold_days": 2,
+    "max_hold_days": 45
+  },
+
+  "signals": {
+    "insider_lookback_days": 5,
+    "insider_min_purchase_usd": 20000,
+    "sector_momentum_weight": 1.0,
+    "insider_weight": 2.0,
+    "fundamentals_weight": 1.5,
+    "news_weight": 1.0,
+    "reddit_weight": 0.75
+  },
+
+  "edgar_user_agent": "Josh Ive personal research joshua.ive@gmail.com"
+}

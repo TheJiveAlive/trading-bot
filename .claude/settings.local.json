@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude mcp *)",
+      "Read(//Users/josh/Library/Application Support/Claude/claude-code/**)",
+      "Read(//Users/josh/Library/Application Support/Claude/vm_bundles/**)",
+      "Bash(brew --version)",
+      "Read(//Users/josh/**)",
+      "Read(//usr/local/bin/**)",
+      "Bash(xcode-select -p)",
+      "Bash(curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest)",
+      "Bash(curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.5/install.sh)",
+      "Bash(bash)",
+      "WebSearch",
+      "WebFetch(domain:robinhood.com)",
+      "Bash(curl -s --max-time 15 -H \"User-Agent: josh trading research joshua.ive@gmail.com\" \"https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&type=4&dateb=&owner=include&count=10&output=atom\" -o /dev/null -w \"EDGAR browse: %{http_code}\\\\n\")",
+      "Bash(curl -s --max-time 15 -H \"User-Agent: josh trading research joshua.ive@gmail.com\" \"https://efts.sec.gov/LATEST/search-index?q=%22test%22&forms=4\" -o /dev/null -w \"EDGAR fts: %{http_code}\\\\n\")",
+      "Bash(curl -s --max-time 15 -H \"User-Agent: Mozilla/5.0\" \"https://query1.finance.yahoo.com/v8/finance/chart/XLK?range=3mo&interval=1d\" -o /dev/null -w \"Yahoo chart: %{http_code}\\\\n\")",
+      "Bash(curl -s --max-time 20 -H \"User-Agent: josh trading research joshua.ive@gmail.com\" \"https://efts.sec.gov/LATEST/search-index?q=&forms=4&dateRange=custom&startdt=2026-07-06&enddt=2026-07-07\")",
+      "Bash(curl -s --max-time 20 \"https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt\")",
+      "Bash(pip3 install *)",
+      "Bash(python3 -c \"import yfinance; print\\('yfinance', yfinance.__version__\\)\")",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 run.py scan)",
+      "Bash(python3 run.py status)",
+      "Bash(claude --version)",
+      "Read(//opt/homebrew/bin/**)",
+      "Bash(mdfind -name \"claude\")",
+      "Bash(grep -iE \"bin/claude$|claude$\")",
+      "Bash(find /Applications/Claude.app -name \"claude\" -type f 2>/dev/null | head -3; ls /Applications/Claude.app/Contents/Resources 2>/dev/null | head -20)",
+      "Bash(curl -fsSL https://claude.ai/install.sh)",
+      "Bash(python3 backtest.py --months 4)",
+      "Bash(python3 -c \"from bot.scan import run_scan; from bot.scoring import score_candidates; import backtest; print\\('all modules import cleanly'\\)\")",
+      "Bash(python3 -c \"import matplotlib; print\\('matplotlib', matplotlib.__version__\\)\")",
+      "Bash(python3 -c \"from bot import executor, notify, emailfmt; print\\('executor OK'\\)\")",
+      "Skill(artifact-design)",
+      "Skill(artifact-design:*)",
+      "Bash(gh auth *)",
+      "Bash(chmod +x /Users/josh/Desktop/RobinHood/setup_pages.sh)"
+    ]
+  }
+}
