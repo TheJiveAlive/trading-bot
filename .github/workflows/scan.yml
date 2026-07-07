@@ -82,7 +82,7 @@ jobs:
           chmod 600 /tmp/dk
           export GIT_SSH_COMMAND="ssh -i /tmp/dk -o StrictHostKeyChecking=no"
           git clone --depth 1 "git@github.com:${{ vars.DASHBOARD_REPO }}.git" /tmp/dash
-          cp publish/index.html /tmp/dash/index.html
+          cp publish/*.html /tmp/dash/
           cd /tmp/dash
           git config user.name "trading-bot"
           git config user.email "trading-bot@users.noreply.github.com"

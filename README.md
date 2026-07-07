@@ -140,6 +140,25 @@ report within 5 days (binary-event risk); or **Reddit pump risk** — a
 parabolic mention spike on a sub-$5 stock with no insider cluster behind it.
 Every failed gate is logged with full metrics.
 
+## Quantitative regime layer (keyless)
+
+`bot/signals/regime.py` reads VIX level, SPY vs its 200-day average, and
+credit appetite (HYG/LQD ratio trend) — all free via Yahoo. Blended with the
+daily Claude research regime **conservatively: whichever says less risk
+wins**. A euphoric research call can't override a cracking credit market,
+and vice versa.
+
+## Optional Finnhub key (recommended)
+
+Free key from https://finnhub.io/register (60 calls/min). When present as
+`finnhub_key` in `data/secrets.json` (local) or the `FINNHUB_KEY` Actions
+secret (cloud: `gh secret set FINNHUB_KEY -R <user>/trading-bot`), the bot
+automatically upgrades:
+- earnings-date veto uses Finnhub's calendar (yfinance's is patchy)
+- candidates gain an insider-sentiment factor (Finnhub MSPR, ±0.3)
+
+Without a key, behavior is unchanged.
+
 ## Reddit signal (ApeWisdom)
 
 Free aggregated mentions across r/wallstreetbets and other investing subs.
