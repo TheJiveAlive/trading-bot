@@ -56,6 +56,14 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
     buy_cfg = cfg["buying"]
     threshold = risk.buy_threshold(cfg, research)
     avoid = risk.avoid_tickers(research)
+    halted = risk.trading_halted(con, cfg)
+    if halted:
+        ledger.log_decision(con, "halt", halted)
+        report.append("  BUYING HALTED: {}".format(halted))
+        from bot import notify
+        notify.send_email("[bot] BUYING HALTED", halted +
+                          "\nExits continue to run. Buying resumes when equity recovers.")
+        return
     if ledger.buys_this_week(con) >= buy_cfg["max_buys_per_week"]:
         ledger.log_decision(con, "skip_buy", "weekly buy budget already used")
         report.append("  no buy: weekly budget used")
@@ -80,12 +88,22 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
             continue
         if c["ticker"] in held or not c["price"]:
             continue
-        budget = min(available, buy_cfg["max_position_usd"])
-        shares = int(budget // c["price"])
+        if risk.sector_full(cfg, con, c.get("sector"), market):
+            ledger.log_decision(con, "skip_buy",
+                                "{}: already at max positions in {}".format(
+                                    c["ticker"], c.get("sector")))
+            continue
+        equity = available + sum(
+            p["shares"] * (market.last_price(p["ticker"]) or p["avg_cost"])
+            for p in ledger.open_positions(con))
+        stop_pct = risk.dynamic_stop_pct(cfg, c["parts"].get("news", 0), research)
+        shares = risk.position_size(cfg, equity, c["price"], stop_pct)
+        shares = min(shares, int(available // c["price"]))
         if shares < 1:
             ledger.log_decision(con, "skip_buy",
-                                "{} scored {} but price ${:.2f} exceeds budget ${:.2f}".format(
-                                    c["ticker"], c["score"], c["price"], budget))
+                                "{} scored {} but risk-sized to 0 shares "
+                                "(price ${:.2f}, cash ${:.2f})".format(
+                                    c["ticker"], c["score"], c["price"], available))
             continue
         ok, detail = confluence_check(
             cfg, c["ticker"], c["parts"].get("news", 0),
@@ -97,9 +115,12 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
             report.append("  skip {}: confluence {} ".format(
                 c["ticker"], summarize(detail)))
             continue
-        reason = "score {} (parts {}); confluence: {}; insiders: {}".format(
-            c["score"], c["parts"], summarize(detail), c["insider_detail"])
-        executor.execute(con, cfg, "buy", c["ticker"], shares, c["price"], reason)
+        reason = ("score {} (parts {}); risk-sized {} sh at {:.0f}% stop "
+                  "(~{:.2f}% equity risk); confluence: {}; insiders: {}").format(
+            c["score"], c["parts"], shares, stop_pct,
+            cfg["risk"]["risk_per_trade_pct"], summarize(detail), c["insider_detail"])
+        executor.execute(con, cfg, "buy", c["ticker"], shares, c["price"], reason,
+                         parts=c["parts"])
         report.append("  BUY {} x{} @ ${:.2f} — {}".format(
             c["ticker"], shares, c["price"], reason))
         return

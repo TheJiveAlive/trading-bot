@@ -44,11 +44,14 @@ def _queue_order(order):
         json.dump(orders, f, indent=2)
 
 
-def execute(con, cfg, side, ticker, shares, price, reason):
+def execute(con, cfg, side, ticker, shares, price, reason, parts=None):
     mode = cfg["mode"]
     pnl_line = ""
     if side == "buy":
         ledger.record_buy(con, ticker, shares, price, mode, reason)
+        if parts:
+            con.execute("INSERT INTO trade_signals (ts,ticker,parts) VALUES (?,?,?)",
+                        (ledger.now(), ticker, json.dumps(parts)))
     else:
         pos = _position(con, ticker)
         ledger.record_sell(con, ticker, shares, price, mode, reason)
@@ -57,6 +60,16 @@ def execute(con, cfg, side, ticker, shares, price, reason):
             pnl_pct = (price / pos["avg_cost"] - 1) * 100
             pnl_line = "P/L: {}${:.2f} ({:+.1f}%)\n".format(
                 "+" if pnl >= 0 else "-", abs(pnl), pnl_pct)
+            # reward attribution: credit/blame the signals that drove the entry
+            row = con.execute("SELECT parts FROM trade_signals WHERE ticker=? "
+                              "ORDER BY id DESC LIMIT 1", (ticker,)).fetchone()
+            if row:
+                for signal, contribution in json.loads(row[0]).items():
+                    con.execute("INSERT INTO signal_rewards "
+                                "(ts,ticker,signal,contribution,pnl_pct) "
+                                "VALUES (?,?,?,?,?)",
+                                (ledger.now(), ticker, signal,
+                                 float(contribution), round(pnl_pct, 2)))
     if mode == "live":
         _queue_order({
             "ts": ledger.now(), "side": side, "ticker": ticker,

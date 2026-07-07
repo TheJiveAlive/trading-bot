@@ -31,6 +31,21 @@
     "avoid_earnings_days": 5
   },
 
+  "risk": {
+    "risk_per_trade_pct": 0.75,
+    "max_sector_positions": 2,
+    "drawdown_halt_pct": 12.0,
+    "daily_loss_halt_pct": 3.0
+  },
+
+  "learning": {
+    "enabled": true,
+    "nudge_pct": 5.0,
+    "min_trades_per_signal": 4,
+    "weight_floor_x": 0.5,
+    "weight_ceil_x": 1.5
+  },
+
   "selling": {
     "trailing_stop_pct": 10.0,
     "take_profit_pct": 25.0,

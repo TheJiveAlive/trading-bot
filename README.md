@@ -27,6 +27,29 @@ Set `"mode"` in `config.json`:
   interactive Claude Code session). Until an order is confirmed executed,
   ledger state in live mode is *intent*, not fact.
 
+## Risk engine
+
+- **Position sizing**: risk-based, not flat-dollar. Shares are sized so that
+  hitting the stop loses ~`risk_per_trade_pct` (0.75%) of total equity —
+  volatile names with wide stops automatically get smaller positions. Still
+  capped by `max_position_usd`.
+- **Circuit breakers**: all buying halts (with an email) if equity falls 12%
+  from peak or 3% in a day. Exits always keep running.
+- **Sector concentration**: max 2 positions per sector.
+- **Dilution guard** (EDGAR S-1/S-3/424B): an offering filing in the last 30
+  days is a hard veto; 15+ lifetime offering filings marks a chronic diluter
+  and counts against confluence.
+
+## Signal learning (bounded, monthly)
+
+Every buy records which signals drove it; every sell pays its P/L back to
+those signals (`signal_rewards` table). On the first Sunday of each month,
+weights drift ±5% toward what's actually making money — clamped to 50–150%
+of the hand-set defaults, minimum 4 closed trades of evidence per signal,
+and hard vetoes/risk caps are never touched. Deliberately *not* deep RL:
+with dozens of trades a year a neural policy would memorize noise; this is
+a slow, auditable bandit. Every adjustment is logged and emailed.
+
 ## Safety rails (in config.json — think hard before loosening)
 
 - `price_min: 1.0` — no sub-$1 stocks (delisting risk, manipulation bait)
@@ -159,6 +182,25 @@ and skipped candidate (including checking what skipped stocks did afterwards),
 writes `logs/weekly_review_<date>.md`, and emails it. It may PROPOSE up to
 three bounded config changes — it never applies them; you (or a Claude
 session you supervise) decide.
+
+## Cloud mode (GitHub Actions + Pages) — one login away
+
+`setup_cloud.sh` deploys everything to GitHub after a one-time `gh auth login`:
+
+- **private repo `trading-bot`** — code + ledger state; GitHub Actions runs
+  scans hourly during US market hours (`.github/workflows/scan.yml`), emails
+  trades, and commits the ledger back after each run
+- **public repo `trading-bot-dashboard`** — GitHub Pages serves the dashboard
+  at `https://<user>.github.io/trading-bot-dashboard/`, updated every scan
+- email credentials go into Actions **secrets** (never the repo; both
+  secrets files are gitignored)
+- the script **disables the local scan schedule** so cloud and laptop never
+  double-trade; daily research keeps running locally and pushes
+  `research.json` to the repo
+
+Caveats: Actions cron can fire a few minutes late (fine); Yahoo sometimes
+rate-limits GitHub's shared runners — if scans get flaky, run a self-hosted
+runner on the OptiPlex (same workflow, home IP, best of both).
 
 ## Moving to a new PC later
 

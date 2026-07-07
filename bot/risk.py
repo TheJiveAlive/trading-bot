@@ -67,6 +67,54 @@ def sector_bias_bonus(research, sector):
         return 0.0
 
 
+def position_size(cfg, equity, price, stop_pct):
+    """Whole shares such that hitting the stop loses ~risk_per_trade_pct of
+    equity — volatility-aware sizing instead of a flat dollar amount. Still
+    capped by max_position_usd."""
+    risk_budget = equity * cfg["risk"]["risk_per_trade_pct"] / 100.0
+    per_share_risk = price * stop_pct / 100.0
+    if per_share_risk <= 0:
+        return 0
+    shares_by_risk = int(risk_budget / per_share_risk)
+    shares_by_cap = int(cfg["buying"]["max_position_usd"] / price)
+    return max(0, min(shares_by_risk, shares_by_cap))
+
+
+def trading_halted(con, cfg):
+    """Reason string if buying should halt (drawdown/daily-loss circuit
+    breaker), else None. Sells are never halted — exits always run."""
+    rows = con.execute("SELECT ts, equity FROM equity_history ORDER BY id").fetchall()
+    if len(rows) < 2:
+        return None
+    peak = max(e for _, e in rows)
+    latest = rows[-1][1]
+    dd = (1 - latest / peak) * 100 if peak else 0
+    if dd >= cfg["risk"]["drawdown_halt_pct"]:
+        return "drawdown circuit breaker: {:.1f}% below peak (limit {}%)".format(
+            dd, cfg["risk"]["drawdown_halt_pct"])
+    today = dt.date.today().isoformat()
+    todays = [e for ts, e in rows if ts[:10] == today]
+    if len(todays) >= 2:
+        day_loss = (1 - todays[-1] / todays[0]) * 100
+        if day_loss >= cfg["risk"]["daily_loss_halt_pct"]:
+            return "daily-loss circuit breaker: -{:.1f}% today (limit {}%)".format(
+                day_loss, cfg["risk"]["daily_loss_halt_pct"])
+    return None
+
+
+def sector_full(cfg, con, sector, market_module):
+    """True if we already hold max_sector_positions in this sector."""
+    if not sector:
+        return False
+    from bot import ledger
+    count = 0
+    for p in ledger.open_positions(con):
+        info = market_module.ticker_info(p["ticker"])
+        if info.get("sector") == sector:
+            count += 1
+    return count >= cfg["risk"]["max_sector_positions"]
+
+
 def watchlist_tickers(research):
     return [w["ticker"].upper() for w in research.get("watchlist", [])
             if isinstance(w, dict) and w.get("ticker")]

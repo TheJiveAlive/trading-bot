@@ -24,6 +24,11 @@ CREATE TABLE IF NOT EXISTS scan_candidates (
     score REAL, detail TEXT);
 CREATE TABLE IF NOT EXISTS equity_history (
     id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT, equity REAL, cash REAL);
+CREATE TABLE IF NOT EXISTS trade_signals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT, ticker TEXT, parts TEXT);
+CREATE TABLE IF NOT EXISTS signal_rewards (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT, ticker TEXT,
+    signal TEXT, contribution REAL, pnl_pct REAL);
 """
 
 

@@ -129,6 +129,9 @@ def confluence_check(cfg, ticker, news_sc, reddit_info=None, n_insiders=0):
         "options_flow": None if m["call_put_ratio"] is None
                         else m["call_put_ratio"] > 1.0,
     }
+    from bot.signals.dilution import check_dilution
+    dil = check_dilution(cfg, ticker)
+    checks["clean_dilution_history"] = not dil["chronic"]
     vetoes = []
     if m["spread_pct"] is not None and m["spread_pct"] > c["hard_fail_spread_pct"]:
         vetoes.append("spread {}% > {}%".format(m["spread_pct"], c["hard_fail_spread_pct"]))
@@ -139,6 +142,9 @@ def confluence_check(cfg, ticker, news_sc, reddit_info=None, n_insiders=0):
     e_days = days_to_earnings(ticker)
     if e_days is not None and 0 <= e_days <= c["avoid_earnings_days"]:
         vetoes.append("earnings in {}d (binary-event risk)".format(e_days))
+    if dil["veto"]:
+        vetoes.append("dilution risk: offering/shelf filing {}d ago ({} in 90d)".format(
+            dil["days_since_last"], dil["recent_filings"]))
 
     passed = sum(1 for v in checks.values() if v is True)
     applicable = sum(1 for v in checks.values() if v is not None)

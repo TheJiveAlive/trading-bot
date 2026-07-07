@@ -6,6 +6,11 @@ cd "$(dirname "$0")"
 
 /usr/bin/python3 -m bot.review_dump >> logs/review_cli.log 2>&1
 
+# monthly (first Sunday): apply bounded signal-weight learning from trade rewards
+if [ "$(date +%d)" -le 7 ]; then
+  /usr/bin/python3 -m bot.learn >> logs/review_cli.log 2>&1
+fi
+
 claude -p "$(cat research/review_prompt.md)" \
   --allowedTools "Read,Write,Bash(python3:*),WebSearch,WebFetch" \
   --permission-mode acceptEdits \
