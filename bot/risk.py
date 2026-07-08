@@ -122,3 +122,31 @@ def watchlist_tickers(research):
 
 def avoid_tickers(research):
     return {t.upper() for t in research.get("avoid", []) if isinstance(t, str)}
+
+
+INTEL_PATH = os.path.join(DATA_DIR, "intel.json")
+INTEL_STALE_HOURS = 4
+
+
+def load_intel():
+    """Latest hourly intel dict, or {} if missing/stale."""
+    if not os.path.exists(INTEL_PATH):
+        return {}
+    try:
+        with open(INTEL_PATH) as f:
+            intel = json.load(f)
+        gen = intel.get("generated", "")
+        if gen:
+            when = dt.datetime.fromisoformat(gen.replace("Z", "+00:00"))
+            age_h = (dt.datetime.now(dt.timezone.utc) - when).total_seconds() / 3600
+            if age_h > INTEL_STALE_HOURS:
+                return {"_stale": True, "generated": gen}
+        return intel
+    except Exception:
+        return {}
+
+
+def intel_flagged(intel):
+    """Tickers the hourly intel says to avoid buying this session."""
+    return {t.upper() for t in (intel or {}).get("flags_for_bot", [])
+            if isinstance(t, str)}

@@ -101,6 +101,33 @@ tr:last-child td { border-bottom:none; }
   font-family:ui-monospace,Menlo,monospace; }
 .foot { color:var(--dim); font-size:11px; text-align:center; margin-top:8px; line-height:1.9; }
 .foot a { color:var(--mut); }
+.schedwrap { max-width:1140px; margin:0 auto; padding:0 20px; }
+.sched { display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin-top:12px;
+  padding:9px 14px; font-size:11.5px; border:1px solid var(--line); border-radius:10px;
+  background:linear-gradient(160deg,var(--panel2),var(--panel));
+  font-family:ui-monospace,Menlo,monospace; }
+.sched .dot { width:8px; height:8px; border-radius:50%; background:var(--gain);
+  box-shadow:0 0 0 0 rgba(61,220,151,.6); animation:pulse 2.4s infinite; }
+.sched .dot.closed { background:var(--dim); animation:none; }
+@keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(61,220,151,.5)} 70%{box-shadow:0 0 0 7px rgba(61,220,151,0)} 100%{box-shadow:0 0 0 0 rgba(61,220,151,0)} }
+.sched .sl { color:var(--dim); text-transform:uppercase; letter-spacing:1px; font-size:9.5px; font-weight:800; }
+.sched .sv { color:var(--ink); font-weight:600; }
+.sched .sv.soon { color:var(--teal); }
+.sched .sv.now { color:var(--warn); }
+.sched .sep { color:var(--line); }
+.sched .barwrap { flex:1; min-width:80px; height:5px; background:#121A2C; border-radius:3px; overflow:hidden; }
+.sched .barfill { display:block; height:5px; width:0;
+  background:linear-gradient(90deg,var(--teal),var(--violet)); transition:width 1s linear; }
+.alert { display:flex; gap:9px; padding:8px 0; border-bottom:1px solid #121A2C; align-items:flex-start; }
+.alert:last-child { border-bottom:none; }
+.alert .lv { font-size:9px; font-weight:800; letter-spacing:.6px; padding:2px 7px; border-radius:99px;
+  text-transform:uppercase; white-space:nowrap; margin-top:1px; }
+.alert .lv.info { color:var(--mut); border:1px solid var(--line); }
+.alert .lv.warn { color:var(--warn); border:1px solid #4a3a14; background:#171106; }
+.alert .lv.urgent { color:var(--loss); border:1px solid #4a2320; background:#180a09; }
+.alert .body { font-size:12px; line-height:1.45; }
+.alert .body .tk { color:var(--violet); font-weight:700; }
+.alert .body .sr { color:var(--dim); font-size:10px; font-family:ui-monospace,Menlo,monospace; }
 """
 
 MODE_RANK = {"risk_off": "risk off", "neutral": "neutral", "risk_on": "risk on"}
@@ -139,14 +166,83 @@ def _page(active, body, cfg, research, gen, mood="flat"):
     <span class="pill reg-{reg}">{regt}</span>
   </span>
 </div></div>
+<div class="schedwrap"><div class="sched" id="sched">
+  <span class="dot" id="scandot"></span>
+  <span class="sl">Trading scan</span>
+  <span class="sv" id="scan-next">—</span>
+  <span class="sep">&middot;</span>
+  <span class="sl">Hourly intel</span>
+  <span class="sv" id="intel-next">—</span>
+  <span class="sep">&middot;</span>
+  <span class="sl">Daily research</span>
+  <span class="sv" id="research-next">—</span>
+  <span class="barwrap"><span class="barfill" id="hourbar"></span></span>
+</div></div>
 <div class="wrap">{body}
 <div class="foot">page generated {gen} &middot; browser auto-reloads every 5 min<br/>
-scans hourly 14:30&ndash;21:00 UK weekdays &middot; page refresh hourly 08:30&ndash;23:30 UK daily
-&middot; research 13:37 &middot; review Sun 17:03</div>
-</div>{fx}</body></html>""".format(
+scans hourly during US market hours &middot; hourly intel &middot; daily research &middot; weekly review</div>
+</div>{sched}{fx}</body></html>""".format(
         css=CSS, nav=nav, body=body, gen=gen, fx=_fx_script(mood),
+        sched=_sched_script(),
         mode=cfg["mode"], mc="live" if cfg["mode"] == "live" else "paper",
         reg=regime, regt=MODE_RANK[regime])
+
+
+def _sched_script():
+    """Live countdown to next scan/intel/research, computed in the viewer's
+    local time from the known UTC cron schedules."""
+    return """
+<script>
+(function(){
+  // UTC schedules (minute past hour, list of UTC hours), weekdays only
+  var SCANS={min:33,hours:[13,14,15,16,17,18,19,20,21]};
+  var INTEL={min:8,hours:[14,15,16,17,18,19,20]};
+  var RESEARCH={min:37,hours:[12]};
+  function nextRun(s){
+    var now=new Date();
+    for(var d=0;d<5;d++){
+      var day=new Date(now.getTime()+d*86400000);
+      var dow=day.getUTCDay();
+      if(dow===0||dow===6)continue;
+      for(var i=0;i<s.hours.length;i++){
+        var t=new Date(Date.UTC(day.getUTCFullYear(),day.getUTCMonth(),day.getUTCDate(),s.hours[i],s.min,0));
+        if(t>now)return t;
+      }
+    }
+    return null;
+  }
+  function fmt(ms){
+    if(ms<0)return"now";
+    var m=Math.floor(ms/60000),h=Math.floor(m/60);m=m%60;
+    if(h>0)return h+"h "+m+"m";
+    var sec=Math.floor((ms%60000)/1000);
+    return m+"m "+String(sec).padStart(2,"0")+"s";
+  }
+  function marketOpen(){
+    var n=new Date(),h=n.getUTCHours(),day=n.getUTCDay();
+    if(day===0||day===6)return false;
+    var mins=h*60+n.getUTCMinutes();
+    return mins>=13*60+30&&mins<20*60;  // ~9:30-16:00 ET in UTC (summer)
+  }
+  function tick(){
+    var now=new Date();
+    var defs=[["scan-next",SCANS],["intel-next",INTEL],["research-next",RESEARCH]];
+    defs.forEach(function(d){
+      var el=document.getElementById(d[0]);if(!el)return;
+      var nx=nextRun(d[1]);if(!nx){el.textContent="—";return;}
+      var ms=nx-now;el.textContent="in "+fmt(ms);
+      el.className="sv"+(ms<120000?" now":(ms<600000?" soon":""));
+    });
+    var dot=document.getElementById("scandot");
+    if(dot)dot.className="dot"+(marketOpen()?"":" closed");
+    // progress bar = fraction through the current hour toward next scan
+    var bar=document.getElementById("hourbar");
+    if(bar){var nx=nextRun(SCANS);if(nx){var frac=1-((nx-now)/3600000);
+      frac=Math.max(0,Math.min(1,frac));bar.style.width=(frac*100).toFixed(1)+"%";}}
+  }
+  tick();setInterval(tick,1000);
+})();
+</script>"""
 
 
 def _fx_script(mood):
@@ -263,6 +359,7 @@ def _fetch_state():
     buys_wk = ledger.buys_this_week(con)
     con.close()
 
+    intel = risk.load_intel()
     from bot.signals.reddit import fetch_mentions
     reddit = fetch_mentions()
 
@@ -289,7 +386,7 @@ def _fetch_state():
         "decisions": decisions, "candidates": candidates,
         "cand_ts": _short(cand_ts), "rewards": rewards,
         "buys_wk": buys_wk, "research": research,
-        "reddit": reddit, "news": news,
+        "reddit": reddit, "news": news, "intel": intel,
     }
 
 
@@ -490,6 +587,34 @@ def _news_panel(st):
     return panel("Headlines the bot is reading", "fetched " + st["now"], inner)
 
 
+def _intel_panel(st):
+    intel = st.get("intel") or {}
+    if not intel or intel.get("_stale"):
+        note = ("last intel {} — stale, awaiting next hourly run".format(
+            intel.get("generated", "")[:16].replace("T", " ")) if intel.get("_stale")
+            else "no hourly intel yet — runs every hour during US market hours")
+        return panel("Live intel feed", "hourly", '<div class="mut">{}</div>'.format(note))
+    tape = intel.get("tape", "")
+    alerts = intel.get("alerts", [])[:12]
+    if alerts:
+        items = "".join(
+            '<div class="alert"><span class="lv {lv}">{lv}</span>'
+            '<div class="body"><span class="tk">{tk}</span> {hl}'
+            '{link}<div class="sr">{time}</div></div></div>'.format(
+                lv=(a.get("level") or "info"), tk=a.get("ticker", ""),
+                hl=a.get("headline", ""),
+                link=' &middot; <a href="{u}" target="_blank" rel="noopener">source &#8599;</a>'.format(
+                    u=a["source"]) if a.get("source", "").startswith("http") else "",
+                time=a.get("time", ""))
+            for a in alerts)
+    else:
+        items = '<div class="mut">no material alerts this hour</div>'
+    gen = intel.get("generated", "")[:16].replace("T", " ")
+    tape_html = ('<div class="note" style="margin-bottom:10px;color:var(--ink)">'
+                 '<b style="color:var(--dim)">TAPE:</b> {}</div>'.format(tape)) if tape else ""
+    return panel("Live intel feed", "intel " + gen + " UTC", tape_html + items)
+
+
 def _overview(st):
     threshold = risk.buy_threshold(st["cfg"], st["research"])
     trades = list(reversed(st["trades_asc"][-6:]))
@@ -507,6 +632,7 @@ def _overview(st):
                   _equity_svg(st["curve"], st["deposited"]))
     body += _research_panel(st)
     body += "</div>"
+    body += _intel_panel(st)
     body += _positions_panel(st)
     body += '<div class="grid2">'
     body += _news_panel(st)

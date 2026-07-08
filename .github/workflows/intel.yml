@@ -1,0 +1,64 @@
+name: hourly-intel
+on:
+  schedule:
+    - cron: '8 14-20 * * 1-5'   # hourly during US market hours (UTC ~ 9:00-15:00 ET)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+concurrency:
+  group: intel
+  cancel-in-progress: true
+
+jobs:
+  intel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: check token
+        env:
+          TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "no token — skipping hourly intel"
+            echo "SKIP=1" >> "$GITHUB_ENV"
+          fi
+
+      - name: market hours guard
+        if: env.SKIP != '1'
+        run: |
+          H=$(TZ=America/New_York date +%H); DOW=$(TZ=America/New_York date +%u)
+          if [ "$DOW" -gt 5 ] || [ "$H" -lt 9 ] || [ "$H" -ge 16 ]; then
+            echo "market closed — skipping"; echo "SKIP=1" >> "$GITHUB_ENV"
+          fi
+
+      - uses: actions/checkout@v4
+        if: env.SKIP != '1'
+
+      - uses: actions/setup-node@v4
+        if: env.SKIP != '1'
+        with:
+          node-version: '22'
+
+      - name: install claude code
+        if: env.SKIP != '1'
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: run intel session
+        if: env.SKIP != '1'
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          claude -p "$(cat research/intel_prompt.md)" \
+            --allowedTools "WebSearch,WebFetch,Read,Write" \
+            --permission-mode acceptEdits
+
+      - name: commit intel
+        if: env.SKIP != '1'
+        run: |
+          git config user.name "trading-bot"
+          git config user.email "trading-bot@users.noreply.github.com"
+          git add data/intel.json
+          git commit -m "hourly intel $(date -u '+%H:%M') UTC" || echo "no changes"
+          git pull --rebase -X ours origin main || true
+          git push

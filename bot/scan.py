@@ -56,6 +56,10 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
     buy_cfg = cfg["buying"]
     threshold = risk.buy_threshold(cfg, research)
     avoid = risk.avoid_tickers(research)
+    intel_flags = risk.intel_flagged(risk.load_intel())
+    if intel_flags:
+        report.append("  hourly intel flags (avoid this session): {}".format(
+            ", ".join(sorted(intel_flags))))
     halted = risk.trading_halted(con, cfg)
     if halted:
         ledger.log_decision(con, "halt", halted)
@@ -85,6 +89,12 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
         if c["ticker"] in avoid:
             ledger.log_decision(con, "skip_buy",
                                 "{} on research avoid list".format(c["ticker"]))
+            continue
+        if c["ticker"] in intel_flags:
+            ledger.log_decision(con, "skip_buy",
+                                "{} flagged by hourly intel (fresh negative news)".format(
+                                    c["ticker"]))
+            report.append("  skip {}: hourly intel flag".format(c["ticker"]))
             continue
         if c["ticker"] in held or not c["price"]:
             continue
