@@ -120,7 +120,7 @@ def panel(title, asof, inner, extra=""):
         t=title, a=asof, i=inner, x=extra)
 
 
-def _page(active, body, cfg, research, gen):
+def _page(active, body, cfg, research, gen, mood="flat"):
     regime = risk.regime(research)
     nav = "".join('<a href="{h}" class="{c}">{n}</a>'.format(
         h=h, c="on" if active == h else "", n=n)
@@ -130,6 +130,7 @@ def _page(active, body, cfg, research, gen):
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta http-equiv="refresh" content="300"/>
 <title>RobinHood Bot</title><style>{css}</style></head><body>
+<canvas id="fx" aria-hidden="true"></canvas>
 <div class="top"><div class="topin">
   <span class="brand"><span class="zap">&#9889;</span> RobinHood Bot</span>
   {nav}
@@ -142,10 +143,60 @@ def _page(active, body, cfg, research, gen):
 <div class="foot">page generated {gen} &middot; browser auto-reloads every 5 min<br/>
 scans hourly 14:30&ndash;21:00 UK weekdays &middot; page refresh hourly 08:30&ndash;23:30 UK daily
 &middot; research 13:37 &middot; review Sun 17:03</div>
-</div></body></html>""".format(
-        css=CSS, nav=nav, body=body, gen=gen,
+</div>{fx}</body></html>""".format(
+        css=CSS, nav=nav, body=body, gen=gen, fx=_fx_script(mood),
         mode=cfg["mode"], mc="live" if cfg["mode"] == "live" else "paper",
         reg=regime, regt=MODE_RANK[regime])
+
+
+def _fx_script(mood):
+    """Ambient weather: gold coins rain when up, rain when down, calm when flat.
+    Honors prefers-reduced-motion (renders nothing)."""
+    return """
+<style>#fx{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;
+z-index:1;opacity:.85}@media (prefers-reduced-motion:reduce){#fx{display:none}}</style>
+<script>
+(function(){
+  var MOOD=""" + '"' + mood + '"' + """;
+  if(MOOD==="flat")return;
+  var m=window.matchMedia("(prefers-reduced-motion:reduce)");
+  if(m.matches)return;
+  var c=document.getElementById("fx"),x=c.getContext("2d"),W,H,P=[];
+  function size(){W=c.width=innerWidth;H=c.height=innerHeight;}
+  size();addEventListener("resize",size);
+  var UP=MOOD==="up";
+  var N=UP?Math.min(70,Math.floor(W/22)):Math.min(120,Math.floor(W/12));
+  function coin(){return{x:Math.random()*W,y:Math.random()*-H,r:6+Math.random()*7,
+    vy:1.6+Math.random()*2.4,sp:Math.random()*Math.PI,vs:0.05+Math.random()*0.12,
+    sway:Math.random()*0.6};}
+  function drop(){return{x:Math.random()*W,y:Math.random()*-H,len:10+Math.random()*16,
+    vy:7+Math.random()*7,vx:-1.2};}
+  for(var i=0;i<N;i++)P.push(UP?coin():drop());
+  function draw(){
+    x.clearRect(0,0,W,H);
+    for(var i=0;i<P.length;i++){var p=P[i];
+      if(UP){
+        p.y+=p.vy;p.sp+=p.vs;p.x+=Math.sin(p.sp)*p.sway;
+        var w=Math.abs(Math.cos(p.sp))*p.r+1.5;
+        var g=x.createLinearGradient(p.x-w,p.y-p.r,p.x+w,p.y+p.r);
+        g.addColorStop(0,"#FFE9A3");g.addColorStop(.5,"#F5C542");g.addColorStop(1,"#B8860B");
+        x.beginPath();x.ellipse(p.x,p.y,w,p.r,0,0,7);x.fillStyle=g;x.fill();
+        x.strokeStyle="rgba(120,80,0,.5)";x.lineWidth=1;x.stroke();
+        if(w>p.r*0.55){x.fillStyle="rgba(120,80,0,.75)";x.font="bold "+(p.r)+"px ui-monospace,monospace";
+          x.textAlign="center";x.textBaseline="middle";x.fillText("$",p.x,p.y+0.5);}
+        if(p.y>H+p.r){P[i]=coin();P[i].y=-p.r;}
+      }else{
+        p.y+=p.vy;p.x+=p.vx;
+        x.beginPath();x.moveTo(p.x,p.y);x.lineTo(p.x+p.vx*1.5,p.y+p.len);
+        x.strokeStyle="rgba(120,160,220,.35)";x.lineWidth=1.4;x.stroke();
+        if(p.y>H){P[i]=drop();P[i].y=-p.len;}
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>"""
 
 
 # ---------------- data ----------------
@@ -602,10 +653,14 @@ def _history(st):
 def generate():
     st = _fetch_state()
     cfg, research, gen = st["cfg"], st["research"], st["now"]
+    # mood drives the ambient effect: net P/L vs deposits, with a small deadband
+    net = st["equity"] - st["deposited"] if st["deposited"] else 0.0
+    pct = (net / st["deposited"] * 100) if st["deposited"] else 0.0
+    mood = "up" if pct > 0.5 else ("down" if pct < -0.5 else "flat")
     pages = {
-        "index.html": _page("index.html", _overview(st), cfg, research, gen),
-        "radar.html": _page("radar.html", _radar(st), cfg, research, gen),
-        "history.html": _page("history.html", _history(st), cfg, research, gen),
+        "index.html": _page("index.html", _overview(st), cfg, research, gen, mood),
+        "radar.html": _page("radar.html", _radar(st), cfg, research, gen, mood),
+        "history.html": _page("history.html", _history(st), cfg, research, gen, mood),
     }
     publish_dir = os.path.join(ROOT, "publish")
     for name, html in pages.items():

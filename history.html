@@ -87,6 +87,7 @@ tr:last-child td { border-bottom:none; }
 .foot { color:var(--dim); font-size:11px; text-align:center; margin-top:8px; line-height:1.9; }
 .foot a { color:var(--mut); }
 </style></head><body>
+<canvas id="fx" aria-hidden="true"></canvas>
 <div class="top"><div class="topin">
   <span class="brand"><span class="zap">&#9889;</span> RobinHood Bot</span>
   <a href="index.html" class="">Overview</a><a href="radar.html" class="">Radar</a><a href="history.html" class="on">History</a>
@@ -95,8 +96,52 @@ tr:last-child td { border-bottom:none; }
     <span class="pill reg-risk_on">risk on</span>
   </span>
 </div></div>
-<div class="wrap"><div class="grid2"><div class="panel"><div class="ph"><h2>Weekly P/L</h2><span class="asof">as of ledger Wed 08 Jul, 07:08</span></div><div class="mut">no closed trades yet</div></div><div class="panel"><div class="ph"><h2>Equity curve</h2><span class="asof">as of snapshot Wed 08 Jul, 07:08</span></div><svg viewBox="0 0 640 190" width="100%" role="img" aria-label="equity"><defs><linearGradient id="eq" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#34D399" stop-opacity="0.25"/><stop offset="100%" stop-color="#34D399" stop-opacity="0"/></linearGradient></defs><line x1="10" y1="128.5" x2="630" y2="128.5" stroke="#131D30" stroke-width="1"/><line x1="10" y1="89.0" x2="630" y2="89.0" stroke="#131D30" stroke-width="1"/><line x1="10" y1="49.5" x2="630" y2="49.5" stroke="#131D30" stroke-width="1"/><line x1="10" y1="10.0" x2="630" y2="10.0" stroke="#131D30" stroke-width="1"/><line x1="10" y1="10.0" x2="630" y2="10.0" stroke="#7E8CA6" stroke-dasharray="4 4" opacity="0.6"/><polygon points="10.0,168 10.0,168.0 113.3,10.0 216.7,10.0 320.0,10.0 423.3,10.0 526.7,10.0 630.0,10.0 630.0,168" fill="url(#eq)"/><polyline points="10.0,168.0 113.3,10.0 216.7,10.0 320.0,10.0 423.3,10.0 526.7,10.0 630.0,10.0" fill="none" stroke="#34D399" stroke-width="2"/><circle cx="630.0" cy="10.0" r="3.5" fill="#34D399"/><text x="10" y="184" fill="#5A6A87" font-size="9" font-family="Menlo,monospace">2026-07-07</text><text x="630" y="184" fill="#5A6A87" font-size="9" text-anchor="end" font-family="Menlo,monospace">2026-07-08</text><text x="10" y="20.0" fill="#5A6A87" font-size="9" font-family="Menlo,monospace">$100,059</text><text x="10" y="165.0" fill="#5A6A87" font-size="9" font-family="Menlo,monospace">$127</text></svg></div></div><div class="panel"><div class="ph"><h2>Closed trades</h2><span class="asof">as of ledger Wed 08 Jul, 07:08</span></div><table><tr><th>Closed</th><th>Ticker</th><th class="r">Qty</th><th class="r">In</th><th class="r">Out</th><th class="r">P/L $</th><th class="r">P/L %</th><th>Exit</th></tr><tr><td class="mut" colspan="8">no closed trades yet</td></tr></table></div><div class="panel"><div class="ph"><h2>All activity (last 30)</h2><span class="asof">as of ledger Wed 08 Jul, 07:08</span></div><table><tr><th>When</th><th>Side</th><th>Ticker</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Value</th></tr><tr><td class="mono mut">07-07 20:33</td><td class="mono gain"><b>BUY</b></td><td class="mono"><b>VMAR</b></td><td class="mono r">42</td><td class="mono r">$1.41</td><td class="mono r">$59.22</td></tr></table></div><div class="panel"><div class="ph"><h2>Decision log (last 40) — every choice, including inaction</h2><span class="asof">as of ledger Wed 08 Jul, 07:08</span></div><table><tr><td class="mono mut" style="white-space:nowrap">07-07 21:26</td><td><span class="chip">deposit</span></td><td class="note" style="font-size:11.5px">Credited $99932.22 test capital injection — paper account scaled to $100,000 for strategy testing</td></tr><tr><td class="mono mut" style="white-space:nowrap">07-07 20:53</td><td><span class="chip">skip_buy</span></td><td class="note" style="font-size:11.5px">weekly buy budget already used</td></tr><tr><td class="mono mut" style="white-space:nowrap">07-07 20:49</td><td><span class="chip">skip_buy</span></td><td class="note" style="font-size:11.5px">weekly buy budget already used</td></tr><tr><td class="mono mut" style="white-space:nowrap">07-07 20:33</td><td><span class="chip">buy</span></td><td class="note" style="font-size:11.5px">42 VMAR @ $1.41 ($59.22) — score 4.85 (parts {'insider': 2.0, 'sector': 0.6, 'fundamentals': 2.25, 'news': 0.0}); insiders: {'total_usd': 40869.71, 'n_insiders': 1, 'filings': 1}</td></tr><tr><td class="mono mut" style="white-space:nowrap">07-07 20:33</td><td><span class="chip">deposit</span></td><td class="note" style="font-size:11.5px">Credited $127.00 monthly deposit for 2026-07</td></tr></table></div>
-<div class="foot">page generated Wed 08 Jul, 07:08 &middot; browser auto-reloads every 5 min<br/>
+<div class="wrap"><div class="grid2"><div class="panel"><div class="ph"><h2>Weekly P/L</h2><span class="asof">as of ledger Wed 08 Jul, 07:36</span></div><div class="mut">no closed trades yet</div></div><div class="panel"><div class="ph"><h2>Equity curve</h2><span class="asof">as of snapshot Wed 08 Jul, 07:36</span></div><svg viewBox="0 0 640 190" width="100%" role="img" aria-label="equity"><defs><linearGradient id="eq" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#34D399" stop-opacity="0.25"/><stop offset="100%" stop-color="#34D399" stop-opacity="0"/></linearGradient></defs><line x1="10" y1="128.5" x2="630" y2="128.5" stroke="#131D30" stroke-width="1"/><line x1="10" y1="89.0" x2="630" y2="89.0" stroke="#131D30" stroke-width="1"/><line x1="10" y1="49.5" x2="630" y2="49.5" stroke="#131D30" stroke-width="1"/><line x1="10" y1="10.0" x2="630" y2="10.0" stroke="#131D30" stroke-width="1"/><line x1="10" y1="10.0" x2="630" y2="10.0" stroke="#7E8CA6" stroke-dasharray="4 4" opacity="0.6"/><polygon points="10.0,168 10.0,168.0 87.5,10.0 165.0,10.0 242.5,10.0 320.0,10.0 397.5,10.0 475.0,10.0 552.5,10.0 630.0,10.0 630.0,168" fill="url(#eq)"/><polyline points="10.0,168.0 87.5,10.0 165.0,10.0 242.5,10.0 320.0,10.0 397.5,10.0 475.0,10.0 552.5,10.0 630.0,10.0" fill="none" stroke="#34D399" stroke-width="2"/><circle cx="630.0" cy="10.0" r="3.5" fill="#34D399"/><text x="10" y="184" fill="#5A6A87" font-size="9" font-family="Menlo,monospace">2026-07-07</text><text x="630" y="184" fill="#5A6A87" font-size="9" text-anchor="end" font-family="Menlo,monospace">2026-07-08</text><text x="10" y="20.0" fill="#5A6A87" font-size="9" font-family="Menlo,monospace">$100,059</text><text x="10" y="165.0" fill="#5A6A87" font-size="9" font-family="Menlo,monospace">$127</text></svg></div></div><div class="panel"><div class="ph"><h2>Closed trades</h2><span class="asof">as of ledger Wed 08 Jul, 07:36</span></div><table><tr><th>Closed</th><th>Ticker</th><th class="r">Qty</th><th class="r">In</th><th class="r">Out</th><th class="r">P/L $</th><th class="r">P/L %</th><th>Exit</th></tr><tr><td class="mut" colspan="8">no closed trades yet</td></tr></table></div><div class="panel"><div class="ph"><h2>All activity (last 30)</h2><span class="asof">as of ledger Wed 08 Jul, 07:36</span></div><table><tr><th>When</th><th>Side</th><th>Ticker</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Value</th></tr><tr><td class="mono mut">07-07 20:33</td><td class="mono gain"><b>BUY</b></td><td class="mono"><b>VMAR</b></td><td class="mono r">42</td><td class="mono r">$1.41</td><td class="mono r">$59.22</td></tr></table></div><div class="panel"><div class="ph"><h2>Decision log (last 40) — every choice, including inaction</h2><span class="asof">as of ledger Wed 08 Jul, 07:36</span></div><table><tr><td class="mono mut" style="white-space:nowrap">07-07 21:26</td><td><span class="chip">deposit</span></td><td class="note" style="font-size:11.5px">Credited $99932.22 test capital injection — paper account scaled to $100,000 for strategy testing</td></tr><tr><td class="mono mut" style="white-space:nowrap">07-07 20:53</td><td><span class="chip">skip_buy</span></td><td class="note" style="font-size:11.5px">weekly buy budget already used</td></tr><tr><td class="mono mut" style="white-space:nowrap">07-07 20:49</td><td><span class="chip">skip_buy</span></td><td class="note" style="font-size:11.5px">weekly buy budget already used</td></tr><tr><td class="mono mut" style="white-space:nowrap">07-07 20:33</td><td><span class="chip">buy</span></td><td class="note" style="font-size:11.5px">42 VMAR @ $1.41 ($59.22) — score 4.85 (parts {'insider': 2.0, 'sector': 0.6, 'fundamentals': 2.25, 'news': 0.0}); insiders: {'total_usd': 40869.71, 'n_insiders': 1, 'filings': 1}</td></tr><tr><td class="mono mut" style="white-space:nowrap">07-07 20:33</td><td><span class="chip">deposit</span></td><td class="note" style="font-size:11.5px">Credited $127.00 monthly deposit for 2026-07</td></tr></table></div>
+<div class="foot">page generated Wed 08 Jul, 07:36 &middot; browser auto-reloads every 5 min<br/>
 scans hourly 14:30&ndash;21:00 UK weekdays &middot; page refresh hourly 08:30&ndash;23:30 UK daily
 &middot; research 13:37 &middot; review Sun 17:03</div>
-</div></body></html>
+</div>
+<style>#fx{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;
+z-index:1;opacity:.85}@media (prefers-reduced-motion:reduce){#fx{display:none}}</style>
+<script>
+(function(){
+  var MOOD="flat";
+  if(MOOD==="flat")return;
+  var m=window.matchMedia("(prefers-reduced-motion:reduce)");
+  if(m.matches)return;
+  var c=document.getElementById("fx"),x=c.getContext("2d"),W,H,P=[];
+  function size(){W=c.width=innerWidth;H=c.height=innerHeight;}
+  size();addEventListener("resize",size);
+  var UP=MOOD==="up";
+  var N=UP?Math.min(70,Math.floor(W/22)):Math.min(120,Math.floor(W/12));
+  function coin(){return{x:Math.random()*W,y:Math.random()*-H,r:6+Math.random()*7,
+    vy:1.6+Math.random()*2.4,sp:Math.random()*Math.PI,vs:0.05+Math.random()*0.12,
+    sway:Math.random()*0.6};}
+  function drop(){return{x:Math.random()*W,y:Math.random()*-H,len:10+Math.random()*16,
+    vy:7+Math.random()*7,vx:-1.2};}
+  for(var i=0;i<N;i++)P.push(UP?coin():drop());
+  function draw(){
+    x.clearRect(0,0,W,H);
+    for(var i=0;i<P.length;i++){var p=P[i];
+      if(UP){
+        p.y+=p.vy;p.sp+=p.vs;p.x+=Math.sin(p.sp)*p.sway;
+        var w=Math.abs(Math.cos(p.sp))*p.r+1.5;
+        var g=x.createLinearGradient(p.x-w,p.y-p.r,p.x+w,p.y+p.r);
+        g.addColorStop(0,"#FFE9A3");g.addColorStop(.5,"#F5C542");g.addColorStop(1,"#B8860B");
+        x.beginPath();x.ellipse(p.x,p.y,w,p.r,0,0,7);x.fillStyle=g;x.fill();
+        x.strokeStyle="rgba(120,80,0,.5)";x.lineWidth=1;x.stroke();
+        if(w>p.r*0.55){x.fillStyle="rgba(120,80,0,.75)";x.font="bold "+(p.r)+"px ui-monospace,monospace";
+          x.textAlign="center";x.textBaseline="middle";x.fillText("$",p.x,p.y+0.5);}
+        if(p.y>H+p.r){P[i]=coin();P[i].y=-p.r;}
+      }else{
+        p.y+=p.vy;p.x+=p.vx;
+        x.beginPath();x.moveTo(p.x,p.y);x.lineTo(p.x+p.vx*1.5,p.y+p.len);
+        x.strokeStyle="rgba(120,160,220,.35)";x.lineWidth=1.4;x.stroke();
+        if(p.y>H){P[i]=drop();P[i].y=-p.len;}
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script></body></html>
