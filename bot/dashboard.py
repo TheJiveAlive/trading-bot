@@ -435,6 +435,123 @@ def _equity_svg(curve, deposited, w=640, h=190):
                              ty=y(hi) + 10, by=y(lo) - 3, hi=hi, lo=lo)
 
 
+def _sparkline(closes, cost=None, w=88, h=26):
+    """Tiny inline SVG price line; green if last>=first, red otherwise. If cost
+    is given, a faint dashed line marks the entry price."""
+    if not closes or len(closes) < 2:
+        return '<span class="mut" style="font-size:10px">no data</span>'
+    lo, hi = min(closes), max(closes)
+    if cost:
+        lo, hi = min(lo, cost), max(hi, cost)
+    rng = (hi - lo) or 1
+    pad = 2
+    def x(i): return pad + i * (w - 2 * pad) / (len(closes) - 1)
+    def y(v): return (h - pad) - (v - lo) * (h - 2 * pad) / rng
+    pts = " ".join("{:.1f},{:.1f}".format(x(i), y(v)) for i, v in enumerate(closes))
+    up = closes[-1] >= closes[0]
+    color = "#3DDC97" if up else "#FF7A70"
+    cost_line = ""
+    if cost:
+        cost_line = ('<line x1="{p}" y1="{cy:.1f}" x2="{w2}" y2="{cy:.1f}" '
+                     'stroke="#5C6B8C" stroke-width="0.7" stroke-dasharray="2 2" '
+                     'opacity="0.7"/>').format(p=pad, w2=w - pad, cy=y(cost))
+    return ('<svg viewBox="0 0 {w} {h}" width="{w}" height="{h}" '
+            'style="vertical-align:middle">{cl}<polyline points="{pts}" fill="none" '
+            'stroke="{c}" stroke-width="1.4"/>'
+            '<circle cx="{cx:.1f}" cy="{cy:.1f}" r="1.8" fill="{c}"/></svg>').format(
+        w=w, h=h, cl=cost_line, pts=pts, c=color, cx=x(len(closes) - 1),
+        cy=y(closes[-1]))
+
+
+def _period_stats(closed):
+    """Realized P/L + averages for today / this week / this month."""
+    today = dt.date.today()
+    monday = today - dt.timedelta(days=today.weekday())
+    month1 = today.replace(day=1)
+    buckets = {"Day": [], "Week": [], "Month": [], "All time": []}
+    for t in closed:
+        d = dt.date.fromisoformat(t["ts"][:10])
+        buckets["All time"].append(t)
+        if d >= month1:
+            buckets["Month"].append(t)
+        if d >= monday:
+            buckets["Week"].append(t)
+        if d == today:
+            buckets["Day"].append(t)
+    rows = []
+    for label, ts in buckets.items():
+        wins = [t for t in ts if t["pnl"] > 0]
+        losses = [t for t in ts if t["pnl"] <= 0]
+        net = sum(t["pnl"] for t in ts)
+        avg_w = sum(t["pct"] for t in wins) / len(wins) if wins else 0
+        avg_l = sum(t["pct"] for t in losses) / len(losses) if losses else 0
+        nc = "gain" if net >= 0 else "loss"
+        rows.append(
+            '<tr><td class="mono">{lb}</td><td class="mono r">{n}</td>'
+            '<td class="mono r {nc}">{ns}${na:,.2f}</td>'
+            '<td class="mono r gain">{aw}</td><td class="mono r loss">{al}</td></tr>'.format(
+                lb=label, n=len(ts), nc=nc, ns="+" if net >= 0 else "−", na=abs(net),
+                aw="+{:.1f}%".format(avg_w) if wins else "—",
+                al="{:.1f}%".format(avg_l) if losses else "—"))
+    return ('<table><tr><th>Window</th><th class="r">Trades</th><th class="r">Net P/L</th>'
+            '<th class="r">Avg win</th><th class="r">Avg loss</th></tr>{}</table>'.format(
+                "".join(rows)))
+
+
+# WSB-flavoured captions, chosen by trade outcome
+FAME_CAPS = [
+    ("🚀", "TO THE MOON"), ("💎🙌", "diamond hands paid off"),
+    ("🤑", "tendies secured"), ("📈", "absolute stonks"),
+    ("🧠", "big brain play"), ("🍗", "fat tendies"),
+]
+SHAME_CAPS = [
+    ("💀", "GUH"), ("📉", "bought the top, sold the bottom"),
+    ("🧻🙌", "paper hands special"), ("🤡", "clown market got us"),
+    ("🎒", "certified bagholder"), ("🔥", "this is fine"),
+]
+
+
+def _hall(closed):
+    if not closed:
+        return ('<div class="mut">no closed trades yet — the halls await their first '
+                'legends and cautionary tales 🫡</div>')
+    best = sorted(closed, key=lambda t: t["pct"], reverse=True)[:3]
+    worst = sorted(closed, key=lambda t: t["pct"])[:3]
+
+    def card(t, caps, i, good):
+        emoji, cap = caps[i % len(caps)]
+        cls = "gain" if good else "loss"
+        held = ""
+        try:
+            held = "{}d".format((dt.date.fromisoformat(t["ts"][:10])
+                                 - dt.date.fromisoformat(t["ts"][:10])).days)
+        except Exception:
+            pass
+        return (
+            '<div style="border:1px solid var(--line);border-radius:10px;padding:11px 13px;'
+            'background:rgba(255,255,255,.02)">'
+            '<div style="font-size:20px">{e}</div>'
+            '<div class="mono" style="font-size:15px;font-weight:800;margin:3px 0">'
+            '<span class="tk" style="color:var(--violet)">{tk}</span> '
+            '<span class="{cls}">{ps}{pct:.1f}%</span></div>'
+            '<div class="note" style="font-size:11px">{cap}</div>'
+            '<div class="mono" style="font-size:10.5px;color:var(--dim);margin-top:3px">'
+            '${b:.2f} → ${s:.2f} · {ns}${amt:,.2f}</div></div>').format(
+            e=emoji, tk=t["ticker"], cls=cls, ps="+" if t["pct"] >= 0 else "",
+            pct=t["pct"], cap=cap, b=t["buy"], s=t["sell"],
+            ns="+" if t["pnl"] >= 0 else "−", amt=abs(t["pnl"]))
+
+    fame = "".join(card(t, FAME_CAPS, i, True) for i, t in enumerate(best))
+    shame = "".join(card(t, SHAME_CAPS, i, False) for i, t in enumerate(worst))
+    grid = ('display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px')
+    return (
+        '<div class="klabel" style="color:var(--gain)">🏆 Hall of Fame — biggest tendies</div>'
+        '<div style="{g}">{fame}</div>'
+        '<div class="klabel" style="color:var(--loss);margin-top:14px">🤡 Hall of Shame — '
+        'lessons in humility</div><div style="{g}">{shame}</div>').format(
+        g=grid, fame=fame, shame=shame)
+
+
 def _weekly_bars(closed, w=520, h=150):
     if not closed:
         return '<div class="mut">no closed trades yet</div>'
@@ -497,16 +614,20 @@ def _positions_panel(st):
             stop_lvl = hwm * (1 - stop_pct / 100)
             tp_lvl = p["avg_cost"] * (1 + tp / 100)
             cls = "mut" if p["pl_pct"] is None else ("gain" if p["pl_pct"] >= 0 else "loss")
+            spark = _sparkline(market.price_series(p["ticker"]), cost=p["avg_cost"])
+            pl_usd = "" if p["pl_usd"] is None else " <span class='mut' style='font-size:10.5px'>({}${:,.0f})</span>".format(
+                "+" if p["pl_usd"] >= 0 else "−", abs(p["pl_usd"]))
             rows.append(
-                '<tr><td class="mono"><b>{t}</b></td><td class="mono r">{sh}</td>'
+                '<tr><td class="mono"><b>{t}</b></td><td>{spark}</td>'
+                '<td class="mono r">{sh}</td>'
                 '<td class="mono r">${c:.2f}</td><td class="mono r">{n}</td>'
-                '<td class="mono r {cls}">{pct}</td>'
+                '<td class="mono r {cls}">{pct}{plu}</td>'
                 '<td class="mono r loss">${sl:.2f}</td><td class="mono r gain">${tl:.2f}</td></tr>'.format(
-                    t=p["ticker"], sh=p["shares"], c=p["avg_cost"],
+                    t=p["ticker"], spark=spark, sh=p["shares"], c=p["avg_cost"],
                     n="${:.2f}".format(p["now"]) if p["now"] else "—", cls=cls,
                     pct="{:+.1f}%".format(p["pl_pct"]) if p["pl_pct"] is not None else "—",
-                    sl=stop_lvl, tl=tp_lvl))
-        inner = ('<table><tr><th>Ticker</th><th class="r">Qty</th><th class="r">Avg</th>'
+                    plu=pl_usd, sl=stop_lvl, tl=tp_lvl))
+        inner = ('<table><tr><th>Ticker</th><th>30d</th><th class="r">Qty</th><th class="r">Avg</th>'
                  '<th class="r">Now</th><th class="r">P/L</th><th class="r">Sells below</th>'
                  '<th class="r">Target</th></tr>{}</table>'
                  '<div class="note" style="margin-top:8px">"Sells below" is the trailing '
@@ -757,11 +878,13 @@ def _history(st):
                         d=_short(ts), k=kind, t=detail[:200])
                     for ts, kind, detail in st["decisions"])
 
-    body = '<div class="grid2">'
+    body = panel("🏆 Halls of Fame &amp; Shame", "ledger " + st["now"], _hall(st["closed"]))
+    body += '<div class="grid2">'
+    body += panel("P/L by window", "ledger " + st["now"], _period_stats(st["closed"]))
     body += panel("Weekly P/L", "ledger " + st["now"], _weekly_bars(st["closed"]))
+    body += "</div>"
     body += panel("Equity curve", "snapshot " + st["now"],
                   _equity_svg(st["curve"], st["deposited"]))
-    body += "</div>"
     body += panel("Closed trades", "ledger " + st["now"],
                   '<table><tr><th>Closed</th><th>Ticker</th><th class="r">Qty</th>'
                   '<th class="r">In</th><th class="r">Out</th><th class="r">P/L $</th>'

@@ -75,6 +75,17 @@ def last_price(ticker):
     return float(h["Close"].dropna().iloc[-1])
 
 
+def price_series(ticker, period="1mo"):
+    """List of daily closes for a sparkline, or [] on failure."""
+    try:
+        h = yf.Ticker(ticker).history(period=period)
+        if h is None or h.empty:
+            return []
+        return [float(x) for x in h["Close"].dropna().tolist()]
+    except Exception:
+        return []
+
+
 def ticker_info(ticker):
     try:
         return yf.Ticker(ticker).info or {}
