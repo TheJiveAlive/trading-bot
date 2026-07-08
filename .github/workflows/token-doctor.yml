@@ -1,0 +1,33 @@
+name: token-doctor
+# Safe diagnostic: reports the SHAPE of the stored Claude token without ever
+# printing it. Tells us if the value has whitespace, wrong prefix, or wrong
+# length — the usual causes of "invalid header" / "401". Run manually.
+on:
+  workflow_dispatch:
+
+jobs:
+  doctor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: inspect token shape (value never printed)
+        env:
+          TOK: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python3 - <<'PY'
+          import os
+          for name in ("CLAUDE_CODE_OAUTH_TOKEN","ANTHROPIC_API_KEY"):
+              v = os.environ.get("TOK" if name.startswith("CLAUDE") else "KEY","")
+              if not v:
+                  print(f"{name}: (not set)"); continue
+              stripped = v.strip()
+              print(f"{name}:")
+              print(f"  length: {len(v)}")
+              print(f"  leading/trailing whitespace: {v != stripped} "
+                    f"(len drops {len(v)-len(stripped)} chars when stripped)")
+              print(f"  contains internal whitespace/newline: {any(c.isspace() for c in stripped)}")
+              print(f"  starts with sk-ant-oat01 (OAuth): {stripped.startswith('sk-ant-oat01')}")
+              print(f"  starts with sk-ant-api03 (API key): {stripped.startswith('sk-ant-api03')}")
+              print(f"  all-ASCII printable: {all(32 <= ord(c) < 127 for c in stripped)}")
+              print(f"  expected OAuth length ~100+: {'yes' if len(stripped) >= 90 else 'NO — looks truncated'}")
+          PY

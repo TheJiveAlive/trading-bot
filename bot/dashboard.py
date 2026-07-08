@@ -132,6 +132,17 @@ tr:last-child td { border-bottom:none; }
 .sdot.green { background:var(--gain); box-shadow:0 0 6px rgba(61,220,151,.6); }
 .sdot.red { background:var(--loss); box-shadow:0 0 6px rgba(255,122,112,.5); }
 .sdot.grey { background:var(--dim); }
+.mstrip { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:8px; }
+.mtile { background:linear-gradient(180deg,#0C1422,#0A0F1B); border:1px solid var(--line);
+  border-radius:8px; padding:9px 12px; }
+.mtile .l { color:var(--dim); font-size:8.5px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; }
+.mtile .v { font-size:15px; font-weight:700; margin-top:3px; }
+.mtile .s { color:var(--dim); font-size:9.5px; margin-top:1px; }
+.mktbar { max-width:1140px; margin:8px auto 0; padding:0 20px; }
+.mkt { padding:8px 14px; border:1px solid var(--line); border-radius:10px;
+  background:linear-gradient(160deg,#141d10,#0a0f0a); font-size:12.5px;
+  font-family:ui-monospace,Menlo,monospace; color:var(--warn); text-align:center; }
+.mkt.open { background:linear-gradient(160deg,#0a1a12,#071008); color:var(--gain); }
 """
 
 MODE_RANK = {"risk_off": "risk off", "neutral": "neutral", "risk_on": "risk on"}
@@ -209,6 +220,7 @@ def _page(active, body, cfg, research, gen, mood="flat"):
   <span class="sv" id="research-next">—</span>
   <span class="barwrap"><span class="barfill" id="hourbar"></span></span>
 </div></div>
+<div class="mktbar"><div class="mkt" id="mkt">checking the tape…</div></div>
 <div class="wrap">{body}
 <div class="foot">page generated {gen} &middot; browser auto-reloads every 5 min<br/>
 scans hourly during US market hours &middot; hourly intel &middot; daily research &middot; weekly review</div>
@@ -265,7 +277,34 @@ def _sched_script():
       el.className="sv"+(ms<120000?" now":(ms<600000?" soon":""));
     });
     var dot=document.getElementById("scandot");
-    if(dot)dot.className="dot"+(marketOpen()?"":" closed");
+    var open=marketOpen();
+    if(dot)dot.className="dot"+(open?"":" closed");
+    // WSB-style market countdown
+    var mkt=document.getElementById("mkt");
+    if(mkt){
+      if(open){
+        mkt.className="mkt open";
+        var msgs=["🔔 market's OPEN — the casino is live 🎰",
+          "🚀 bell's rung, let the tendies flow",
+          "📈 stonks only go up (right?)",
+          "💎🙌 hands ready, positions armed"];
+        mkt.textContent=msgs[Math.floor(now.getTime()/60000)%msgs.length];
+      }else{
+        // next open = 9:30 ET. Compute via next SCANS-like 13:30/14:30 UTC weekday
+        var openDef={min:30,hours:[13,14]}; // 9:30 ET summer(13:30 UTC)/winter(14:30)
+        var nx=nextRun(openDef);
+        var dow=now.getUTCDay();
+        if(dow===0||dow===6){
+          mkt.className="mkt";
+          mkt.textContent="🛌 weekend — market closed. go touch grass, anon";
+        }else if(nx){
+          var ms=nx-now;
+          mkt.className="mkt";
+          mkt.textContent="⏰ market opens in "+fmt(ms)+" — "+
+            (ms<1800000?"pre-market jitters incoming 😰":"time to do your DD (or don't) 🤡");
+        }
+      }
+    }
     // progress bar = fraction through the current hour toward next scan
     var bar=document.getElementById("hourbar");
     if(bar){var nx=nextRun(SCANS);if(nx){var frac=1-((nx-now)/3600000);
@@ -613,6 +652,56 @@ def _weekly_bars(closed, w=520, h=150):
 
 # ---------------- page bodies ----------------
 
+def _extra_metrics(st):
+    """Second-row stat strip: exposure, streak, avg hold, best/worst day, etc."""
+    closed = st["closed"]
+    positions = st["positions"]
+    invested = sum((p["now"] or p["avg_cost"]) * p["shares"] for p in positions)
+    exposure = (invested / st["equity"] * 100) if st["equity"] else 0
+
+    # win/loss streak (most recent closed trades)
+    streak, streak_kind = 0, None
+    for t in reversed(closed):
+        k = "W" if t["pnl"] > 0 else "L"
+        if streak_kind is None:
+            streak_kind = k
+        if k == streak_kind:
+            streak += 1
+        else:
+            break
+    streak_txt = "—" if not closed else "{}{} {}".format(
+        streak, streak_kind, "🔥" if streak_kind == "W" and streak >= 2
+        else ("🧊" if streak_kind == "L" and streak >= 2 else ""))
+
+    # P/L by calendar day → best/worst day
+    by_day = {}
+    for t in closed:
+        by_day[t["ts"][:10]] = by_day.get(t["ts"][:10], 0) + t["pnl"]
+    best_day = max(by_day.values()) if by_day else 0
+    worst_day = min(by_day.values()) if by_day else 0
+
+    total_ret = (st["equity"] / st["deposited"] - 1) * 100 if st["deposited"] else 0
+    tot_cls = "gain" if total_ret >= 0 else "loss"
+
+    tiles = [
+        ("Total return", "{:+.1f}%".format(total_ret), tot_cls,
+         "since first deposit"),
+        ("Exposure", "{:.0f}%".format(exposure),
+         "warn" if exposure > 90 else "mut", "invested vs cash"),
+        ("Positions", "{}/{}".format(len(positions), st["cfg"]["buying"]["max_positions"]),
+         "mut", "slots used"),
+        ("Streak", streak_txt, "gain" if streak_kind == "W" else ("loss" if streak_kind == "L" else "mut"),
+         "recent closes"),
+        ("Best day", _money(best_day, sign=True), "gain", "single-day P/L"),
+        ("Worst day", _money(worst_day, sign=True), "loss", "single-day P/L"),
+    ]
+    cells = "".join(
+        '<div class="mtile"><div class="l">{l}</div><div class="v mono {c}">{v}</div>'
+        '<div class="s">{s}</div></div>'.format(l=l, v=v, c=c, s=s)
+        for l, v, c, s in tiles)
+    return '<div class="mstrip">{}</div>'.format(cells)
+
+
 def _kpis(st):
     unreal = sum(p["pl_usd"] or 0 for p in st["positions"])
     net = st["equity"] - st["deposited"] if st["deposited"] else 0.0
@@ -815,6 +904,7 @@ def _overview(st):
         for ts, side, t, sh, price, *_ in trades) or \
         '<tr><td class="mut">no trades yet</td></tr>'
     body = _kpis(st)
+    body += _extra_metrics(st)
     body += '<div class="grid2">'
     body += panel("Equity curve", "snapshot " + st["now"],
                   _equity_svg(st["curve"], st["deposited"]))
