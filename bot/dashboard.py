@@ -17,73 +17,89 @@ from bot import config, ledger, market, risk
 from bot.config import ROOT
 
 CSS = """
-:root { --bg:#06090F; --panel:#0D1420; --line:#1B2740; --ink:#E6EDF8;
-  --mut:#7E8CA6; --teal:#4FD1C5; --violet:#A78BFA; --gain:#34D399;
-  --loss:#F87171; --warn:#F59E0B; }
+:root { --bg:#070A12; --panel:#0D1322; --panel2:#101829; --line:#1A2338;
+  --ink:#EAF0FB; --mut:#8B99B5; --dim:#5C6B8C; --teal:#3EDDC5; --violet:#9F8CFF;
+  --gain:#3DDC97; --loss:#FF7A70; --warn:#FFB454; }
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:var(--bg); color:var(--ink); padding-bottom:60px;
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; }
+html { -webkit-font-smoothing:antialiased; }
+body { background:radial-gradient(1200px 500px at 70% -10%, #0D1730 0%, var(--bg) 55%);
+  color:var(--ink); padding-bottom:64px; font-size:14px;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; }
+a { color:var(--teal); text-decoration:none; }
+a:hover { text-decoration:underline; }
 .mono { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
   font-variant-numeric:tabular-nums; }
-.top { position:sticky; top:0; z-index:5; background:rgba(6,9,15,.92);
-  backdrop-filter:blur(6px); border-bottom:1px solid var(--line);
-  padding:12px 16px; }
-.topin { max-width:1100px; margin:0 auto; display:flex; align-items:center;
-  gap:14px; flex-wrap:wrap; }
-.brand { font-size:16px; font-weight:800; letter-spacing:.3px; }
-.brand .zap { color:var(--teal); }
-nav { display:flex; gap:4px; }
-nav a { color:var(--mut); text-decoration:none; font-size:12px; font-weight:600;
-  padding:5px 12px; border-radius:16px; letter-spacing:.4px; }
-nav a.on { color:#06090F; background:var(--teal); }
-nav a:not(.on):hover { color:var(--ink); background:var(--panel); }
+.top { position:sticky; top:0; z-index:5; background:rgba(7,10,18,.85);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--line); padding:12px 20px; }
+.topin { max-width:1140px; margin:0 auto; display:flex; align-items:center;
+  gap:16px; flex-wrap:wrap; }
+.brand { font-size:15px; font-weight:800; letter-spacing:.2px; }
+.brand .zap { color:var(--teal); margin-right:2px; }
+nav { display:flex; gap:2px; background:var(--panel); border:1px solid var(--line);
+  border-radius:99px; padding:3px; }
+nav a { color:var(--mut); text-decoration:none; font-size:12px; font-weight:650;
+  padding:5px 14px; border-radius:99px; letter-spacing:.3px; }
+nav a:hover { text-decoration:none; color:var(--ink); }
+nav a.on { color:#051512;
+  background:linear-gradient(120deg,var(--teal),#6FE8D2); }
 .modes { margin-left:auto; display:flex; gap:8px; align-items:center; }
-.pill { border:1px solid var(--line); border-radius:4px; padding:3px 10px;
-  font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }
-.pill.paper { color:var(--warn); border-color:#453410; background:#191307; }
-.pill.live { color:var(--gain); border-color:#123f2c; background:#071a11; }
+.pill { border:1px solid var(--line); border-radius:99px; padding:4px 11px;
+  font-size:9.5px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; }
+.pill.paper { color:var(--warn); border-color:#4a3a14; background:#171106; }
+.pill.live { color:var(--gain); border-color:#14432f; background:#06180f; }
 .pill.reg-risk_on { color:var(--gain); } .pill.reg-risk_off { color:var(--loss); }
 .pill.reg-neutral { color:var(--mut); }
-.wrap { max-width:1100px; margin:18px auto 0; padding:0 16px; display:flex;
-  flex-direction:column; gap:14px; }
-.kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; }
-.kpi { background:linear-gradient(180deg,#0E1626,#0B1220); border:1px solid var(--line);
-  border-radius:6px; padding:13px 15px; }
-.kpi .l { color:var(--mut); font-size:10px; font-weight:700; letter-spacing:1.6px;
+.wrap { max-width:1140px; margin:20px auto 0; padding:0 20px; display:flex;
+  flex-direction:column; gap:16px; }
+.kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
+.kpi { background:linear-gradient(160deg,var(--panel2),var(--panel));
+  border:1px solid var(--line); border-radius:12px; padding:14px 16px;
+  box-shadow:0 1px 0 rgba(255,255,255,.04) inset, 0 10px 28px rgba(0,0,0,.35); }
+.kpi .l { color:var(--dim); font-size:9.5px; font-weight:800; letter-spacing:1.7px;
   text-transform:uppercase; }
-.kpi .v { font-size:22px; font-weight:700; margin-top:6px; }
-.kpi .s { font-size:11px; color:var(--mut); margin-top:3px; }
-.grid2 { display:grid; grid-template-columns:3fr 2fr; gap:14px; }
-.grid2r { display:grid; grid-template-columns:2fr 3fr; gap:14px; }
-@media (max-width:820px){ .grid2,.grid2r { grid-template-columns:1fr; } }
-.panel { background:linear-gradient(180deg,#0E1626,#0B1220); border:1px solid var(--line);
-  border-radius:6px; padding:14px 16px; overflow-x:auto; }
-.ph { display:flex; align-items:baseline; gap:10px; margin-bottom:10px; }
-.ph h2 { color:var(--mut); font-size:10.5px; font-weight:700; letter-spacing:1.8px;
+.kpi .v { font-size:24px; font-weight:750; margin-top:7px; letter-spacing:-.3px; }
+.kpi .s { font-size:11px; color:var(--mut); margin-top:4px; }
+.grid2 { display:grid; grid-template-columns:3fr 2fr; gap:16px; }
+.grid2r { display:grid; grid-template-columns:2fr 3fr; gap:16px; }
+@media (max-width:840px){ .grid2,.grid2r { grid-template-columns:1fr; } }
+.panel { background:linear-gradient(160deg,var(--panel2),var(--panel));
+  border:1px solid var(--line); border-radius:12px; padding:16px 18px;
+  overflow-x:auto;
+  box-shadow:0 1px 0 rgba(255,255,255,.04) inset, 0 10px 28px rgba(0,0,0,.35); }
+.ph { display:flex; align-items:baseline; gap:10px; margin-bottom:12px; }
+.ph h2 { color:var(--mut); font-size:10.5px; font-weight:800; letter-spacing:1.9px;
   text-transform:uppercase; }
-.asof { margin-left:auto; color:#5A6A87; font-size:10px; white-space:nowrap; }
+.asof { margin-left:auto; color:var(--dim); font-size:10px; white-space:nowrap;
+  font-family:ui-monospace,Menlo,monospace; }
 table { width:100%; border-collapse:collapse; font-size:12.5px; }
-th { text-align:left; color:var(--mut); font-size:10px; letter-spacing:1.3px;
-  text-transform:uppercase; padding:6px 8px; border-bottom:1px solid var(--line); }
-td { padding:7px 8px; border-bottom:1px solid #131D30; vertical-align:top; }
+th { text-align:left; color:var(--dim); font-size:9.5px; letter-spacing:1.4px;
+  text-transform:uppercase; padding:7px 10px; border-bottom:1px solid var(--line); }
+td { padding:8px 10px; border-bottom:1px solid #121A2C; vertical-align:top; }
+tbody tr:hover td, tr:hover td { background:rgba(62,221,197,.03); }
 tr:last-child td { border-bottom:none; }
 .r { text-align:right; } th.r { text-align:right; }
 .gain { color:var(--gain); } .loss { color:var(--loss); } .mut { color:var(--mut); }
 .warn { color:var(--warn); }
-.bar { height:6px; background:#131D30; border-radius:3px; min-width:60px; }
+.bar { height:6px; background:#121A2C; border-radius:3px; min-width:60px; }
 .bar i { display:block; height:6px; border-radius:3px;
   background:linear-gradient(90deg,var(--teal),var(--violet)); }
 .chips { display:flex; gap:6px; flex-wrap:wrap; }
-.chip { border:1px solid var(--line); border-radius:4px; padding:2px 9px;
-  font-size:11px; color:var(--mut); }
-.chip.pos { color:var(--gain); border-color:#123f2c; }
-.chip.neg { color:var(--loss); border-color:#42201f; }
-.chip.tick { color:var(--violet); border-color:#2b2350; }
-.note { font-size:12px; color:var(--mut); line-height:1.55; }
-.klabel { color:var(--mut); font-size:10.5px; margin:10px 0 4px; letter-spacing:1px;
-  text-transform:uppercase; font-weight:700; }
+.chip { border:1px solid var(--line); border-radius:99px; padding:2.5px 10px;
+  font-size:11px; color:var(--mut); background:rgba(255,255,255,.02); }
+.chip.pos { color:var(--gain); border-color:#14432f; }
+.chip.neg { color:var(--loss); border-color:#4a2320; }
+.chip.tick { color:var(--violet); border-color:#2d2657; }
+.chip a { color:inherit; }
+.note { font-size:12px; color:var(--mut); line-height:1.6; }
+.klabel { color:var(--dim); font-size:10px; margin:12px 0 5px; letter-spacing:1.4px;
+  text-transform:uppercase; font-weight:800; }
 .ok { color:var(--gain); font-weight:700; } .no { color:var(--loss); font-weight:700; }
-.foot { color:#5A6A87; font-size:11px; text-align:center; margin-top:8px; line-height:1.8; }
+.newsit { padding:7px 0; border-bottom:1px solid #121A2C; }
+.newsit:last-child { border-bottom:none; }
+.newsit .t { font-size:12.5px; line-height:1.45; }
+.newsit .m { font-size:10.5px; color:var(--dim); margin-top:2px;
+  font-family:ui-monospace,Menlo,monospace; }
+.foot { color:var(--dim); font-size:11px; text-align:center; margin-top:8px; line-height:1.9; }
 .foot a { color:var(--mut); }
 """
 
@@ -196,6 +212,24 @@ def _fetch_state():
     buys_wk = ledger.buys_this_week(con)
     con.close()
 
+    from bot.signals.reddit import fetch_mentions
+    reddit = fetch_mentions()
+
+    news, seen_n = [], set()
+    for t in [p["ticker"] for p in positions] + [c[0] for c in candidates[:3]]:
+        if t in seen_n:
+            continue
+        seen_n.add(t)
+        for item in market.ticker_news(t)[:2]:
+            c = item.get("content") or {}
+            title = c.get("title") or item.get("title")
+            url = ((c.get("clickThroughUrl") or {}).get("url")
+                   or (c.get("canonicalUrl") or {}).get("url") or "")
+            if title:
+                news.append({"ticker": t, "title": title, "url": url,
+                             "src": (c.get("provider") or {}).get("displayName") or "",
+                             "when": (c.get("pubDate") or "")[:16].replace("T", " ")})
+
     research = risk.load_research()
     return {
         "cfg": cfg, "now": now, "positions": positions, "cash": cash,
@@ -204,6 +238,7 @@ def _fetch_state():
         "decisions": decisions, "candidates": candidates,
         "cand_ts": _short(cand_ts), "rewards": rewards,
         "buys_wk": buys_wk, "research": research,
+        "reddit": reddit, "news": news,
     }
 
 
@@ -343,6 +378,15 @@ def _candidates_panel(st, threshold):
         verdict = ('<span class="ok">&#10003; above threshold</span>' if s >= threshold
                    else '<span class="mut">below {}</span>'.format(threshold))
         parts = ", ".join("{} {}".format(k, v) for k, v in (d.get("parts") or {}).items())
+        r = (st.get("reddit") or {}).get(t)
+        if r:
+            parts += (' &middot; <a href="https://apewisdom.io/stocks/{t}/" target="_blank" '
+                      'rel="noopener">reddit {m} mentions, rank {rk}</a>').format(
+                t=t, m=r["mentions"], rk=r.get("rank", "—"))
+        else:
+            parts += " &middot; reddit: quiet"
+        parts += (' &middot; <a href="https://www.reddit.com/search/?q=%24{t}&sort=new" '
+                  'target="_blank" rel="noopener">posts &#8599;</a>').format(t=t)
         rows.append(
             '<tr><td class="mono"><b>{t}</b><div class="mut" style="font-size:10.5px">{name}</div></td>'
             '<td class="mono r">{price}</td>'
@@ -379,6 +423,22 @@ def _research_panel(st):
     return panel("Daily research", research.get("date", "—"), inner)
 
 
+def _news_panel(st):
+    if not st["news"]:
+        inner = '<div class="mut">no recent headlines for held or candidate tickers</div>'
+    else:
+        inner = "".join(
+            '<div class="newsit"><div class="t"><span class="chip tick">{t}</span> '
+            '{link}</div><div class="m">{src}{sep}{when}</div></div>'.format(
+                t=n["ticker"],
+                link='<a href="{u}" target="_blank" rel="noopener">{h}</a>'.format(
+                    u=n["url"], h=n["title"]) if n["url"] else n["title"],
+                src=n["src"], sep=" &middot; " if n["src"] and n["when"] else "",
+                when=n["when"])
+            for n in st["news"][:10])
+    return panel("Headlines the bot is reading", "fetched " + st["now"], inner)
+
+
 def _overview(st):
     threshold = risk.buy_threshold(st["cfg"], st["research"])
     trades = list(reversed(st["trades_asc"][-6:]))
@@ -398,13 +458,14 @@ def _overview(st):
     body += "</div>"
     body += _positions_panel(st)
     body += '<div class="grid2">'
-    body += _candidates_panel(st, threshold)
+    body += _news_panel(st)
     body += panel("Recent trades", "ledger " + st["now"],
                   '<table><tr><th>When</th><th>Side</th><th>Ticker</th>'
                   '<th class="r">Qty</th><th class="r">Price</th></tr>{}</table>'
                   '<div class="note" style="margin-top:8px"><a href="history.html" '
                   'style="color:var(--teal)">full history &rarr;</a></div>'.format(trows))
     body += "</div>"
+    body += _candidates_panel(st, threshold)
     return body
 
 

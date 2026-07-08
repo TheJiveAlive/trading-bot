@@ -2,8 +2,10 @@
 data/secrets.json
 data/secrets.example.json
 
-# local-only artifacts
-data/cache/
+# local-only artifacts (backtest caches are kept so cloud runs resume fast)
+data/cache/*
+!data/cache/bt_purchases.json
+!data/cache/bt_candidates_*.json
 data/review_input.json
 logs/
 publish/

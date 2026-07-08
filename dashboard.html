@@ -2,73 +2,89 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta http-equiv="refresh" content="300"/>
 <title>RobinHood Bot</title><style>
-:root { --bg:#06090F; --panel:#0D1420; --line:#1B2740; --ink:#E6EDF8;
-  --mut:#7E8CA6; --teal:#4FD1C5; --violet:#A78BFA; --gain:#34D399;
-  --loss:#F87171; --warn:#F59E0B; }
+:root { --bg:#070A12; --panel:#0D1322; --panel2:#101829; --line:#1A2338;
+  --ink:#EAF0FB; --mut:#8B99B5; --dim:#5C6B8C; --teal:#3EDDC5; --violet:#9F8CFF;
+  --gain:#3DDC97; --loss:#FF7A70; --warn:#FFB454; }
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:var(--bg); color:var(--ink); padding-bottom:60px;
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; }
+html { -webkit-font-smoothing:antialiased; }
+body { background:radial-gradient(1200px 500px at 70% -10%, #0D1730 0%, var(--bg) 55%);
+  color:var(--ink); padding-bottom:64px; font-size:14px;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; }
+a { color:var(--teal); text-decoration:none; }
+a:hover { text-decoration:underline; }
 .mono { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
   font-variant-numeric:tabular-nums; }
-.top { position:sticky; top:0; z-index:5; background:rgba(6,9,15,.92);
-  backdrop-filter:blur(6px); border-bottom:1px solid var(--line);
-  padding:12px 16px; }
-.topin { max-width:1100px; margin:0 auto; display:flex; align-items:center;
-  gap:14px; flex-wrap:wrap; }
-.brand { font-size:16px; font-weight:800; letter-spacing:.3px; }
-.brand .zap { color:var(--teal); }
-nav { display:flex; gap:4px; }
-nav a { color:var(--mut); text-decoration:none; font-size:12px; font-weight:600;
-  padding:5px 12px; border-radius:16px; letter-spacing:.4px; }
-nav a.on { color:#06090F; background:var(--teal); }
-nav a:not(.on):hover { color:var(--ink); background:var(--panel); }
+.top { position:sticky; top:0; z-index:5; background:rgba(7,10,18,.85);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--line); padding:12px 20px; }
+.topin { max-width:1140px; margin:0 auto; display:flex; align-items:center;
+  gap:16px; flex-wrap:wrap; }
+.brand { font-size:15px; font-weight:800; letter-spacing:.2px; }
+.brand .zap { color:var(--teal); margin-right:2px; }
+nav { display:flex; gap:2px; background:var(--panel); border:1px solid var(--line);
+  border-radius:99px; padding:3px; }
+nav a { color:var(--mut); text-decoration:none; font-size:12px; font-weight:650;
+  padding:5px 14px; border-radius:99px; letter-spacing:.3px; }
+nav a:hover { text-decoration:none; color:var(--ink); }
+nav a.on { color:#051512;
+  background:linear-gradient(120deg,var(--teal),#6FE8D2); }
 .modes { margin-left:auto; display:flex; gap:8px; align-items:center; }
-.pill { border:1px solid var(--line); border-radius:4px; padding:3px 10px;
-  font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }
-.pill.paper { color:var(--warn); border-color:#453410; background:#191307; }
-.pill.live { color:var(--gain); border-color:#123f2c; background:#071a11; }
+.pill { border:1px solid var(--line); border-radius:99px; padding:4px 11px;
+  font-size:9.5px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; }
+.pill.paper { color:var(--warn); border-color:#4a3a14; background:#171106; }
+.pill.live { color:var(--gain); border-color:#14432f; background:#06180f; }
 .pill.reg-risk_on { color:var(--gain); } .pill.reg-risk_off { color:var(--loss); }
 .pill.reg-neutral { color:var(--mut); }
-.wrap { max-width:1100px; margin:18px auto 0; padding:0 16px; display:flex;
-  flex-direction:column; gap:14px; }
-.kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; }
-.kpi { background:linear-gradient(180deg,#0E1626,#0B1220); border:1px solid var(--line);
-  border-radius:6px; padding:13px 15px; }
-.kpi .l { color:var(--mut); font-size:10px; font-weight:700; letter-spacing:1.6px;
+.wrap { max-width:1140px; margin:20px auto 0; padding:0 20px; display:flex;
+  flex-direction:column; gap:16px; }
+.kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
+.kpi { background:linear-gradient(160deg,var(--panel2),var(--panel));
+  border:1px solid var(--line); border-radius:12px; padding:14px 16px;
+  box-shadow:0 1px 0 rgba(255,255,255,.04) inset, 0 10px 28px rgba(0,0,0,.35); }
+.kpi .l { color:var(--dim); font-size:9.5px; font-weight:800; letter-spacing:1.7px;
   text-transform:uppercase; }
-.kpi .v { font-size:22px; font-weight:700; margin-top:6px; }
-.kpi .s { font-size:11px; color:var(--mut); margin-top:3px; }
-.grid2 { display:grid; grid-template-columns:3fr 2fr; gap:14px; }
-.grid2r { display:grid; grid-template-columns:2fr 3fr; gap:14px; }
-@media (max-width:820px){ .grid2,.grid2r { grid-template-columns:1fr; } }
-.panel { background:linear-gradient(180deg,#0E1626,#0B1220); border:1px solid var(--line);
-  border-radius:6px; padding:14px 16px; overflow-x:auto; }
-.ph { display:flex; align-items:baseline; gap:10px; margin-bottom:10px; }
-.ph h2 { color:var(--mut); font-size:10.5px; font-weight:700; letter-spacing:1.8px;
+.kpi .v { font-size:24px; font-weight:750; margin-top:7px; letter-spacing:-.3px; }
+.kpi .s { font-size:11px; color:var(--mut); margin-top:4px; }
+.grid2 { display:grid; grid-template-columns:3fr 2fr; gap:16px; }
+.grid2r { display:grid; grid-template-columns:2fr 3fr; gap:16px; }
+@media (max-width:840px){ .grid2,.grid2r { grid-template-columns:1fr; } }
+.panel { background:linear-gradient(160deg,var(--panel2),var(--panel));
+  border:1px solid var(--line); border-radius:12px; padding:16px 18px;
+  overflow-x:auto;
+  box-shadow:0 1px 0 rgba(255,255,255,.04) inset, 0 10px 28px rgba(0,0,0,.35); }
+.ph { display:flex; align-items:baseline; gap:10px; margin-bottom:12px; }
+.ph h2 { color:var(--mut); font-size:10.5px; font-weight:800; letter-spacing:1.9px;
   text-transform:uppercase; }
-.asof { margin-left:auto; color:#5A6A87; font-size:10px; white-space:nowrap; }
+.asof { margin-left:auto; color:var(--dim); font-size:10px; white-space:nowrap;
+  font-family:ui-monospace,Menlo,monospace; }
 table { width:100%; border-collapse:collapse; font-size:12.5px; }
-th { text-align:left; color:var(--mut); font-size:10px; letter-spacing:1.3px;
-  text-transform:uppercase; padding:6px 8px; border-bottom:1px solid var(--line); }
-td { padding:7px 8px; border-bottom:1px solid #131D30; vertical-align:top; }
+th { text-align:left; color:var(--dim); font-size:9.5px; letter-spacing:1.4px;
+  text-transform:uppercase; padding:7px 10px; border-bottom:1px solid var(--line); }
+td { padding:8px 10px; border-bottom:1px solid #121A2C; vertical-align:top; }
+tbody tr:hover td, tr:hover td { background:rgba(62,221,197,.03); }
 tr:last-child td { border-bottom:none; }
 .r { text-align:right; } th.r { text-align:right; }
 .gain { color:var(--gain); } .loss { color:var(--loss); } .mut { color:var(--mut); }
 .warn { color:var(--warn); }
-.bar { height:6px; background:#131D30; border-radius:3px; min-width:60px; }
+.bar { height:6px; background:#121A2C; border-radius:3px; min-width:60px; }
 .bar i { display:block; height:6px; border-radius:3px;
   background:linear-gradient(90deg,var(--teal),var(--violet)); }
 .chips { display:flex; gap:6px; flex-wrap:wrap; }
-.chip { border:1px solid var(--line); border-radius:4px; padding:2px 9px;
-  font-size:11px; color:var(--mut); }
-.chip.pos { color:var(--gain); border-color:#123f2c; }
-.chip.neg { color:var(--loss); border-color:#42201f; }
-.chip.tick { color:var(--violet); border-color:#2b2350; }
-.note { font-size:12px; color:var(--mut); line-height:1.55; }
-.klabel { color:var(--mut); font-size:10.5px; margin:10px 0 4px; letter-spacing:1px;
-  text-transform:uppercase; font-weight:700; }
+.chip { border:1px solid var(--line); border-radius:99px; padding:2.5px 10px;
+  font-size:11px; color:var(--mut); background:rgba(255,255,255,.02); }
+.chip.pos { color:var(--gain); border-color:#14432f; }
+.chip.neg { color:var(--loss); border-color:#4a2320; }
+.chip.tick { color:var(--violet); border-color:#2d2657; }
+.chip a { color:inherit; }
+.note { font-size:12px; color:var(--mut); line-height:1.6; }
+.klabel { color:var(--dim); font-size:10px; margin:12px 0 5px; letter-spacing:1.4px;
+  text-transform:uppercase; font-weight:800; }
 .ok { color:var(--gain); font-weight:700; } .no { color:var(--loss); font-weight:700; }
-.foot { color:#5A6A87; font-size:11px; text-align:center; margin-top:8px; line-height:1.8; }
+.newsit { padding:7px 0; border-bottom:1px solid #121A2C; }
+.newsit:last-child { border-bottom:none; }
+.newsit .t { font-size:12.5px; line-height:1.45; }
+.newsit .m { font-size:10.5px; color:var(--dim); margin-top:2px;
+  font-family:ui-monospace,Menlo,monospace; }
+.foot { color:var(--dim); font-size:11px; text-align:center; margin-top:8px; line-height:1.9; }
 .foot a { color:var(--mut); }
 </style></head><body>
 <div class="top"><div class="topin">
@@ -85,8 +101,8 @@ tr:last-child td { border-bottom:none; }
 <div class="kpi"><div class="l">Net P/L</div><div class="v mono loss">−$0.00</div><div class="s">vs deposits</div></div>
 <div class="kpi"><div class="l">Unrealized</div><div class="v mono gain">+$0.00</div><div class="s">open positions</div></div>
 <div class="kpi"><div class="l">Realized</div><div class="v mono gain">+$0.00</div><div class="s">0 closed trade(s)</div></div>
-</div><div class="grid2"><div class="panel"><div class="ph"><h2>Equity curve</h2><span class="asof">as of snapshot Tue 07 Jul, 22:30</span></div><svg viewBox="0 0 640 190" width="100%" role="img" aria-label="equity"><defs><linearGradient id="eq" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#34D399" stop-opacity="0.25"/><stop offset="100%" stop-color="#34D399" stop-opacity="0"/></linearGradient></defs><line x1="10" y1="128.5" x2="630" y2="128.5" stroke="#131D30" stroke-width="1"/><line x1="10" y1="89.0" x2="630" y2="89.0" stroke="#131D30" stroke-width="1"/><line x1="10" y1="49.5" x2="630" y2="49.5" stroke="#131D30" stroke-width="1"/><line x1="10" y1="10.0" x2="630" y2="10.0" stroke="#131D30" stroke-width="1"/><line x1="10" y1="10.0" x2="630" y2="10.0" stroke="#7E8CA6" stroke-dasharray="4 4" opacity="0.6"/><polygon points="10.0,168 10.0,168.0 165.0,10.0 320.0,10.0 475.0,10.0 630.0,10.0 630.0,168" fill="url(#eq)"/><polyline points="10.0,168.0 165.0,10.0 320.0,10.0 475.0,10.0 630.0,10.0" fill="none" stroke="#34D399" stroke-width="2"/><circle cx="630.0" cy="10.0" r="3.5" fill="#34D399"/><text x="10" y="184" fill="#5A6A87" font-size="9" font-family="Menlo,monospace">2026-07-07</text><text x="630" y="184" fill="#5A6A87" font-size="9" text-anchor="end" font-family="Menlo,monospace">2026-07-07</text><text x="10" y="20.0" fill="#5A6A87" font-size="9" font-family="Menlo,monospace">$100,059</text><text x="10" y="165.0" fill="#5A6A87" font-size="9" font-family="Menlo,monospace">$127</text></svg></div><div class="panel"><div class="ph"><h2>Daily research</h2><span class="asof">as of 2026-07-07</span></div><div class="note">S&P 500, Nasdaq, and Dow are all at or near record highs (Dow above 53,000) on a strong week of gains, with VIX around 16.3, a calm/low volatility reading.</div><div class="klabel">Sector bias</div><div class="chips"><span class="chip neg">Technology -0.3</span><span class="chip pos">Healthcare +0.6</span><span class="chip pos">Financial Services +0.5</span></div><div class="klabel">Watchlist</div><div class="chips"><span class="mut">—</span></div><div class="klabel">Avoid</div><div class="chips"><span class="chip neg">NVVE</span><span class="chip neg">SHPH</span><span class="chip neg">SNAL</span><span class="chip neg">VMAR</span></div><div class="klabel">Notes</div><div class="note">Held position VMAR (42 sh @ $1.41) did a 1-for-10 reverse split on June 17 to avoid Nasdaq delisting, and a top insider (HRT Financial LP) sold ~$52k of shares on July 2 -- both material red flags despite the insider-buy signal that originally triggered the position; financials remain weak with ~9.3x debt/equity. Broader market is at records but rotating out of tech into healthcare/financials, so tech-heavy candidates should be discounted for now.</div></div></div><div class="panel"><div class="ph"><h2>Open positions &amp; exit map</h2><span class="asof">as of prices Tue 07 Jul, 22:30</span></div><table><tr><th>Ticker</th><th class="r">Qty</th><th class="r">Avg</th><th class="r">Now</th><th class="r">P/L</th><th class="r">Sells below</th><th class="r">Target</th></tr><tr><td class="mono"><b>VMAR</b></td><td class="mono r">42</td><td class="mono r">$1.41</td><td class="mono r">$1.41</td><td class="mono r gain">+0.0%</td><td class="mono r loss">$1.25</td><td class="mono r gain">$1.76</td></tr></table><div class="note" style="margin-top:8px">"Sells below" is the trailing stop from the high-water mark at the current ~11% stop; it rises as the price does. Target is the +25% take-profit.</div></div><div class="grid2"><div class="panel"><div class="ph"><h2>Scan candidates</h2><span class="asof">as of scan 07-07 20:53</span></div><table><tr><th>Ticker</th><th class="r">Price</th><th>Score</th><th class="r"></th><th></th></tr><tr><td class="mono"><b>RIG</b><div class="mut" style="font-size:10.5px">Transocean Ltd (Switzerland)</div></td><td class="mono r">$5.02</td><td style="width:110px;padding-top:12px"><div class="bar"><i style="width:100%"></i></div></td><td class="mono r">6.0</td><td><span class="ok">&#10003; above threshold</span></td></tr><tr><td colspan="5" class="mut" style="font-size:10.5px;padding-top:0">insider 4.0, sector 0.0, fundamentals 1.5, news 0.5</td></tr><tr><td class="mono"><b>ABSI</b><div class="mut" style="font-size:10.5px">Absci Corporation</div></td><td class="mono r">$11.33</td><td style="width:110px;padding-top:12px"><div class="bar"><i style="width:87%"></i></div></td><td class="mono r">5.2</td><td><span class="ok">&#10003; above threshold</span></td></tr><tr><td colspan="5" class="mut" style="font-size:10.5px;padding-top:0">insider 4.0, sector 0.9, fundamentals 0.0, news 0.0, sector_bias 0.3</td></tr><tr><td class="mono"><b>VMAR</b><div class="mut" style="font-size:10.5px">Vision Marine Technologies Inc.</div></td><td class="mono r">$1.41</td><td style="width:110px;padding-top:12px"><div class="bar"><i style="width:81%"></i></div></td><td class="mono r">4.85</td><td><span class="ok">&#10003; above threshold</span></td></tr><tr><td colspan="5" class="mut" style="font-size:10.5px;padding-top:0">insider 2.0, sector 0.6, fundamentals 2.25, news 0.0</td></tr><tr><td class="mono"><b>PALI</b><div class="mut" style="font-size:10.5px">Palisade Bio, Inc.</div></td><td class="mono r">$2.08</td><td style="width:110px;padding-top:12px"><div class="bar"><i style="width:53%"></i></div></td><td class="mono r">3.2</td><td><span class="ok">&#10003; above threshold</span></td></tr><tr><td colspan="5" class="mut" style="font-size:10.5px;padding-top:0">insider 2.0, sector 0.9, fundamentals 0.0, news 0.0, sector_bias 0.3</td></tr><tr><td class="mono"><b>SHPH</b><div class="mut" style="font-size:10.5px">Shuttle Pharmaceuticals Holding</div></td><td class="mono r">$3.26</td><td style="width:110px;padding-top:12px"><div class="bar"><i style="width:53%"></i></div></td><td class="mono r">3.2</td><td><span class="ok">&#10003; above threshold</span></td></tr><tr><td colspan="5" class="mut" style="font-size:10.5px;padding-top:0">insider 2.0, sector 0.9, fundamentals 0.0, news 0.0, sector_bias 0.3</td></tr></table></div><div class="panel"><div class="ph"><h2>Recent trades</h2><span class="asof">as of ledger Tue 07 Jul, 22:30</span></div><table><tr><th>When</th><th>Side</th><th>Ticker</th><th class="r">Qty</th><th class="r">Price</th></tr><tr><td class="mono mut">07-07 20:33</td><td class="mono gain"><b>BUY</b></td><td class="mono"><b>VMAR</b></td><td class="mono r">42</td><td class="mono r">$1.41</td></tr></table><div class="note" style="margin-top:8px"><a href="history.html" style="color:var(--teal)">full history &rarr;</a></div></div></div>
-<div class="foot">page generated Tue 07 Jul, 22:30 &middot; browser auto-reloads every 5 min<br/>
+</div><div class="grid2"><div class="panel"><div class="ph"><h2>Equity curve</h2><span class="asof">as of snapshot Wed 08 Jul, 07:08</span></div><svg viewBox="0 0 640 190" width="100%" role="img" aria-label="equity"><defs><linearGradient id="eq" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#34D399" stop-opacity="0.25"/><stop offset="100%" stop-color="#34D399" stop-opacity="0"/></linearGradient></defs><line x1="10" y1="128.5" x2="630" y2="128.5" stroke="#131D30" stroke-width="1"/><line x1="10" y1="89.0" x2="630" y2="89.0" stroke="#131D30" stroke-width="1"/><line x1="10" y1="49.5" x2="630" y2="49.5" stroke="#131D30" stroke-width="1"/><line x1="10" y1="10.0" x2="630" y2="10.0" stroke="#131D30" stroke-width="1"/><line x1="10" y1="10.0" x2="630" y2="10.0" stroke="#7E8CA6" stroke-dasharray="4 4" opacity="0.6"/><polygon points="10.0,168 10.0,168.0 113.3,10.0 216.7,10.0 320.0,10.0 423.3,10.0 526.7,10.0 630.0,10.0 630.0,168" fill="url(#eq)"/><polyline points="10.0,168.0 113.3,10.0 216.7,10.0 320.0,10.0 423.3,10.0 526.7,10.0 630.0,10.0" fill="none" stroke="#34D399" stroke-width="2"/><circle cx="630.0" cy="10.0" r="3.5" fill="#34D399"/><text x="10" y="184" fill="#5A6A87" font-size="9" font-family="Menlo,monospace">2026-07-07</text><text x="630" y="184" fill="#5A6A87" font-size="9" text-anchor="end" font-family="Menlo,monospace">2026-07-08</text><text x="10" y="20.0" fill="#5A6A87" font-size="9" font-family="Menlo,monospace">$100,059</text><text x="10" y="165.0" fill="#5A6A87" font-size="9" font-family="Menlo,monospace">$127</text></svg></div><div class="panel"><div class="ph"><h2>Daily research</h2><span class="asof">as of 2026-07-07</span></div><div class="note">S&P 500, Nasdaq, and Dow are all at or near record highs (Dow above 53,000) on a strong week of gains, with VIX around 16.3, a calm/low volatility reading.</div><div class="klabel">Sector bias</div><div class="chips"><span class="chip neg">Technology -0.3</span><span class="chip pos">Healthcare +0.6</span><span class="chip pos">Financial Services +0.5</span></div><div class="klabel">Watchlist</div><div class="chips"><span class="mut">—</span></div><div class="klabel">Avoid</div><div class="chips"><span class="chip neg">NVVE</span><span class="chip neg">SHPH</span><span class="chip neg">SNAL</span><span class="chip neg">VMAR</span></div><div class="klabel">Notes</div><div class="note">Held position VMAR (42 sh @ $1.41) did a 1-for-10 reverse split on June 17 to avoid Nasdaq delisting, and a top insider (HRT Financial LP) sold ~$52k of shares on July 2 -- both material red flags despite the insider-buy signal that originally triggered the position; financials remain weak with ~9.3x debt/equity. Broader market is at records but rotating out of tech into healthcare/financials, so tech-heavy candidates should be discounted for now.</div></div></div><div class="panel"><div class="ph"><h2>Open positions &amp; exit map</h2><span class="asof">as of prices Wed 08 Jul, 07:08</span></div><table><tr><th>Ticker</th><th class="r">Qty</th><th class="r">Avg</th><th class="r">Now</th><th class="r">P/L</th><th class="r">Sells below</th><th class="r">Target</th></tr><tr><td class="mono"><b>VMAR</b></td><td class="mono r">42</td><td class="mono r">$1.41</td><td class="mono r">$1.41</td><td class="mono r gain">+0.0%</td><td class="mono r loss">$1.25</td><td class="mono r gain">$1.76</td></tr></table><div class="note" style="margin-top:8px">"Sells below" is the trailing stop from the high-water mark at the current ~11% stop; it rises as the price does. Target is the +25% take-profit.</div></div><div class="grid2"><div class="panel"><div class="ph"><h2>Headlines the bot is reading</h2><span class="asof">as of fetched Wed 08 Jul, 07:08</span></div><div class="newsit"><div class="t"><span class="chip tick">VMAR</span> <a href="https://finance.yahoo.com/news/bc-most-active-stocks-153018529.html" target="_blank" rel="noopener">BC-Most Active Stocks</a></div><div class="m">Associated Press Finance &middot; 2025-12-22 15:30</div></div><div class="newsit"><div class="t"><span class="chip tick">VMAR</span> <a href="https://finance.yahoo.com/news/correction-investors-hope-rate-cut-144931995.html" target="_blank" rel="noopener">Correction: Investors Hope for Rate Cut Following Subdued Inflation as US Futures Mixed in Friday's Premarket Session</a></div><div class="m">MT Newswires &middot; 2025-12-19 14:49</div></div><div class="newsit"><div class="t"><span class="chip tick">RIG</span> <a href="https://finance.yahoo.com/energy/articles/noble-vs-transocean-off-shore-154907343.html" target="_blank" rel="noopener">Noble vs. Transocean: Which Off-Shore Drilling Stock Is a Better Buy in 2026?</a></div><div class="m">Motley Fool &middot; 2026-07-07 15:49</div></div><div class="newsit"><div class="t"><span class="chip tick">RIG</span> <a href="https://finance.yahoo.com/energy/articles/strategic-deals-boost-eqnrs-offshore-161700001.html" target="_blank" rel="noopener">Strategic Deals Boost EQNR's Offshore Operations & Production Growth</a></div><div class="m">Zacks &middot; 2026-07-06 16:17</div></div><div class="newsit"><div class="t"><span class="chip tick">ABSI</span> <a href="https://finance.yahoo.com/markets/stocks/articles/heres-why-absci-corporation-absi-160004837.html" target="_blank" rel="noopener">Here's Why Absci Corporation (ABSI) is a Great Momentum Stock to Buy</a></div><div class="m">Zacks &middot; 2026-07-02 16:00</div></div><div class="newsit"><div class="t"><span class="chip tick">ABSI</span> <a href="https://finance.yahoo.com/healthcare/articles/absci-raises-100-million-equity-100125058.html" target="_blank" rel="noopener">Absci Raises $100 Million In Equity To Fund AI-Designed Hair Loss And Endometriosis Program</a></div><div class="m">Benzinga &middot; 2026-06-27 10:01</div></div></div><div class="panel"><div class="ph"><h2>Recent trades</h2><span class="asof">as of ledger Wed 08 Jul, 07:08</span></div><table><tr><th>When</th><th>Side</th><th>Ticker</th><th class="r">Qty</th><th class="r">Price</th></tr><tr><td class="mono mut">07-07 20:33</td><td class="mono gain"><b>BUY</b></td><td class="mono"><b>VMAR</b></td><td class="mono r">42</td><td class="mono r">$1.41</td></tr></table><div class="note" style="margin-top:8px"><a href="history.html" style="color:var(--teal)">full history &rarr;</a></div></div></div><div class="panel"><div class="ph"><h2>Scan candidates</h2><span class="asof">as of scan 07-07 20:53</span></div><table><tr><th>Ticker</th><th class="r">Price</th><th>Score</th><th class="r"></th><th></th></tr><tr><td class="mono"><b>RIG</b><div class="mut" style="font-size:10.5px">Transocean Ltd (Switzerland)</div></td><td class="mono r">$5.02</td><td style="width:110px;padding-top:12px"><div class="bar"><i style="width:100%"></i></div></td><td class="mono r">6.0</td><td><span class="ok">&#10003; above threshold</span></td></tr><tr><td colspan="5" class="mut" style="font-size:10.5px;padding-top:0">insider 4.0, sector 0.0, fundamentals 1.5, news 0.5 &middot; reddit: quiet &middot; <a href="https://www.reddit.com/search/?q=%24RIG&sort=new" target="_blank" rel="noopener">posts &#8599;</a></td></tr><tr><td class="mono"><b>ABSI</b><div class="mut" style="font-size:10.5px">Absci Corporation</div></td><td class="mono r">$11.33</td><td style="width:110px;padding-top:12px"><div class="bar"><i style="width:87%"></i></div></td><td class="mono r">5.2</td><td><span class="ok">&#10003; above threshold</span></td></tr><tr><td colspan="5" class="mut" style="font-size:10.5px;padding-top:0">insider 4.0, sector 0.9, fundamentals 0.0, news 0.0, sector_bias 0.3 &middot; reddit: quiet &middot; <a href="https://www.reddit.com/search/?q=%24ABSI&sort=new" target="_blank" rel="noopener">posts &#8599;</a></td></tr><tr><td class="mono"><b>VMAR</b><div class="mut" style="font-size:10.5px">Vision Marine Technologies Inc.</div></td><td class="mono r">$1.41</td><td style="width:110px;padding-top:12px"><div class="bar"><i style="width:81%"></i></div></td><td class="mono r">4.85</td><td><span class="ok">&#10003; above threshold</span></td></tr><tr><td colspan="5" class="mut" style="font-size:10.5px;padding-top:0">insider 2.0, sector 0.6, fundamentals 2.25, news 0.0 &middot; reddit: quiet &middot; <a href="https://www.reddit.com/search/?q=%24VMAR&sort=new" target="_blank" rel="noopener">posts &#8599;</a></td></tr><tr><td class="mono"><b>PALI</b><div class="mut" style="font-size:10.5px">Palisade Bio, Inc.</div></td><td class="mono r">$2.08</td><td style="width:110px;padding-top:12px"><div class="bar"><i style="width:53%"></i></div></td><td class="mono r">3.2</td><td><span class="ok">&#10003; above threshold</span></td></tr><tr><td colspan="5" class="mut" style="font-size:10.5px;padding-top:0">insider 2.0, sector 0.9, fundamentals 0.0, news 0.0, sector_bias 0.3 &middot; reddit: quiet &middot; <a href="https://www.reddit.com/search/?q=%24PALI&sort=new" target="_blank" rel="noopener">posts &#8599;</a></td></tr><tr><td class="mono"><b>SHPH</b><div class="mut" style="font-size:10.5px">Shuttle Pharmaceuticals Holding</div></td><td class="mono r">$3.26</td><td style="width:110px;padding-top:12px"><div class="bar"><i style="width:53%"></i></div></td><td class="mono r">3.2</td><td><span class="ok">&#10003; above threshold</span></td></tr><tr><td colspan="5" class="mut" style="font-size:10.5px;padding-top:0">insider 2.0, sector 0.9, fundamentals 0.0, news 0.0, sector_bias 0.3 &middot; reddit: quiet &middot; <a href="https://www.reddit.com/search/?q=%24SHPH&sort=new" target="_blank" rel="noopener">posts &#8599;</a></td></tr></table></div>
+<div class="foot">page generated Wed 08 Jul, 07:08 &middot; browser auto-reloads every 5 min<br/>
 scans hourly 14:30&ndash;21:00 UK weekdays &middot; page refresh hourly 08:30&ndash;23:30 UK daily
 &middot; research 13:37 &middot; review Sun 17:03</div>
 </div></body></html>
