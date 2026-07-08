@@ -9,8 +9,22 @@ import requests
 URL = "https://apewisdom.io/api/v1.0/filter/all-stocks/page/{}"
 
 
-def fetch_mentions(pages=2):
-    """{ticker: {rank, mentions, mentions_prev, upvotes}} or {} on failure."""
+def fetch_mentions(pages=2, ttl_min=25):
+    """{ticker: {rank, mentions, mentions_prev, upvotes}} or {} on failure.
+    Cached ttl_min minutes — Reddit buzz moves slowly and this spares the API
+    on frequent dashboard refreshes."""
+    import json, os, time
+    from bot.config import CACHE_DIR
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    cache = os.path.join(CACHE_DIR, "reddit_mentions.json")
+    if os.path.exists(cache):
+        try:
+            with open(cache) as f:
+                blob = json.load(f)
+            if time.time() - blob["at"] < ttl_min * 60:
+                return blob["data"]
+        except Exception:
+            pass
     out = {}
     try:
         for p in range(1, pages + 1):
@@ -27,7 +41,13 @@ def fetch_mentions(pages=2):
                         "upvotes": int(row.get("upvotes") or 0),
                     }
     except Exception:
-        return out
+        pass
+    if out:
+        try:
+            with open(cache, "w") as f:
+                json.dump({"at": time.time(), "data": out}, f)
+        except Exception:
+            pass
     return out
 
 

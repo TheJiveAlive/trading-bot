@@ -1,9 +1,10 @@
 name: trading-scan
 on:
   schedule:
-    # market hours (UTC): full scan on the hour (:33), price refresh on the half (:03)
+    # market hours (UTC): full trading scan on the hour (:33);
+    # price/dashboard refresh every 15 min (:03,:18,:48). Public repo = unlimited minutes.
     - cron: '33 13-21 * * 1-5'
-    - cron: '3 14-21 * * 1-5'
+    - cron: '3,18,48 14-21 * * 1-5'
     # off-hours — hourly dashboard refresh
     - cron: '33 7-12,22 * * *'
   workflow_dispatch:
@@ -26,9 +27,9 @@ jobs:
           DOW=$(TZ=America/New_York date +%u)
           UM=$(date -u +%M)
           MODE=refresh
-          # full scan only on the top-of-hour (:33) slot during market hours;
-          # the :03 half-hour slot just refreshes prices on the dashboard
-          if [ "$DOW" -le 5 ] && [ "$H" -ge 9 ] && [ "$H" -lt 16 ] && [ "$UM" -ge 25 ]; then
+          # full scan only on the :33 slot (UTC min 30-40); other quarter-hour
+          # slots just refresh prices on the dashboard
+          if [ "$DOW" -le 5 ] && [ "$H" -ge 9 ] && [ "$H" -lt 16 ] && [ "$UM" -ge 30 ] && [ "$UM" -le 40 ]; then
             if [ "$H" -gt 9 ] || [ "$M" -ge 30 ]; then MODE=scan; fi
           fi
           echo "MODE=$MODE" >> "$GITHUB_ENV"

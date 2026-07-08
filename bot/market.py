@@ -78,15 +78,40 @@ def last_price(ticker):
         return None
 
 
-def price_series(ticker, period="1mo"):
-    """List of daily closes for a sparkline, or [] on failure."""
+def _cache_path(name):
+    import os
+    from bot.config import CACHE_DIR
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    return os.path.join(CACHE_DIR, name)
+
+
+def price_series(ticker, period="1mo", ttl_min=30):
+    """List of daily closes for a sparkline, cached ttl_min minutes so frequent
+    dashboard refreshes don't re-hit Yahoo for slow-changing daily bars."""
+    import json, os, time
+    cache = _cache_path("sparklines.json")
+    data = {}
+    if os.path.exists(cache):
+        try:
+            with open(cache) as f:
+                data = json.load(f)
+        except Exception:
+            data = {}
+    hit = data.get(ticker)
+    if hit and time.time() - hit["at"] < ttl_min * 60:
+        return hit["series"]
     try:
         h = yf.Ticker(ticker).history(period=period)
-        if h is None or h.empty:
-            return []
-        return [float(x) for x in h["Close"].dropna().tolist()]
+        series = [] if h is None or h.empty else [float(x) for x in h["Close"].dropna().tolist()]
     except Exception:
-        return []
+        series = hit["series"] if hit else []
+    data[ticker] = {"at": time.time(), "series": series}
+    try:
+        with open(cache, "w") as f:
+            json.dump(data, f)
+    except Exception:
+        pass
+    return series
 
 
 def ticker_info(ticker):
