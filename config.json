@@ -53,7 +53,9 @@
     "max_position_usd": 100.0,
     "max_buys_per_week": 2,
     "require_research_ok": true,
-    "_note": "Ring-fenced speculative sleeve: sub-$1 r/pennystocks names in the 20-80c band, tiny whole-share bets. STILL must pass the dilution + spread vetoes and a research/intel quality gate (require_research_ok). Separate budget from the core book. This is lottery-ticket money by design — keep max_position_usd small."
+    "trailing_stop_pct": 20.0,
+    "take_profit_pct": 40.0,
+    "_note": "Ring-fenced speculative sleeve: sub-$1 r/pennystocks names in the 20-80c band, tiny whole-share bets. STILL must pass the dilution + spread vetoes and a research/intel quality gate (require_research_ok). Wider stop/take-profit than the core (penny stocks swing hard). Separate budget from the core book. Lottery-ticket money by design — keep max_position_usd small."
   },
 
   "earnings": {

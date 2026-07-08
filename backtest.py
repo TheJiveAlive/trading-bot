@@ -281,8 +281,8 @@ def tune(cfg, start, end):
 
     import copy
     rows = []
-    for stop in (8.0, 10.0, 12.0):
-        for tp in (20.0, 25.0, 30.0, 999.0):  # 999 = never take profit, ride the stop
+    for stop in (8.0, 10.0, 12.0, 15.0):
+        for tp in (15.0, 20.0, 25.0, 30.0, 999.0):  # 999 = never take profit, ride the stop
             for buys in (1, 2):
                 for min_score in (2.5, 3.0, 4.0):
                     c = copy.deepcopy(cfg)

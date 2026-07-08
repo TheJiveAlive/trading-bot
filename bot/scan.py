@@ -13,8 +13,14 @@ from bot.scoring import score_candidates
 from bot.config import LOG_DIR
 
 
+def _is_wildcard(con, ticker):
+    from bot.wildcard import _is_wild
+    return _is_wild(con, ticker)
+
+
 def manage_exits(con, cfg, research, report):
     sell_cfg = cfg["selling"]
+    wc = cfg.get("wildcard", {})
     for pos in ledger.open_positions(con):
         price = market.last_price(pos["ticker"])
         if price is None:
@@ -27,32 +33,39 @@ def manage_exits(con, cfg, research, report):
         held_days = (dt.datetime.now(dt.timezone.utc)
                      - dt.datetime.fromisoformat(pos["opened_at"])).days
 
-        pos_news = news_score(market.ticker_news(pos["ticker"]))
-        if pos["ticker"] in risk.avoid_tickers(research):
-            pos_news = min(pos_news, -1.0)  # research red flag: tightest stop
-            report.append("  ! {} on research avoid list — stop tightened".format(
-                pos["ticker"]))
-        stop_pct = risk.dynamic_stop_pct(cfg, pos_news, research)
+        # wildcard positions use their own wider stop/take-profit
+        is_wc = _is_wildcard(con, pos["ticker"])
+        if is_wc:
+            stop_pct = wc.get("trailing_stop_pct", 20.0)
+            take_profit = wc.get("take_profit_pct", 40.0)
+        else:
+            take_profit = sell_cfg["take_profit_pct"]
+            pos_news = news_score(market.ticker_news(pos["ticker"]))
+            if pos["ticker"] in risk.avoid_tickers(research):
+                pos_news = min(pos_news, -1.0)  # research red flag: tightest stop
+                report.append("  ! {} on research avoid list — stop tightened".format(
+                    pos["ticker"]))
+            stop_pct = risk.dynamic_stop_pct(cfg, pos_news, research)
 
         from bot.signals.catalysts import earnings_exit_due
         reason = None
-        if earnings_exit_due(cfg, pos["ticker"]):
+        if not is_wc and earnings_exit_due(cfg, pos["ticker"]):
             reason = "pre-earnings exit: avoiding the binary print"
         elif dd_pct >= stop_pct and held_days >= sell_cfg["min_hold_days"]:
-            reason = "trailing stop ({:.0f}%, news {:+.1f}): {:.1f}% off high".format(
-                stop_pct, pos_news, dd_pct)
-        elif gain_pct >= sell_cfg["take_profit_pct"]:
+            reason = "trailing stop ({:.0f}%): {:.1f}% off high".format(stop_pct, dd_pct)
+        elif gain_pct >= take_profit:
             reason = "take profit: +{:.1f}%".format(gain_pct)
         elif held_days > sell_cfg["max_hold_days"]:
             reason = "max hold {} days reached".format(sell_cfg["max_hold_days"])
 
+        tag = "WC " if is_wc else ""
         if reason:
             executor.execute(con, cfg, "sell", pos["ticker"], pos["shares"], price, reason)
-            report.append("  SELL {} x{} @ ${:.2f} — {}".format(
-                pos["ticker"], pos["shares"], price, reason))
+            report.append("  SELL {}{} x{} @ ${:.2f} — {}".format(
+                tag, pos["ticker"], pos["shares"], price, reason))
         else:
-            report.append("  hold {} x{} @ ${:.2f} ({:+.1f}%, {:.1f}% off high, stop {:.0f}%, day {})".format(
-                pos["ticker"], pos["shares"], price, gain_pct, dd_pct, stop_pct, held_days))
+            report.append("  hold {}{} x{} @ ${:.2f} ({:+.1f}%, {:.1f}% off high, stop {:.0f}%, day {})".format(
+                tag, pos["ticker"], pos["shares"], price, gain_pct, dd_pct, stop_pct, held_days))
 
 
 def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
