@@ -147,3 +147,10 @@ def buys_this_week(con):
     row = con.execute("SELECT COUNT(*) FROM trades WHERE side='buy' AND ts >= ?",
                       (monday.isoformat(),)).fetchone()
     return row[0]
+
+
+def buys_today(con):
+    today = dt.date.today().isoformat()
+    row = con.execute("SELECT COUNT(*) FROM trades WHERE side='buy' AND ts >= ?",
+                      (today,)).fetchone()
+    return row[0]

@@ -13,11 +13,12 @@
   },
 
   "buying": {
-    "max_buys_per_week": 2,
+    "max_buys_per_day": 3,
+    "max_buys_per_week": 8,
     "min_composite_score": 3.0,
-    "max_positions": 6,
-    "max_position_usd": 15000.0,
-    "_sizing_note": "$100k test scale. Before live: set max_position_usd back to ~45 to match the real £100/month account."
+    "max_positions": 12,
+    "max_position_usd": 8000.0,
+    "_sizing_note": "$100k test scale, wide book (many small whole-share trades). Before live: set max_position_usd back to ~45 to match the real £100/month account."
   },
 
   "confluence": {
@@ -28,7 +29,15 @@
     "max_iv": 2.0,
     "momentum_min_5d_pct": 0.0,
     "max_extension_pct": 25.0,
-    "avoid_earnings_days": 5
+    "avoid_earnings_days": 2
+  },
+
+  "earnings": {
+    "catalyst_window_min": 3,
+    "catalyst_window_max": 15,
+    "catalyst_weight": 1.25,
+    "exit_days_before": 1,
+    "_note": "Earnings within avoid_earnings_days (2) = hard veto (too close to hold through). Earnings 3-15 days out + positive momentum/news = catalyst bonus. Positions are force-sold 1 day before earnings to avoid the binary event."
   },
 
   "risk": {
@@ -60,7 +69,9 @@
     "insider_weight": 2.0,
     "fundamentals_weight": 1.5,
     "news_weight": 1.0,
-    "reddit_weight": 0.75
+    "reddit_weight": 0.75,
+    "earnings_weight": 1.0,
+    "breakout_weight": 1.0
   },
 
   "edgar_user_agent": "Josh Ive personal research joshua.ive@gmail.com"

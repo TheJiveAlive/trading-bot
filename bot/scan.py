@@ -34,8 +34,11 @@ def manage_exits(con, cfg, research, report):
                 pos["ticker"]))
         stop_pct = risk.dynamic_stop_pct(cfg, pos_news, research)
 
+        from bot.signals.catalysts import earnings_exit_due
         reason = None
-        if dd_pct >= stop_pct and held_days >= sell_cfg["min_hold_days"]:
+        if earnings_exit_due(cfg, pos["ticker"]):
+            reason = "pre-earnings exit: avoiding the binary print"
+        elif dd_pct >= stop_pct and held_days >= sell_cfg["min_hold_days"]:
             reason = "trailing stop ({:.0f}%, news {:+.1f}): {:.1f}% off high".format(
                 stop_pct, pos_news, dd_pct)
         elif gain_pct >= sell_cfg["take_profit_pct"]:
@@ -68,52 +71,50 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
         notify.send_email("[bot] BUYING HALTED", halted +
                           "\nExits continue to run. Buying resumes when equity recovers.")
         return
-    if ledger.buys_this_week(con) >= buy_cfg["max_buys_per_week"]:
-        ledger.log_decision(con, "skip_buy", "weekly buy budget already used")
-        report.append("  no buy: weekly budget used")
+    # budgets: how many more buys allowed this scan
+    week_left = buy_cfg["max_buys_per_week"] - ledger.buys_this_week(con)
+    day_left = buy_cfg.get("max_buys_per_day", buy_cfg["max_buys_per_week"]) - ledger.buys_today(con)
+    slots_left = buy_cfg["max_positions"] - len(ledger.open_positions(con))
+    budget = min(week_left, day_left, slots_left)
+    if budget <= 0:
+        why = ("weekly cap" if week_left <= 0 else
+               "daily cap" if day_left <= 0 else "max positions")
+        ledger.log_decision(con, "skip_buy", "buy budget exhausted ({})".format(why))
+        report.append("  no buy: {} reached".format(why))
         return
-    if len(ledger.open_positions(con)) >= buy_cfg["max_positions"]:
-        ledger.log_decision(con, "skip_buy", "max positions held")
-        report.append("  no buy: max positions held")
-        return
-    available = ledger.cash(con)
-    held = {p["ticker"] for p in ledger.open_positions(con)}
+
+    bought = 0
     for c in candidates:
+        if bought >= budget:
+            report.append("  buy budget for this scan filled ({} trades)".format(bought))
+            break
         if c["score"] < threshold:
-            ledger.log_decision(con, "skip_buy",
-                                "top score {} below threshold {} (regime: {})".format(
-                                    c["score"], threshold, risk.regime(research)))
-            report.append("  no buy: top score {} < {} (regime {})".format(
-                c["score"], threshold, risk.regime(research)))
-            return
-        if c["ticker"] in avoid:
-            ledger.log_decision(con, "skip_buy",
-                                "{} on research avoid list".format(c["ticker"]))
-            continue
-        if c["ticker"] in intel_flags:
-            ledger.log_decision(con, "skip_buy",
-                                "{} flagged by hourly intel (fresh negative news)".format(
-                                    c["ticker"]))
-            report.append("  skip {}: hourly intel flag".format(c["ticker"]))
+            # candidates are score-sorted; nothing below will qualify either
+            if bought == 0:
+                report.append("  no buy: top score {} < {} (regime {})".format(
+                    c["score"], threshold, risk.regime(research)))
+            break
+        held = {p["ticker"] for p in ledger.open_positions(con)}
+        if c["ticker"] in avoid or c["ticker"] in intel_flags:
+            ledger.log_decision(con, "skip_buy", "{} on avoid/intel list".format(c["ticker"]))
             continue
         if c["ticker"] in held or not c["price"]:
             continue
         if risk.sector_full(cfg, con, c.get("sector"), market):
             ledger.log_decision(con, "skip_buy",
-                                "{}: already at max positions in {}".format(
-                                    c["ticker"], c.get("sector")))
+                                "{}: max positions in {}".format(c["ticker"], c.get("sector")))
             continue
+        available = ledger.cash(con)
         equity = available + sum(
             p["shares"] * (market.last_price(p["ticker"]) or p["avg_cost"])
             for p in ledger.open_positions(con))
         stop_pct = risk.dynamic_stop_pct(cfg, c["parts"].get("news", 0), research)
-        shares = risk.position_size(cfg, equity, c["price"], stop_pct)
-        shares = min(shares, int(available // c["price"]))
+        shares = min(risk.position_size(cfg, equity, c["price"], stop_pct),
+                     int(available // c["price"]))
         if shares < 1:
             ledger.log_decision(con, "skip_buy",
-                                "{} scored {} but risk-sized to 0 shares "
-                                "(price ${:.2f}, cash ${:.2f})".format(
-                                    c["ticker"], c["score"], c["price"], available))
+                                "{} sized to 0 shares (price ${:.2f}, cash ${:.2f})".format(
+                                    c["ticker"], c["price"], available))
             continue
         ok, detail = confluence_check(
             cfg, c["ticker"], c["parts"].get("news", 0),
@@ -122,19 +123,18 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
         if not ok:
             ledger.log_decision(con, "skip_buy", "{} failed confluence: {}".format(
                 c["ticker"], summarize(detail)))
-            report.append("  skip {}: confluence {} ".format(
-                c["ticker"], summarize(detail)))
+            report.append("  skip {}: confluence {}".format(c["ticker"], summarize(detail)))
             continue
-        reason = ("score {} (parts {}); risk-sized {} sh at {:.0f}% stop "
-                  "(~{:.2f}% equity risk); confluence: {}; insiders: {}").format(
-            c["score"], c["parts"], shares, stop_pct,
-            cfg["risk"]["risk_per_trade_pct"], summarize(detail), c["insider_detail"])
+        reason = ("score {} (parts {}); risk-sized {} sh at {:.0f}% stop; "
+                  "confluence: {}").format(
+            c["score"], c["parts"], shares, stop_pct, summarize(detail))
         executor.execute(con, cfg, "buy", c["ticker"], shares, c["price"], reason,
                          parts=c["parts"])
-        report.append("  BUY {} x{} @ ${:.2f} — {}".format(
-            c["ticker"], shares, c["price"], reason))
-        return
-    report.append("  no buy: no affordable candidate above threshold")
+        report.append("  BUY {} x{} @ ${:.2f} — score {}".format(
+            c["ticker"], shares, c["price"], c["score"]))
+        bought += 1
+    if bought == 0:
+        report.append("  no buy: no candidate cleared all gates this scan")
 
 
 def run_scan():

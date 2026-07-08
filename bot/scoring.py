@@ -36,6 +36,16 @@ def score_candidates(cfg, insider_hits, sector_ranks, snapshot, research=None,
         fh_sent = insider_sentiment_bonus(ticker)
         if fh_sent:
             parts["insider_sentiment"] = fh_sent
+        from bot.signals.catalysts import earnings_catalyst_score, breakout_score
+        news_raw = news_score(news)
+        ret5d = info.get("52WeekChange")  # coarse; refined in confluence
+        e_sc, _ = earnings_catalyst_score(cfg, ticker,
+                                          (info.get("regularMarketChangePercent") or 0), news_raw)
+        if e_sc:
+            parts["earnings"] = round(e_sc * w.get("earnings_weight", 1.0), 2)
+        b_sc, _ = breakout_score(ticker)
+        if b_sc:
+            parts["breakout"] = round(b_sc * w.get("breakout_weight", 1.0), 2)
         if ticker in watchlist:
             parts["watchlist"] = 1.0
         bias = risk.sector_bias_bonus(research, info.get("sector"))
