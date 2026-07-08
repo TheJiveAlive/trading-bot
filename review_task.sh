@@ -22,7 +22,7 @@ os.chdir(os.path.dirname(os.path.abspath("__file__")))
 import sys; sys.path.insert(0, ".")
 from bot import config, notify
 config.load()
-reviews = sorted(glob.glob("logs/weekly_review_*.md"))
+reviews = sorted(glob.glob("data/reviews/weekly_review_*.md"))
 if reviews:
     with open(reviews[-1]) as f:
         body = f.read()

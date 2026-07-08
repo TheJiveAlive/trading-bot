@@ -1,0 +1,77 @@
+name: daily-research
+on:
+  schedule:
+    - cron: '37 12 * * 1-5'   # ~13:37 UK in summer, 12:37 in winter — before US open either way
+  workflow_dispatch:
+
+permissions:
+  contents: write
+concurrency:
+  group: research
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # skips silently until the CLAUDE_CODE_OAUTH_TOKEN secret exists
+    steps:
+      - name: check token
+        env:
+          TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "CLAUDE_CODE_OAUTH_TOKEN not set — skipping (research still runs on the Mac)"
+            echo "SKIP=1" >> "$GITHUB_ENV"
+          fi
+
+      - uses: actions/checkout@v4
+        if: env.SKIP != '1'
+
+      - uses: actions/setup-node@v4
+        if: env.SKIP != '1'
+        with:
+          node-version: '22'
+
+      - name: install claude code
+        if: env.SKIP != '1'
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: run research session
+        if: env.SKIP != '1'
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          claude -p "$(cat research/research_prompt.md)" \
+            --allowedTools "WebSearch,WebFetch,Read,Write,Edit" \
+            --permission-mode acceptEdits
+
+      - name: commit research
+        if: env.SKIP != '1'
+        run: |
+          git config user.name "trading-bot"
+          git config user.email "trading-bot@users.noreply.github.com"
+          git add data/research.json data/research_journal.md
+          git commit -m "daily research $(date -u '+%Y-%m-%d')" || echo "no changes"
+          git pull --rebase origin main || true
+          git push
+
+      - name: email research summary
+        if: env.SKIP != '1'
+        env:
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: |
+          python3 -c "
+          import json, os, smtplib, ssl
+          from email.mime.text import MIMEText
+          try:
+              body = json.dumps(json.load(open('data/research.json')), indent=2)
+              subj = '[bot research] cloud run OK'
+          except Exception as e:
+              body, subj = str(e), '[bot research] FAILED to produce research.json'
+          msg = MIMEText(body); msg['Subject'] = subj
+          msg['From'] = os.environ['SMTP_USER']; msg['To'] = os.environ['EMAIL_TO']
+          with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as s:
+              s.login(os.environ['SMTP_USER'], os.environ['SMTP_APP_PASSWORD'])
+              s.send_message(msg)"

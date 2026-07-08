@@ -14,7 +14,7 @@ claude -p "$(cat research/research_prompt.md)" \
 # cloud scans consume today's research.json
 if git remote get-url origin > /dev/null 2>&1; then
   git pull -q --rebase origin main 2>/dev/null || true
-  git add data/research.json 2>/dev/null
+  git add data/research.json data/research_journal.md 2>/dev/null
   git commit -q -m "daily research $(date '+%Y-%m-%d')" 2>/dev/null && \
     git push -q origin main 2>/dev/null || true
 fi

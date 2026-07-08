@@ -1,0 +1,199 @@
+{
+  "period": "2026-03-08 to 2026-07-06",
+  "deposited": 635.0,
+  "final_equity": 648.59,
+  "return_pct": 2.1,
+  "closed_trades": 14,
+  "win_rate_pct": 50.0,
+  "avg_win_pct": 12.6,
+  "avg_loss_pct": -9.2,
+  "max_drawdown_pct": 9.8,
+  "spy_buy_hold_return_pct": 11.4,
+  "open_at_end": [
+    {
+      "ticker": "MBC",
+      "shares": 6,
+      "cost": 8.649999618530273,
+      "now": 9.4399995803833
+    },
+    {
+      "ticker": "BORR",
+      "shares": 13,
+      "cost": 4.340000152587891,
+      "now": 4.46999979019165
+    },
+    {
+      "ticker": "MOBI",
+      "shares": 4,
+      "cost": 14.380000114440918,
+      "now": 13.25
+    },
+    {
+      "ticker": "PALI",
+      "shares": 29,
+      "cost": 2.0399999618530273,
+      "now": 2.0399999618530273
+    }
+  ],
+  "trades": [
+    {
+      "ticker": "CTEV",
+      "in": "2026-03-16",
+      "out": "2026-03-19",
+      "buy": 17.600000381469727,
+      "sell": 15.34000015258789,
+      "shares": 3,
+      "pct": -12.8,
+      "usd": -6.78,
+      "exit": "stop"
+    },
+    {
+      "ticker": "ALKT",
+      "in": "2026-03-09",
+      "out": "2026-03-24",
+      "buy": 17.5,
+      "sell": 15.920000076293945,
+      "shares": 3,
+      "pct": -9.0,
+      "usd": -4.74,
+      "exit": "stop"
+    },
+    {
+      "ticker": "AIRS",
+      "in": "2026-04-06",
+      "out": "2026-04-08",
+      "buy": 3.0999999046325684,
+      "sell": 2.7200000286102295,
+      "shares": 19,
+      "pct": -12.3,
+      "usd": -7.22,
+      "exit": "stop"
+    },
+    {
+      "ticker": "BORR",
+      "in": "2026-03-23",
+      "out": "2026-04-16",
+      "buy": 5.03000020980835,
+      "sell": 5.440000057220459,
+      "shares": 11,
+      "pct": 8.2,
+      "usd": 4.51,
+      "exit": "stop"
+    },
+    {
+      "ticker": "THM",
+      "in": "2026-04-20",
+      "out": "2026-04-28",
+      "buy": 2.5799999237060547,
+      "sell": 2.2799999713897705,
+      "shares": 23,
+      "pct": -11.6,
+      "usd": -6.9,
+      "exit": "stop"
+    },
+    {
+      "ticker": "VALE",
+      "in": "2026-03-30",
+      "out": "2026-04-29",
+      "buy": 15.100000381469727,
+      "sell": 15.850000381469727,
+      "shares": 3,
+      "pct": 5.0,
+      "usd": 2.25,
+      "exit": "stop"
+    },
+    {
+      "ticker": "CAG",
+      "in": "2026-04-13",
+      "out": "2026-05-29",
+      "buy": 14.15311336517334,
+      "sell": 13.279999732971191,
+      "shares": 4,
+      "pct": -6.2,
+      "usd": -3.49,
+      "exit": "max_hold"
+    },
+    {
+      "ticker": "ALKT",
+      "in": "2026-05-04",
+      "out": "2026-06-03",
+      "buy": 17.170000076293945,
+      "sell": 16.6200008392334,
+      "shares": 3,
+      "pct": -3.2,
+      "usd": -1.65,
+      "exit": "stop"
+    },
+    {
+      "ticker": "GPK",
+      "in": "2026-05-11",
+      "out": "2026-06-10",
+      "buy": 10.114934921264648,
+      "sell": 10.223803520202637,
+      "shares": 5,
+      "pct": 1.1,
+      "usd": 0.54,
+      "exit": "stop"
+    },
+    {
+      "ticker": "KYN",
+      "in": "2026-04-27",
+      "out": "2026-06-12",
+      "buy": 13.398743629455566,
+      "sell": 13.984999656677246,
+      "shares": 4,
+      "pct": 4.4,
+      "usd": 2.35,
+      "exit": "max_hold"
+    },
+    {
+      "ticker": "NCLH",
+      "in": "2026-05-26",
+      "out": "2026-06-29",
+      "buy": 17.100000381469727,
+      "sell": 21.920000076293945,
+      "shares": 3,
+      "pct": 28.2,
+      "usd": 14.46,
+      "exit": "take_profit"
+    },
+    {
+      "ticker": "INR",
+      "in": "2026-06-08",
+      "out": "2026-07-01",
+      "buy": 13.579999923706055,
+      "sell": 12.319999694824219,
+      "shares": 4,
+      "pct": -9.3,
+      "usd": -5.04,
+      "exit": "stop"
+    },
+    {
+      "ticker": "PAR",
+      "in": "2026-06-15",
+      "out": "2026-07-02",
+      "buy": 14.6899995803833,
+      "sell": 19.049999237060547,
+      "shares": 4,
+      "pct": 29.7,
+      "usd": 17.44,
+      "exit": "take_profit"
+    },
+    {
+      "ticker": "NOMD",
+      "in": "2026-05-18",
+      "out": "2026-07-06",
+      "buy": 10.239999771118164,
+      "sell": 11.430000305175781,
+      "shares": 5,
+      "pct": 11.6,
+      "usd": 5.95,
+      "exit": "max_hold"
+    }
+  ],
+  "caveats": [
+    "fills at daily close, zero spread/slippage \u2014 optimistic",
+    "no news/VWAP/spread/IV/research signals \u2014 core engine only",
+    "current CIK->ticker map: delisted names excluded (survivorship bias)"
+  ]
+}

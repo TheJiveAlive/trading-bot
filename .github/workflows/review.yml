@@ -1,0 +1,110 @@
+name: weekly-review
+on:
+  schedule:
+    - cron: '3 16 * * 0'   # Sundays ~17:03 UK summer / 16:03 winter
+  workflow_dispatch:
+
+permissions:
+  contents: write
+concurrency:
+  group: review
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: check token
+        env:
+          TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "CLAUDE_CODE_OAUTH_TOKEN not set — skipping (review still runs on the Mac)"
+            echo "SKIP=1" >> "$GITHUB_ENV"
+          fi
+
+      - uses: actions/checkout@v4
+        if: env.SKIP != '1'
+
+      - uses: actions/setup-python@v5
+        if: env.SKIP != '1'
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: install dependencies
+        if: env.SKIP != '1'
+        run: pip install -r requirements.txt
+
+      - name: dump week data
+        if: env.SKIP != '1'
+        run: |
+          mkdir -p data/reviews logs
+          python -m bot.review_dump
+
+      - uses: actions/setup-node@v4
+        if: env.SKIP != '1'
+        with:
+          node-version: '22'
+
+      - name: install claude code
+        if: env.SKIP != '1'
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: run review session
+        if: env.SKIP != '1'
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          claude -p "$(cat research/review_prompt.md)" \
+            --allowedTools "Read,Write,Bash(python3:*),WebSearch,WebFetch" \
+            --permission-mode acceptEdits
+
+      - name: monthly learning (first Sunday)
+        if: env.SKIP != '1'
+        env:
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: |
+          if [ "$(date +%d)" -le 7 ]; then
+            python3 -c "
+          import json, os
+          json.dump({'smtp_host':'smtp.gmail.com','smtp_port':465,
+                     'smtp_user':os.environ.get('SMTP_USER',''),
+                     'smtp_app_password':os.environ.get('SMTP_APP_PASSWORD',''),
+                     'email_to':os.environ.get('EMAIL_TO','')},
+                    open('data/secrets.json','w'))"
+            python -m bot.learn
+            rm -f data/secrets.json
+          fi
+
+      - name: commit review output
+        if: env.SKIP != '1'
+        run: |
+          rm -f data/secrets.json
+          git config user.name "trading-bot"
+          git config user.email "trading-bot@users.noreply.github.com"
+          git add data/reviews config.json data/review_input.json
+          git commit -m "weekly review $(date -u '+%Y-%m-%d')" || echo "no changes"
+          git pull --rebase origin main || true
+          git push
+
+      - name: email review
+        if: env.SKIP != '1'
+        env:
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: |
+          python3 -c "
+          import glob, os, smtplib, ssl
+          from email.mime.text import MIMEText
+          files = sorted(glob.glob('data/reviews/weekly_review_*.md'))
+          body = open(files[-1]).read() if files else 'no review file produced'
+          subj = '[bot review] ' + (os.path.basename(files[-1]) if files else 'FAILED')
+          msg = MIMEText(body); msg['Subject'] = subj
+          msg['From'] = os.environ['SMTP_USER']; msg['To'] = os.environ['EMAIL_TO']
+          with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as s:
+              s.login(os.environ['SMTP_USER'], os.environ['SMTP_APP_PASSWORD'])
+              s.send_message(msg)"

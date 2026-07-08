@@ -6,8 +6,8 @@ Work from the project root (/Users/josh/Desktop/RobinHood).
 
 ## Context to load first
 1. Read `data/research.json` (yesterday's view, if present).
-2. Read the two most recent files in `logs/` matching `scan_*.log` to see what
-   the bot has been doing and holding.
+2. Read `dashboard.html` and `radar.html` at the project root — they contain
+   the bot's current positions, candidates, and recent decisions.
 
 ## Research (use WebSearch)
 1. **Market regime**: current S&P 500 / Nasdaq trend, VIX level, notable macro
@@ -44,7 +44,7 @@ Write `data/research.json` (overwrite) with EXACTLY this schema:
 ```
 
 Also append a short dated summary (5-10 lines, human-readable) to
-`logs/research_journal.md`.
+`data/research_journal.md`.
 
 Rules:
 - Valid JSON only, tickers uppercase, no invented tickers — only ones you

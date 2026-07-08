@@ -10,7 +10,7 @@ PROPOSE config changes, you never apply them.
    candidates, and current positions (pre-generated).
 2. `README.md` — how the bot works and its config semantics.
 3. `config.json` — current parameters.
-4. Last ~40 lines of `logs/research_journal.md` — what the research layer
+4. Last ~40 lines of `data/research_journal.md` — what the research layer
    believed this week.
 5. `data/backtest_report.json` if present — long-run evidence.
 
@@ -28,7 +28,7 @@ PROPOSE config changes, you never apply them.
    small-to-medium risk expectations (>12% single-position loss)?
 
 ## Output
-1. Write `logs/weekly_review_YYYY-MM-DD.md` (today's date) containing:
+1. Write `data/reviews/weekly_review_YYYY-MM-DD.md` (today's date) containing:
    - **Verdict**: one paragraph, plain English, no hedging.
    - **The week in numbers**: trades, P/L, win rate, current equity vs cash
      deposited to date.
