@@ -7,6 +7,28 @@ pump-and-dump shape — that becomes a hard veto in the confluence gate.
 import requests
 
 URL = "https://apewisdom.io/api/v1.0/filter/all-stocks/page/{}"
+PENNY_URL = "https://apewisdom.io/api/v1.0/filter/pennystocks/page/{}"
+
+
+def fetch_pennystock_buzz(pages=2):
+    """{ticker: {rank, mentions, mentions_prev, upvotes}} from r/pennystocks,
+    for the wildcard sleeve. Uncached (called only in scans, not refreshes)."""
+    out = {}
+    try:
+        for p in range(1, pages + 1):
+            r = requests.get(PENNY_URL.format(p), timeout=20)
+            if r.status_code != 200:
+                break
+            for row in r.json().get("results", []):
+                t = (row.get("ticker") or "").upper()
+                if t:
+                    out[t] = {"rank": row.get("rank"),
+                              "mentions": int(row.get("mentions") or 0),
+                              "mentions_prev": int(row.get("mentions_24h_ago") or 0),
+                              "upvotes": int(row.get("upvotes") or 0)}
+    except Exception:
+        return out
+    return out
 
 
 def fetch_mentions(pages=2, ttl_min=25):

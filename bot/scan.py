@@ -207,6 +207,15 @@ def run_scan():
     report.append("action:")
     maybe_buy(con, cfg, candidates, research, report, reddit_data=reddit_data)
 
+    # ring-fenced wildcard sleeve (sub-$1 r/pennystocks lottery tickets)
+    if cfg.get("wildcard", {}).get("enabled") and not risk.trading_halted(con, cfg):
+        report.append("wildcard sleeve:")
+        try:
+            from bot.wildcard import scan_wildcards
+            scan_wildcards(con, cfg, research, risk.load_intel(), report)
+        except Exception as e:
+            report.append("  wildcard error (non-fatal): {}".format(e))
+
     con.commit()
     con.close()
 

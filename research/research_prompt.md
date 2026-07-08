@@ -9,6 +9,15 @@ Work from the project root (/Users/josh/Desktop/RobinHood).
 2. Read `dashboard.html` and `radar.html` at the project root — they contain
    the bot's current positions, candidates, and recent decisions.
 
+## User watchlist (evaluate honestly)
+Read `config.json` → `user_watchlist`. For EACH ticker there, do focused DD:
+current price, what drove any recent spike, whether there's a real catalyst vs
+hype, dilution/offering history (a serial diluter is a red flag), and float.
+Be skeptical — "it spiked before so it'll spike again" is NOT a thesis. Put
+genuinely promising ones on the `watchlist` output (so the bot may act via the
+wildcard sleeve); put dangerous ones on `avoid`. Summarise your verdict on each
+in `notes`.
+
 ## Research (use WebSearch)
 1. **Market regime**: current S&P 500 / Nasdaq trend, VIX level, notable macro
    events this week (Fed, CPI, jobs). Classify as `risk_on`, `neutral`, or
