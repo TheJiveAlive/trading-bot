@@ -1,9 +1,10 @@
 name: trading-scan
 on:
   schedule:
-    # market window (UTC) — full scans when US market is open
+    # market hours (UTC): full scan on the hour (:33), price refresh on the half (:03)
     - cron: '33 13-21 * * 1-5'
-    # off-hours — hourly dashboard refresh (7:33-12:33 & 22:33 UTC, every day)
+    - cron: '3 14-21 * * 1-5'
+    # off-hours — hourly dashboard refresh
     - cron: '33 7-12,22 * * *'
   workflow_dispatch:
 
@@ -23,12 +24,15 @@ jobs:
           H=$(TZ=America/New_York date +%H)
           M=$(TZ=America/New_York date +%M)
           DOW=$(TZ=America/New_York date +%u)
+          UM=$(date -u +%M)
           MODE=refresh
-          if [ "$DOW" -le 5 ] && [ "$H" -ge 9 ] && [ "$H" -lt 16 ]; then
+          # full scan only on the top-of-hour (:33) slot during market hours;
+          # the :03 half-hour slot just refreshes prices on the dashboard
+          if [ "$DOW" -le 5 ] && [ "$H" -ge 9 ] && [ "$H" -lt 16 ] && [ "$UM" -ge 25 ]; then
             if [ "$H" -gt 9 ] || [ "$M" -ge 30 ]; then MODE=scan; fi
           fi
           echo "MODE=$MODE" >> "$GITHUB_ENV"
-          echo "mode: $MODE"
+          echo "mode: $MODE (utc min $UM)"
 
       - uses: actions/checkout@v4
 
@@ -46,6 +50,7 @@ jobs:
           SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
           FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
+          T212_API_KEY: ${{ secrets.T212_API_KEY }}
         run: |
           mkdir -p data logs publish
           python3 -c "
@@ -54,8 +59,33 @@ jobs:
                      'smtp_user':os.environ.get('SMTP_USER',''),
                      'smtp_app_password':os.environ.get('SMTP_APP_PASSWORD',''),
                      'email_to':os.environ.get('EMAIL_TO',''),
-                     'finnhub_key':os.environ.get('FINNHUB_KEY','')},
+                     'finnhub_key':os.environ.get('FINNHUB_KEY',''),
+                     't212_api_key':os.environ.get('T212_API_KEY','')},
                     open('data/secrets.json','w'))"
+
+      - name: refresh GitHub workflow status for the dashboard
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import json, subprocess, datetime
+          wanted = ["trading-scan","hourly-intel","daily-research","weekly-review","backtest"]
+          out = {"generated": datetime.datetime.utcnow().isoformat(timespec="seconds"),
+                 "workflows": {}}
+          for wf in wanted:
+              try:
+                  r = subprocess.run(["gh","run","list","--workflow",wf+".yml",
+                      "--limit","1","--json","conclusion,createdAt,status"],
+                      capture_output=True,text=True,timeout=30)
+                  arr = json.loads(r.stdout or "[]")
+                  if arr:
+                      out["workflows"][wf] = {"conclusion":arr[0].get("conclusion"),
+                          "when":arr[0].get("createdAt",""),"status":arr[0].get("status")}
+              except Exception as e:
+                  pass
+          json.dump(out, open("data/health.json","w"), indent=2)
+          print("health.json:", out)
+          PY
 
       - name: full scan (market hours)
         if: env.MODE == 'scan'

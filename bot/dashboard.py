@@ -128,6 +128,10 @@ tr:last-child td { border-bottom:none; }
 .alert .body { font-size:12px; line-height:1.45; }
 .alert .body .tk { color:var(--violet); font-weight:700; }
 .alert .body .sr { color:var(--dim); font-size:10px; font-family:ui-monospace,Menlo,monospace; }
+.sdot { display:inline-block; width:9px; height:9px; border-radius:50%; }
+.sdot.green { background:var(--gain); box-shadow:0 0 6px rgba(61,220,151,.6); }
+.sdot.red { background:var(--loss); box-shadow:0 0 6px rgba(255,122,112,.5); }
+.sdot.grey { background:var(--dim); }
 """
 
 MODE_RANK = {"risk_off": "risk off", "neutral": "neutral", "risk_on": "risk on"}
@@ -135,6 +139,33 @@ MODE_RANK = {"risk_off": "risk off", "neutral": "neutral", "risk_on": "risk on"}
 
 def _now_str():
     return dt.datetime.now().strftime("%a %d %b, %H:%M")
+
+
+def _money(v, sign=False):
+    """Compact currency: $8.0k, $1.2M, $940, −$3.7k. Keeps KPIs short."""
+    s = "+" if (sign and v >= 0) else ("−" if v < 0 else "")
+    a = abs(v)
+    if a >= 1_000_000:
+        body = "${:.2f}M".format(a / 1_000_000)
+    elif a >= 10_000:
+        body = "${:.1f}k".format(a / 1000)
+    elif a >= 1_000:
+        body = "${:,.0f}".format(a)
+    else:
+        body = "${:,.2f}".format(a)
+    return s + body
+
+
+def _load_health():
+    """Workflow run statuses written by the scan workflow, or {}."""
+    p = os.path.join(ROOT, "data", "health.json")
+    if os.path.exists(p):
+        try:
+            with open(p) as f:
+                return json.load(f)
+        except Exception:
+            return {}
+    return {}
 
 
 def _short(ts):
@@ -589,15 +620,16 @@ def _kpis(st):
     def cls(v): return "gain" if v >= 0 else "loss"
     def sgn(v): return "+" if v >= 0 else "−"
     return """<div class="kpis">
-<div class="kpi"><div class="l">Total equity</div><div class="v mono">${eq:,.2f}</div><div class="s">deposited ${dep:,.0f}</div></div>
-<div class="kpi"><div class="l">Cash</div><div class="v mono">${cash:,.2f}</div><div class="s">{np} open position(s)</div></div>
-<div class="kpi"><div class="l">Net P/L</div><div class="v mono {nc}">{ns}${net:,.2f}</div><div class="s">vs deposits</div></div>
-<div class="kpi"><div class="l">Unrealized</div><div class="v mono {uc}">{us}${ur:,.2f}</div><div class="s">open positions</div></div>
-<div class="kpi"><div class="l">Realized</div><div class="v mono {rc}">{rs}${rl:,.2f}</div><div class="s">{nt} closed trade(s)</div></div>
-</div>""".format(eq=st["equity"], dep=st["deposited"], cash=st["cash"],
-                 np=len(st["positions"]), nc=cls(net), ns=sgn(net), net=abs(net),
-                 uc=cls(unreal), us=sgn(unreal), ur=abs(unreal),
-                 rc=cls(realized), rs=sgn(realized), rl=abs(realized),
+<div class="kpi"><div class="l">Total equity</div><div class="v mono" title="${eqf:,.2f}">{eq}</div><div class="s">deposited {dep}</div></div>
+<div class="kpi"><div class="l">Cash</div><div class="v mono" title="${cashf:,.2f}">{cash}</div><div class="s">{np} open position(s)</div></div>
+<div class="kpi"><div class="l">Net P/L</div><div class="v mono {nc}">{net}</div><div class="s">vs deposits</div></div>
+<div class="kpi"><div class="l">Unrealized</div><div class="v mono {uc}">{ur}</div><div class="s">open positions</div></div>
+<div class="kpi"><div class="l">Realized</div><div class="v mono {rc}">{rl}</div><div class="s">{nt} closed trade(s)</div></div>
+</div>""".format(eq=_money(st["equity"]), eqf=st["equity"], dep=_money(st["deposited"]),
+                 cash=_money(st["cash"]), cashf=st["cash"], np=len(st["positions"]),
+                 nc=cls(net), net=_money(net, sign=True),
+                 uc=cls(unreal), ur=_money(unreal, sign=True),
+                 rc=cls(realized), rl=_money(realized, sign=True),
                  nt=len(st["closed"]))
 
 
@@ -736,6 +768,41 @@ def _intel_panel(st):
     return panel("Live intel feed", "intel " + gen + " UTC", tape_html + items)
 
 
+WORKFLOW_LABELS = [
+    ("trading-scan", "Trading scans"), ("hourly-intel", "Hourly intel"),
+    ("daily-research", "Daily research"), ("weekly-review", "Weekly review"),
+    ("backtest", "Backtest"),
+]
+
+
+def _github_panel(st):
+    health = _load_health()
+    runs = health.get("workflows", {})
+    rows = []
+    for key, label in WORKFLOW_LABELS:
+        info = runs.get(key)
+        if not info:
+            dot, txt = "grey", "not run yet"
+        else:
+            concl = info.get("conclusion")
+            when = info.get("when", "")[5:16].replace("T", " ")
+            if concl == "success":
+                dot, txt = "green", "OK · {}".format(when)
+            elif concl in ("skipped", None):
+                dot, txt = "grey", "{} · {}".format(concl or "pending", when)
+            else:
+                dot, txt = "red", "{} · {}".format(concl, when)
+        rows.append('<tr><td><span class="sdot {d}"></span></td>'
+                    '<td class="mono">{lb}</td><td class="note">{t}</td></tr>'.format(
+                        d=dot, lb=label, t=txt))
+    updated = health.get("generated", "")[:16].replace("T", " ")
+    note = ('<div class="note" style="margin-top:8px">Green = last cloud run '
+            'succeeded, red = failed, grey = not run / disabled. Claude-powered '
+            'jobs (intel, research, review) stay grey until an API key/token is set.</div>')
+    return panel("Running on GitHub", "status " + (updated or "—"),
+                 '<table>{}</table>{}'.format("".join(rows), note))
+
+
 def _overview(st):
     threshold = risk.buy_threshold(st["cfg"], st["research"])
     trades = list(reversed(st["trades_asc"][-6:]))
@@ -753,7 +820,10 @@ def _overview(st):
                   _equity_svg(st["curve"], st["deposited"]))
     body += _research_panel(st)
     body += "</div>"
+    body += '<div class="grid2">'
+    body += _github_panel(st)
     body += _intel_panel(st)
+    body += "</div>"
     body += _positions_panel(st)
     body += '<div class="grid2">'
     body += _news_panel(st)

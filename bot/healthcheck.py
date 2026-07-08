@@ -97,6 +97,11 @@ def check_finnhub():
             else "no key (optional) — using Yahoo fallbacks")
 
 
+def check_broker():
+    from bot import broker_t212, config
+    return broker_t212.health(config.load())
+
+
 def check_dashboard():
     from bot import dashboard
     path, _ = dashboard.generate()
@@ -110,7 +115,7 @@ CHECKS = [
     ("SEC EDGAR insider map", check_edgar), ("EDGAR dilution query", check_dilution),
     ("Reddit (ApeWisdom)", check_reddit), ("Quant regime", check_quant_regime),
     ("Daily research freshness", check_research_fresh), ("Finnhub", check_finnhub),
-    ("Dashboard generation", check_dashboard),
+    ("Trading 212 broker", check_broker), ("Dashboard generation", check_dashboard),
 ]
 
 

@@ -44,6 +44,35 @@ def _queue_order(order):
         json.dump(orders, f, indent=2)
 
 
+def _route_live_order(cfg, side, ticker, shares, price, reason):
+    """Send a live order to the configured broker. Returns a human note for
+    the email/log. Falls back to the pending_orders.json queue on any error so
+    nothing is silently lost."""
+    broker = cfg.get("broker", {}).get("name", "trading212")
+    signed = shares if side == "buy" else -shares
+    if broker == "trading212":
+        try:
+            from bot import broker_t212
+            res = broker_t212.place_market_order(
+                cfg, ticker, signed, price_hint=price,
+                dry_run=not cfg.get("broker", {}).get("live_orders_enabled", False))
+            if res.get("dry_run"):
+                return ("DRY-RUN (live_orders_enabled=false): would {} {} x{} on "
+                        "Trading 212 {}.".format(side, ticker, shares, res["environment"]))
+            return "SENT to Trading 212: {} {} x{} (order id {}).".format(
+                side, ticker, shares, res.get("response", {}).get("id", "?"))
+        except Exception as e:
+            _queue_order({"ts": ledger.now(), "side": side, "ticker": ticker,
+                          "shares": shares, "limit_price_hint": round(price, 2),
+                          "reason": reason, "status": "pending",
+                          "error": str(e)})
+            return "Broker error ({}) — queued to pending_orders.json instead.".format(e)
+    _queue_order({"ts": ledger.now(), "side": side, "ticker": ticker,
+                  "shares": shares, "limit_price_hint": round(price, 2),
+                  "reason": reason, "status": "pending"})
+    return "Queued to pending_orders.json (broker '{}').".format(broker)
+
+
 def execute(con, cfg, side, ticker, shares, price, reason, parts=None):
     mode = cfg["mode"]
     pnl_line = ""
@@ -70,12 +99,9 @@ def execute(con, cfg, side, ticker, shares, price, reason, parts=None):
                                 "VALUES (?,?,?,?,?)",
                                 (ledger.now(), ticker, signal,
                                  float(contribution), round(pnl_pct, 2)))
+    broker_note = ""
     if mode == "live":
-        _queue_order({
-            "ts": ledger.now(), "side": side, "ticker": ticker,
-            "shares": shares, "limit_price_hint": round(price, 2),
-            "reason": reason, "status": "pending",
-        })
+        broker_note = _route_live_order(cfg, side, ticker, shares, price, reason)
 
     from bot import emailfmt
     positions = _portfolio_positions(con)
@@ -84,10 +110,7 @@ def execute(con, cfg, side, ticker, shares, price, reason, parts=None):
     if pnl_line:
         pnl_usd = (price - pos["avg_cost"]) * shares
         pnl_pct = (price / pos["avg_cost"] - 1) * 100
-    note = None
-    if mode == "live":
-        note = ("Live mode: this order is QUEUED in pending_orders.json and is "
-                "not executed until the Robinhood connector processes it.")
+    note = broker_note or None
     subject, html, text = emailfmt.trade_email(
         side, ticker, shares, price, mode, reasons, positions,
         ledger.cash(con), pnl_usd=pnl_usd, pnl_pct=pnl_pct, note=note)
