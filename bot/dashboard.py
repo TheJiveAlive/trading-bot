@@ -496,8 +496,10 @@ def _equity_svg(curve, deposited, w=640, h=190):
         lo, hi = lo - 1, hi + 1
     def x(i): return pad + i * (w - 2 * pad) / (len(pts) - 1)
     def y(v): return (h - padb) - (v - lo) * (h - padb - pad) / (hi - lo)
-    line = " ".join("{:.1f},{:.1f}".format(x(i), y(v)) for i, v in enumerate(pts))
-    area = "{},{} {} {},{}".format(x(0), h - padb, line, x(len(pts) - 1), h - padb)
+    coords = [(x(i), y(v)) for i, v in enumerate(pts)]
+    line = _smooth_path(coords)
+    area = line + " L {:.1f},{:.1f} L {:.1f},{:.1f} Z".format(
+        coords[-1][0], h - padb, coords[0][0], h - padb)
     color = "#34D399" if (not deposited or pts[-1] >= deposited) else "#F87171"
     grid = "".join('<line x1="{p}" y1="{gy:.1f}" x2="{w2}" y2="{gy:.1f}" '
                    'stroke="#131D30" stroke-width="1"/>'.format(
@@ -513,9 +515,11 @@ def _equity_svg(curve, deposited, w=640, h=190):
             '<defs><linearGradient id="eq" x1="0" y1="0" x2="0" y2="1">'
             '<stop offset="0%" stop-color="{c}" stop-opacity="0.25"/>'
             '<stop offset="100%" stop-color="{c}" stop-opacity="0"/></linearGradient></defs>'
-            '{grid}{dep}<polygon points="{area}" fill="url(#eq)"/>'
-            '<polyline points="{line}" fill="none" stroke="{c}" stroke-width="2"/>'
+            '{grid}{dep}<path d="{area}" fill="url(#eq)"/>'
+            '<path d="{line}" fill="none" stroke="{c}" stroke-width="2" '
+            'stroke-linejoin="round" stroke-linecap="round"/>'
             '<circle cx="{cx:.1f}" cy="{cy:.1f}" r="3.5" fill="{c}"/>'
+            '<circle cx="{cx:.1f}" cy="{cy:.1f}" r="6.5" fill="{c}" opacity="0.22"/>'
             '<text x="{p}" y="{h2}" fill="#5A6A87" font-size="9" font-family="Menlo,monospace">{d0}</text>'
             '<text x="{w2}" y="{h2}" fill="#5A6A87" font-size="9" text-anchor="end" font-family="Menlo,monospace">{d1}</text>'
             '<text x="{p}" y="{ty:.1f}" fill="#5A6A87" font-size="9" font-family="Menlo,monospace">${hi:,.0f}</text>'
@@ -643,32 +647,63 @@ def _hall(closed):
         g=grid, fame=fame, shame=shame)
 
 
-def _weekly_bars(closed, w=520, h=150):
+def _smooth_path(pts):
+    """Catmull-Rom → cubic bezier smoothing for a Robinhood-style curve."""
+    if len(pts) < 3:
+        return "M " + " L ".join("{:.1f},{:.1f}".format(*p) for p in pts)
+    d = "M {:.1f},{:.1f}".format(*pts[0])
+    for i in range(len(pts) - 1):
+        p0 = pts[i - 1] if i > 0 else pts[0]
+        p1, p2 = pts[i], pts[i + 1]
+        p3 = pts[i + 2] if i + 2 < len(pts) else p2
+        c1x = p1[0] + (p2[0] - p0[0]) / 6.0
+        c1y = p1[1] + (p2[1] - p0[1]) / 6.0
+        c2x = p2[0] - (p3[0] - p1[0]) / 6.0
+        c2y = p2[1] - (p3[1] - p1[1]) / 6.0
+        d += " C {:.1f},{:.1f} {:.1f},{:.1f} {:.1f},{:.1f}".format(c1x, c1y, c2x, c2y, p2[0], p2[1])
+    return d
+
+
+def _pnl_line(closed, w=560, h=170):
+    """Robinhood-style cumulative realized-P/L curve: thin smoothed line, soft
+    gradient fill, baseline at zero, endpoint dot. Replaces the old bar chart."""
     if not closed:
-        return '<div class="mut">no closed trades yet</div>'
-    weeks = {}
-    for t in closed:
-        wk = "{}-W{:02d}".format(*dt.date.fromisoformat(t["ts"][:10]).isocalendar()[:2])
-        weeks[wk] = weeks.get(wk, 0) + t["pnl"]
-    keys = sorted(weeks)[-12:]
-    vals = [weeks[k] for k in keys]
-    mx = max(abs(v) for v in vals) or 1
-    bw = (w - 20) / max(len(keys), 1)
-    mid = h / 2
-    bars = []
-    for i, (k, v) in enumerate(zip(keys, vals)):
-        bh = abs(v) / mx * (mid - 18)
-        ycoord = mid - bh if v >= 0 else mid
-        c = "#34D399" if v >= 0 else "#F87171"
-        bars.append('<rect x="{x:.1f}" y="{y:.1f}" width="{bw:.1f}" height="{bh:.1f}" '
-                    'rx="2" fill="{c}"/>'
-                    '<text x="{tx:.1f}" y="{h2}" fill="#5A6A87" font-size="8" '
-                    'text-anchor="middle" font-family="Menlo,monospace">{lbl}</text>'.format(
-                        x=10 + i * bw + 2, y=ycoord, bw=bw - 4, bh=max(bh, 1), c=c,
-                        tx=10 + i * bw + bw / 2, h2=h - 4, lbl=k[-3:]))
-    return ('<svg viewBox="0 0 {w} {h}" width="100%"><line x1="10" y1="{m}" x2="{w2}" '
-            'y2="{m}" stroke="#1B2740"/>{bars}</svg>').format(
-        w=w, h=h, m=mid, w2=w - 10, bars="".join(bars))
+        return '<div class="mut">no closed trades yet — the line starts at your first sale</div>'
+    ordered = sorted(closed, key=lambda t: t["ts"])
+    cum, running = [0.0], 0.0
+    for t in ordered:
+        running += t["pnl"]
+        cum.append(running)
+    lo, hi = min(cum), max(cum)
+    if hi - lo < 1:
+        lo, hi = lo - 1, hi + 1
+    pad_l, pad_r, pad_t, pad_b = 6, 6, 12, 16
+    def x(i): return pad_l + i * (w - pad_l - pad_r) / (len(cum) - 1)
+    def y(v): return (h - pad_b) - (v - lo) * (h - pad_b - pad_t) / (hi - lo)
+    pts = [(x(i), y(v)) for i, v in enumerate(cum)]
+    path = _smooth_path(pts)
+    end_up = cum[-1] >= 0
+    color = "#34D399" if end_up else "#F87171"
+    zero_y = y(0)
+    area = path + " L {:.1f},{:.1f} L {:.1f},{:.1f} Z".format(pts[-1][0], h - pad_b, pts[0][0], h - pad_b)
+    return ('<svg viewBox="0 0 {w} {h}" width="100%" role="img" aria-label="cumulative P/L">'
+            '<defs><linearGradient id="pl" x1="0" y1="0" x2="0" y2="1">'
+            '<stop offset="0%" stop-color="{c}" stop-opacity="0.22"/>'
+            '<stop offset="100%" stop-color="{c}" stop-opacity="0"/></linearGradient></defs>'
+            '<line x1="{pl}" y1="{zy:.1f}" x2="{w2}" y2="{zy:.1f}" stroke="#2A3B5C" '
+            'stroke-width="1" stroke-dasharray="3 3"/>'
+            '<path d="{area}" fill="url(#pl)"/>'
+            '<path d="{path}" fill="none" stroke="{c}" stroke-width="2" '
+            'stroke-linejoin="round" stroke-linecap="round"/>'
+            '<circle cx="{ex:.1f}" cy="{ey:.1f}" r="3.5" fill="{c}"/>'
+            '<circle cx="{ex:.1f}" cy="{ey:.1f}" r="6" fill="{c}" opacity="0.25"/>'
+            '<text x="{pl}" y="10" fill="#5A6A87" font-size="9" '
+            'font-family="Menlo,monospace">cumulative realized P/L</text>'
+            '<text x="{w2}" y="{ty:.1f}" fill="{c}" font-size="11" text-anchor="end" '
+            'font-weight="700" font-family="Menlo,monospace">{end}</text></svg>').format(
+        w=w, h=h, c=color, pl=pad_l, w2=w - pad_r, zy=zero_y, area=area, path=path,
+        ex=pts[-1][0], ey=pts[-1][1], ty=max(pts[-1][1] - 8, 20),
+        end=("+" if end_up else "−") + "${:,.2f}".format(abs(cum[-1])))
 
 
 # ---------------- page bodies ----------------
@@ -1086,7 +1121,7 @@ def _history(st):
     body = panel("🏆 Halls of Fame &amp; Shame", "ledger " + st["now"], _hall(st["closed"]))
     body += '<div class="grid2">'
     body += panel("P/L by window", "ledger " + st["now"], _period_stats(st["closed"]))
-    body += panel("Weekly P/L", "ledger " + st["now"], _weekly_bars(st["closed"]))
+    body += panel("Cumulative P/L", "ledger " + st["now"], _pnl_line(st["closed"]))
     body += "</div>"
     body += panel("Equity curve", "snapshot " + st["now"],
                   _equity_svg(st["curve"], st["deposited"]))
