@@ -1,7 +1,7 @@
 name: hourly-intel
 on:
   schedule:
-    - cron: '8 14-20 * * 1-5'   # hourly during US market hours (UTC ~ 9:00-15:00 ET)
+    - cron: '8 14,17,20 * * 1-5'   # every ~3h during US market hours (lighter Claude usage)
   workflow_dispatch:
 
 permissions:
