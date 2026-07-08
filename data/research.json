@@ -1,20 +1,21 @@
 {
   "date": "2026-07-08",
   "market_regime": "risk_off",
-  "regime_reason": "Trump declared the US-Iran ceasefire memorandum 'over', sending oil up over 5% (WTI above $74) and futures down sharply (Dow -~600pts, S&P -0.8%, Nasdaq -1.3%) with VIX jumping 8.4% to 17.49, reversing yesterday's record-high risk-on tape.",
+  "regime_reason": "US-Iran tensions re-escalated sharply (Trump declared the ceasefire memorandum 'over' after US strikes on Iranian-linked targets), sending oil up over 5% and pressuring equities broadly (Dow -1.1%, S&P -0.3%, Nasdaq pared to near-flat) with VIX up 3.4% to 16.67; only energy and consumer defensive closed green.",
   "sector_bias": {
     "Technology": -0.4,
     "Energy": 0.6,
-    "Industrials": 0.3,
     "Consumer Defensive": 0.3,
-    "Healthcare": 0.3,
-    "Financial Services": 0.2
+    "Healthcare": 0.1,
+    "Financial Services": -0.2,
+    "Industrials": -0.2,
+    "Consumer Cyclical": -0.3
   },
   "watchlist": [
-    {"ticker": "RIG", "note": "Transocean signed a $1B+ multi-rig contract with Equinor on 2026-06-30; pending Valaris merger and Aug 5 earnings."},
-    {"ticker": "ABSI", "note": "Absci: Truist raised PT to $17 on 2026-07-02 after positive Phase 1 ABS-201 data (2026-06-24); stock +47% on the week."},
-    {"ticker": "HDSN", "note": "Hudson Technologies: major holder Hartree Partners bought $1.16M on 2026-06-30 and $1.62M more on 2026-07-02."}
+    {"ticker": "RIG", "note": "Transocean: >$1B multi-year Equinor harsh-environment rig contract (7/8), Q2 earnings set for 8/5."},
+    {"ticker": "ABSI", "note": "Absci: Truist PT raised to $17 (7/2) after positive Phase 1 ABS-201 data (6/24); +47% on the week."},
+    {"ticker": "HDSN", "note": "Hudson Technologies: 10%+ owner Hartree Partners bought 764,202 sh ($4.48M) over 6/30-7/2, board also adding."}
   ],
-  "avoid": ["SHPH", "PALI", "VMAR", "NVVE", "SNAL", "SDM", "MCRP", "JMG"],
-  "notes": "Held position VMAR (42 sh @ $1.41, day 0/45, stop armed day 2) has no new negative news today beyond the already-flagged reverse split and 7/2 insider sale; recent PRs are routine operational items (patent filing, ECU deliveries, facility moves). Scan candidate PALI looks attractive on FDA/Phase 2 news but carries heavy dilution risk (167M shares out, $300M shelf, 13.95M warrants, authorized shares just raised to 450M) -- added to avoid despite the clinical catalyst. NVVE and SNAL remain in active Nasdaq delisting distress (both did compliance reverse splits this week); SDM was suspended/delisted 6/26 and MCRP/JMG are under exchange or SEC scrutiny."
+  "avoid": ["DVLT", "SHPH", "PALI", "VMAR", "NVVE", "SNAL", "SDM", "MCRP", "JMG", "REE", "CASI", "EOSE"],
+  "notes": "User watchlist ticker DVLT is a serial diluter -- shares outstanding up ~1518% YoY to 855M after a $60M raise in May, and a newly proposed ~$2B structured financing could dilute over 50% more; today's pop is tied to a speculative minerals-tokenization MOU and a meme-coin launch, not a real re-rating catalyst, so it goes to avoid despite the headline move. Held position VMAR (42 sh @ $1.41, now $1.22/-13.5%, stop $1.30) has no new negative news today beyond the already-flagged reverse split and 7/2 insider sale. New avoid entries: REE (Nasdaq-delisted 7/7, -64% to $0.07) and CASI (delisted 7/6, -39% to $0.15) both crashed post-delisting; EOSE priced a dilutive $75M raise with Hudson Bay Capital and is down ~40% in weeks to $4.73."
 }
