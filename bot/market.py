@@ -69,10 +69,13 @@ def make_universe_filter(cfg):
 
 
 def last_price(ticker):
-    h = yf.Ticker(ticker).history(period="5d")
-    if h is None or h.empty:
+    try:
+        h = yf.Ticker(ticker).history(period="5d")
+        if h is None or h.empty:
+            return None
+        return float(h["Close"].dropna().iloc[-1])
+    except Exception:
         return None
-    return float(h["Close"].dropna().iloc[-1])
 
 
 def price_series(ticker, period="1mo"):

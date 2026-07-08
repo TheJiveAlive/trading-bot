@@ -41,7 +41,12 @@ def main():
         status()
     elif cmd == "dashboard":
         from bot.dashboard import generate
-        print("wrote", generate()[0])
+        try:
+            print("wrote", generate()[0])
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            print("dashboard generation failed (non-fatal, likely transient data error):", e)
     else:
         print(__doc__)
         sys.exit(1)

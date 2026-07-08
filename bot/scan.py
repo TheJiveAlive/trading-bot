@@ -215,7 +215,9 @@ def run_scan():
         dashboard.generate()
         report.append("dashboard updated")
     except Exception as e:
-        report.append("dashboard update failed: {}".format(e))
+        import traceback
+        report.append("dashboard update failed (non-fatal): {}".format(e))
+        traceback.print_exc()
 
     text = "\n".join(report)
     stamp = dt.datetime.now().strftime("%Y%m%d_%H%M")
