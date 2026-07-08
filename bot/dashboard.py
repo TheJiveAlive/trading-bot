@@ -132,6 +132,10 @@ tr:last-child td { border-bottom:none; }
 .sdot.green { background:var(--gain); box-shadow:0 0 6px rgba(61,220,151,.6); }
 .sdot.red { background:var(--loss); box-shadow:0 0 6px rgba(255,122,112,.5); }
 .sdot.grey { background:var(--dim); }
+.sdot.run { background:var(--warn); animation:pulse 1.3s infinite; }
+.rbar { height:5px; background:#121A2C; border-radius:3px; margin-top:5px; overflow:hidden; max-width:220px; }
+.rbar i { display:block; height:5px; border-radius:3px;
+  background:linear-gradient(90deg,var(--warn),var(--teal)); transition:width 1s linear; }
 .mstrip { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:8px; }
 .mtile { background:linear-gradient(180deg,#0C1422,#0A0F1B); border:1px solid var(--line);
   border-radius:8px; padding:9px 12px; }
@@ -311,6 +315,23 @@ def _sched_script():
       frac=Math.max(0,Math.min(1,frac));bar.style.width=(frac*100).toFixed(1)+"%";}}
   }
   tick();setInterval(tick,1000);
+  // live-tick any currently-running workflow timers + progress bars
+  var runbars=document.querySelectorAll(".rbar");
+  function tickRuns(){
+    runbars.forEach(function(b){
+      var start=parseInt(b.getAttribute("data-start")||"0",10);
+      var avg=parseInt(b.getAttribute("data-avg")||"0",10);
+      start+=1;b.setAttribute("data-start",start);
+      var i=b.querySelector("i");
+      if(avg>0){i.style.width=Math.min(97,Math.round(100*start/avg))+"%";}
+      var lbl=b.parentNode.childNodes[0];
+      if(lbl&&lbl.nodeType===3){
+        var m=Math.floor(start/60),s=start%60;
+        lbl.textContent="running… "+(m>0?m+"m "+(s<10?"0":"")+s+"s":s+"s")+(avg>0?" / ~"+Math.floor(avg/60)+"m "+(avg%60<10?"0":"")+(avg%60)+"s":"");
+      }
+    });
+  }
+  if(runbars.length)setInterval(tickRuns,1000);
 })();
 </script>"""
 
@@ -864,6 +885,14 @@ WORKFLOW_LABELS = [
 ]
 
 
+def _fmt_dur(s):
+    if s is None:
+        return ""
+    if s < 60:
+        return "{}s".format(s)
+    return "{}m {:02d}s".format(s // 60, s % 60)
+
+
 def _github_panel(st):
     health = _load_health()
     runs = health.get("workflows", {})
@@ -871,23 +900,39 @@ def _github_panel(st):
     for key, label in WORKFLOW_LABELS:
         info = runs.get(key)
         if not info:
-            dot, txt = "grey", "not run yet"
+            dot, cls, txt, bar = "grey", "", "not run yet", ""
         else:
+            status = info.get("status")
             concl = info.get("conclusion")
             when = info.get("when", "")[5:16].replace("T", " ")
-            if concl == "success":
-                dot, txt = "green", "OK · {}".format(when)
+            if status in ("in_progress", "queued"):
+                # RUNNING: pulsing amber + live elapsed, progress vs avg duration
+                run_s = info.get("running_s", 0)
+                avg = info.get("avg_s")
+                pct = min(95, int(100 * run_s / avg)) if avg else 40
+                dot, cls = "run", "warn"
+                txt = ("running… {}".format(_fmt_dur(run_s)) +
+                       (" / ~{}".format(_fmt_dur(avg)) if avg else ""))
+                bar = ('<div class="rbar" data-start="{}" data-avg="{}">'
+                       '<i style="width:{}%"></i></div>').format(run_s, avg or 0, pct)
+            elif concl == "success":
+                dot, cls = "green", "gain"
+                txt = "OK · {} · ran in {}".format(when, _fmt_dur(info.get("duration_s")))
+                bar = ""
             elif concl in ("skipped", None):
-                dot, txt = "grey", "{} · {}".format(concl or "pending", when)
+                dot, cls, txt, bar = "grey", "mut", "{} · {}".format(concl or "idle", when), ""
             else:
-                dot, txt = "red", "{} · {}".format(concl, when)
-        rows.append('<tr><td><span class="sdot {d}"></span></td>'
-                    '<td class="mono">{lb}</td><td class="note">{t}</td></tr>'.format(
-                        d=dot, lb=label, t=txt))
+                dot, cls = "red", "loss"
+                txt = "{} · {} · {}".format(concl, when, _fmt_dur(info.get("duration_s")))
+                bar = ""
+        rows.append('<tr><td style="width:14px"><span class="sdot {d}"></span></td>'
+                    '<td class="mono" style="white-space:nowrap">{lb}</td>'
+                    '<td class="note {c}">{t}{bar}</td></tr>'.format(
+                        d=dot, lb=label, c=cls, t=txt, bar=bar))
     updated = health.get("generated", "")[:16].replace("T", " ")
-    note = ('<div class="note" style="margin-top:8px">Green = last cloud run '
-            'succeeded, red = failed, grey = not run / disabled. Claude-powered '
-            'jobs (intel, research, review) stay grey until an API key/token is set.</div>')
+    note = ('<div class="note" style="margin-top:8px">🟢 last run OK · 🔴 failed · '
+            '🟡 running now (live timer) · grey = idle/not-run. Durations are actual '
+            'run times.</div>')
     return panel("Running on GitHub", "status " + (updated or "—"),
                  '<table>{}</table>{}'.format("".join(rows), note))
 

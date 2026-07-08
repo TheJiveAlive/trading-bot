@@ -70,22 +70,39 @@ jobs:
         run: |
           python3 - <<'PY'
           import json, subprocess, datetime
+          def parse(t):
+              try: return datetime.datetime.fromisoformat(t.replace("Z","+00:00"))
+              except Exception: return None
           wanted = ["trading-scan","hourly-intel","daily-research","weekly-review","backtest"]
-          out = {"generated": datetime.datetime.utcnow().isoformat(timespec="seconds"),
-                 "workflows": {}}
+          now = datetime.datetime.now(datetime.timezone.utc)
+          out = {"generated": now.isoformat(timespec="seconds"), "workflows": {}}
           for wf in wanted:
               try:
-                  r = subprocess.run(["gh","run","list","--workflow",wf+".yml",
-                      "--limit","1","--json","conclusion,createdAt,status"],
+                  # last 3 runs, so we can show a currently-running one AND the last finished
+                  r = subprocess.run(["gh","run","list","--workflow",wf+".yml","--limit","3",
+                      "--json","conclusion,createdAt,startedAt,updatedAt,status"],
                       capture_output=True,text=True,timeout=30)
                   arr = json.loads(r.stdout or "[]")
-                  if arr:
-                      out["workflows"][wf] = {"conclusion":arr[0].get("conclusion"),
-                          "when":arr[0].get("createdAt",""),"status":arr[0].get("status")}
-              except Exception as e:
+                  if not arr: continue
+                  latest = arr[0]
+                  status = latest.get("status")   # queued|in_progress|completed
+                  started, updated = parse(latest.get("startedAt")), parse(latest.get("updatedAt"))
+                  info = {"status":status, "conclusion":latest.get("conclusion"),
+                          "when":latest.get("createdAt","")}
+                  if status == "completed" and started and updated:
+                      info["duration_s"] = int((updated-started).total_seconds())
+                  elif status in ("in_progress","queued") and started:
+                      info["running_s"] = int((now-started).total_seconds())
+                  # avg duration of last completed runs (rough progress denominator)
+                  durs = [int((parse(x["updatedAt"])-parse(x["startedAt"])).total_seconds())
+                          for x in arr if x.get("status")=="completed"
+                          and parse(x.get("startedAt")) and parse(x.get("updatedAt"))]
+                  if durs: info["avg_s"] = int(sum(durs)/len(durs))
+                  out["workflows"][wf] = info
+              except Exception:
                   pass
           json.dump(out, open("data/health.json","w"), indent=2)
-          print("health.json:", out)
+          print("health.json:", json.dumps(out, indent=2))
           PY
 
       - name: full scan (market hours)
