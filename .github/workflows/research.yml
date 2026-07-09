@@ -53,10 +53,13 @@ jobs:
         run: |
           git config user.name "trading-bot"
           git config user.email "trading-bot@users.noreply.github.com"
-          git add data/research.json data/research_journal.md
+          rm -f data/secrets.json
+          git add -A
           git commit -m "daily research $(date -u '+%Y-%m-%d')" || echo "no changes"
-          git pull --rebase origin main || true
-          git push
+          for i in 1 2 3; do
+            git pull --rebase -X ours origin main && git push && break
+            sleep 3
+          done
 
       - name: email research summary
         if: env.SKIP != '1'
