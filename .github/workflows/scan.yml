@@ -26,14 +26,19 @@ jobs:
           M=$(TZ=America/New_York date +%M)
           DOW=$(TZ=America/New_York date +%u)
           UM=$(date -u +%M)
+          OPEN=0
+          if [ "$DOW" -le 5 ] && [ "$H" -ge 9 ] && [ "$H" -lt 16 ]; then
+            if [ "$H" -gt 9 ] || [ "$M" -ge 30 ]; then OPEN=1; fi
+          fi
           MODE=refresh
-          # full scan only on the :33 slot (UTC min 30-40); other quarter-hour
-          # slots just refresh prices on the dashboard
-          if [ "$DOW" -le 5 ] && [ "$H" -ge 9 ] && [ "$H" -lt 16 ] && [ "$UM" -ge 30 ] && [ "$UM" -le 40 ]; then
-            if [ "$H" -gt 9 ] || [ "$M" -ge 30 ]; then MODE=scan; fi
+          # full scan on the :33 scheduled slot OR any manual trigger while open
+          if [ "$OPEN" = "1" ]; then
+            if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] || { [ "$UM" -ge 30 ] && [ "$UM" -le 40 ]; }; then
+              MODE=scan
+            fi
           fi
           echo "MODE=$MODE" >> "$GITHUB_ENV"
-          echo "mode: $MODE (utc min $UM)"
+          echo "mode: $MODE (event $GITHUB_EVENT_NAME, utc min $UM, open $OPEN)"
 
       - uses: actions/checkout@v4
 
