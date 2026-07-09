@@ -1,0 +1,16 @@
+{
+  "generated": "2026-07-09T19:35:00Z",
+  "tape": "Thursday's AI-led rally holds into the close - S&P +0.8%, Nasdaq +1.1%, VIX eased to ~16 as US-Iran risk-off fades; no fresh shock, next catalyst is Monday's hot June CPI print (7/14).",
+  "alerts": [
+    {"ticker":"AVO","level":"info","headline":"Fresh insider-buying roundup (Quiver Quantitative) again lists AVO for 7/9, consistent with GlobalHarvest's ongoing buying streak - no new negative news.","source":"https://finance.yahoo.com/quote/AVO/news/","time":"today ~18:45 UTC"},
+    {"ticker":"RIG","level":"info","headline":"Susquehanna trimmed its RIG price target to $7 from $8 but kept a Positive rating, following this week's $1B+ Equinor backlog news.","source":"https://finance.yahoo.com/quote/RIG/news/","time":"recent, exact time unconfirmed"},
+    {"ticker":"LRMR","level":"info","headline":"Baird cut its LRMR price target to $5 from $7; stock still holding gains from Wednesday's director buy after Monday's anaphylaxis safety-signal selloff - not a new sell trigger, but a incremental negative revision to watch.","source":"https://finance.yahoo.com/quote/LRMR/news/","time":"recent, exact time unconfirmed"},
+    {"ticker":"ABSI","level":"info","headline":"No fresh catalyst since this week's Guggenheim ($15 PT) and JonesResearch ($11 PT) hikes; stock continuing to grind higher (+~2% today) on that momentum.","source":"https://finance.yahoo.com/quote/ABSI/news/","time":"today"}
+  ],
+  "movers": [
+    {"ticker":"RIG","note":"+~3% today, extending the Equinor $1B backlog contract reaction from 7/8."},
+    {"ticker":"ABSI","note":"+~2% today, continued drift on last week's analyst PT hikes."},
+    {"ticker":"LRMR","note":"Mixed signals: Baird PT cut to $5 vs. ongoing director-buy support; range-bound."}
+  ],
+  "flags_for_bot": []
+}
