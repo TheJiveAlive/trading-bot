@@ -1,0 +1,93 @@
+name: overnight-learnings
+# Out-of-hours study: refresh the parameter sweep + a Claude analysis session
+# that writes proposed improvements to data/learnings.md. Runs nightly.
+on:
+  schedule:
+    - cron: '17 2 * * 2-6'   # ~02:17 UTC Tue-Sat (after each US trading day)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+concurrency:
+  group: learnings
+
+jobs:
+  study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: check token
+        env:
+          TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          APIKEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$TOKEN" ] && [ -z "$APIKEY" ]; then
+            echo "no token/key — skipping"; echo "SKIP=1" >> "$GITHUB_ENV"
+          fi
+      - uses: actions/checkout@v4
+        if: env.SKIP != '1'
+      - uses: actions/setup-python@v5
+        if: env.SKIP != '1'
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: install deps
+        if: env.SKIP != '1'
+        run: pip install -r requirements.txt
+      - name: refresh parameter sweep (cached candidates → fast)
+        if: env.SKIP != '1'
+        run: python backtest.py --months 6 --tune || echo "tune skipped (no cache yet)"
+      - name: apply bounded signal-weight learning
+        if: env.SKIP != '1'
+        env:
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: |
+          python3 -c "
+          import json, os
+          json.dump({'smtp_host':'smtp.gmail.com','smtp_port':465,
+                     'smtp_user':os.environ.get('SMTP_USER',''),
+                     'smtp_app_password':os.environ.get('SMTP_APP_PASSWORD',''),
+                     'email_to':os.environ.get('EMAIL_TO','')}, open('data/secrets.json','w'))"
+          python -m bot.learn || echo "learning: insufficient evidence"
+          rm -f data/secrets.json
+      - uses: actions/setup-node@v4
+        if: env.SKIP != '1'
+        with:
+          node-version: '22'
+      - name: install claude code
+        if: env.SKIP != '1'
+        run: npm install -g @anthropic-ai/claude-code
+      - name: run study session
+        if: env.SKIP != '1'
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -n "$ANTHROPIC_API_KEY" ]; then unset CLAUDE_CODE_OAUTH_TOKEN; fi
+          claude -p "$(cat research/study_prompt.md)" \
+            --allowedTools "Read,Write,Bash(python3:*),WebSearch,WebFetch" \
+            --permission-mode acceptEdits
+      - name: commit + email learnings
+        if: env.SKIP != '1'
+        env:
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: |
+          rm -f data/secrets.json
+          git config user.name "trading-bot"
+          git config user.email "trading-bot@users.noreply.github.com"
+          git add -A
+          git commit -m "overnight learnings $(date -u '+%Y-%m-%d')" || echo "no changes"
+          for i in 1 2 3; do git pull --rebase -X ours origin main && git push && break; sleep 3; done
+          python3 -c "
+          import os, smtplib, ssl
+          from email.mime.text import MIMEText
+          try: body=open('data/learnings.md').read()[-4000:]
+          except Exception: body='no learnings file produced'
+          msg=MIMEText(body); msg['Subject']='[bot] overnight learnings'
+          msg['From']=os.environ['SMTP_USER']; msg['To']=os.environ['EMAIL_TO']
+          with smtplib.SMTP_SSL('smtp.gmail.com',465,context=ssl.create_default_context()) as s:
+              s.login(os.environ['SMTP_USER'],os.environ['SMTP_APP_PASSWORD']); s.send_message(msg)" || true
