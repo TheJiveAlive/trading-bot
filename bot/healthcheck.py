@@ -102,6 +102,11 @@ def check_broker():
     return broker_t212.health(config.load())
 
 
+def check_alpaca():
+    from bot import alpaca
+    return alpaca.health()
+
+
 def check_fda():
     from bot.signals.fda import recent_fda_activity
     # a known biotech to confirm the endpoint responds
@@ -131,8 +136,9 @@ CHECKS = [
     ("SEC EDGAR insider map", check_edgar), ("EDGAR dilution query", check_dilution),
     ("Reddit (ApeWisdom)", check_reddit), ("Quant regime", check_quant_regime),
     ("Daily research freshness", check_research_fresh), ("Finnhub", check_finnhub),
-    ("Trading 212 broker", check_broker), ("openFDA catalysts", check_fda),
-    ("FRED macro", check_macro), ("Dashboard generation", check_dashboard),
+    ("Trading 212 broker", check_broker), ("Alpaca data feed", check_alpaca),
+    ("openFDA catalysts", check_fda), ("FRED macro", check_macro),
+    ("Dashboard generation", check_dashboard),
 ]
 
 

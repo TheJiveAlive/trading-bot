@@ -193,7 +193,7 @@ def panel(title, asof, inner, extra=""):
         t=title, a=asof, i=inner, x=extra)
 
 
-def _page(active, body, cfg, research, gen, mood="flat"):
+def _page(active, body, cfg, research, gen, mood="flat", cost_basis=None):
     regime = risk.regime(research)
     nav = "".join('<a href="{h}" class="{c}">{n}</a>'.format(
         h=h, c="on" if active == h else "", n=n)
@@ -225,12 +225,14 @@ def _page(active, body, cfg, research, gen, mood="flat"):
   <span class="barwrap"><span class="barfill" id="hourbar"></span></span>
 </div></div>
 <div class="mktbar"><div class="mkt" id="mkt">checking the tape…</div></div>
+{live}
 <div class="wrap">{body}
-<div class="foot">page generated {gen} &middot; browser auto-reloads every 5 min<br/>
-scans hourly during US market hours &middot; hourly intel &middot; daily research &middot; weekly review</div>
+<div class="foot">page generated {gen} &middot; browser auto-reloads every 5 min &middot;
+live quotes poll every 45s during market hours<br/>
+scans hourly &middot; hourly intel &middot; daily research &middot; weekly review</div>
 </div>{sched}{fx}</body></html>""".format(
         css=CSS, nav=nav, body=body, gen=gen, fx=_fx_script(mood),
-        sched=_sched_script(),
+        sched=_sched_script(), live=_live_ticker(cost_basis or {}),
         mode=cfg["mode"], mc="live" if cfg["mode"] == "live" else "paper",
         reg=regime, regt=MODE_RANK[regime])
 
@@ -332,6 +334,75 @@ def _sched_script():
     });
   }
   if(runbars.length)setInterval(tickRuns,1000);
+})();
+</script>"""
+
+
+PRICES_URL = "https://raw.githubusercontent.com/TheJiveAlive/trading-bot/main/data/prices.json"
+
+
+def _live_ticker(cost_basis):
+    """Live-updating ticker tape: polls prices.json (CORS-enabled raw URL) every
+    45s and shows held positions with live price + P/L%. cost_basis: {tkr: avg}."""
+    import json as _json
+    return """
+<style>
+.livewrap{max-width:1140px;margin:8px auto 0;padding:0 20px;}
+.live{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:8px 14px;
+  border:1px solid var(--line);border-radius:10px;background:linear-gradient(160deg,#0b1420,#080d16);
+  font-family:ui-monospace,Menlo,monospace;font-size:12.5px;overflow-x:auto;}
+.live .ld{width:8px;height:8px;border-radius:50%;background:var(--gain);
+  animation:pulse 1.6s infinite;flex:none;}
+.live .lbl{color:var(--dim);font-size:9.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;flex:none;}
+.live .q{display:flex;gap:6px;align-items:baseline;white-space:nowrap;}
+.live .q .t{color:var(--violet);font-weight:700;}
+.live .q .p{color:var(--ink);}
+.live .q .c.up{color:var(--gain);} .live .q .c.dn{color:var(--loss);}
+.live .ago{margin-left:auto;color:var(--dim);font-size:10px;flex:none;}
+.live .flash{transition:background .1s;}
+.live .flash.f{background:rgba(78,209,197,.18);border-radius:3px;}
+</style>
+<div class="livewrap"><div class="live" id="live">
+  <span class="ld" id="lived"></span><span class="lbl">Live</span>
+  <span id="livequotes" style="display:flex;gap:16px;flex-wrap:wrap;">connecting…</span>
+  <span class="ago" id="liveago"></span>
+</div></div>
+<script>
+(function(){
+  var COST=""" + _json.dumps(cost_basis) + """;
+  var URL=\"""" + PRICES_URL + """\";
+  var last={};
+  function render(data){
+    var box=document.getElementById("livequotes");
+    var px=data.prices||{};
+    var held=data.held||Object.keys(COST);
+    if(!held.length){box.textContent="flat — no live positions";return;}
+    var html="";
+    held.forEach(function(t){
+      var p=px[t]; if(p==null)return;
+      var cost=COST[t];
+      var pct=cost?((p/cost-1)*100):null;
+      var cls=pct==null?"":(pct>=0?"up":"dn");
+      var flash=(last[t]!=null&&last[t]!==p)?"flash f":"flash";
+      html+='<span class="q '+flash+'"><span class="t">'+t+'</span>'+
+        '<span class="p">$'+p.toFixed(p<1?3:2)+'</span>'+
+        (pct==null?'':'<span class="c '+cls+'">'+(pct>=0?"+":"")+pct.toFixed(1)+'%</span>')+'</span>';
+      last[t]=p;
+    });
+    box.innerHTML=html||"waiting for quotes…";
+    setTimeout(function(){document.querySelectorAll(".live .q.f").forEach(function(e){e.classList.remove("f");});},150);
+    var gen=data.generated?new Date(data.generated):null;
+    var ago=document.getElementById("liveago");
+    if(gen){var s=Math.round((Date.now()-gen)/1000);
+      ago.textContent=(data.source||"")+" · "+(s<90?s+"s ago":Math.round(s/60)+"m ago");}
+    document.getElementById("lived").style.background=gen&&(Date.now()-gen)<600000?"var(--gain)":"var(--dim)";
+  }
+  function poll(){
+    fetch(URL+"?t="+Date.now()).then(function(r){return r.json();}).then(render).catch(function(){
+      document.getElementById("lived").style.background="var(--loss)";
+    });
+  }
+  poll();setInterval(poll,45000);
 })();
 </script>"""
 
@@ -1146,10 +1217,11 @@ def generate():
     net = st["equity"] - st["deposited"] if st["deposited"] else 0.0
     pct = (net / st["deposited"] * 100) if st["deposited"] else 0.0
     mood = "up" if pct > 0.5 else ("down" if pct < -0.5 else "flat")
+    cost_basis = {p["ticker"]: round(p["avg_cost"], 4) for p in st["positions"]}
     pages = {
-        "index.html": _page("index.html", _overview(st), cfg, research, gen, mood),
-        "radar.html": _page("radar.html", _radar(st), cfg, research, gen, mood),
-        "history.html": _page("history.html", _history(st), cfg, research, gen, mood),
+        "index.html": _page("index.html", _overview(st), cfg, research, gen, mood, cost_basis),
+        "radar.html": _page("radar.html", _radar(st), cfg, research, gen, mood, cost_basis),
+        "history.html": _page("history.html", _history(st), cfg, research, gen, mood, cost_basis),
     }
     publish_dir = os.path.join(ROOT, "publish")
     for name, html in pages.items():

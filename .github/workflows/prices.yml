@@ -1,0 +1,51 @@
+name: live-prices
+# Lightweight quote refresh → data/prices.json in this public repo. The
+# dashboard polls it from the browser via raw.githubusercontent (CORS-enabled),
+# giving a near-live feed with no key exposure. Public repo = free minutes.
+on:
+  schedule:
+    - cron: '*/5 13-21 * * 1-5'   # every 5 min during US market hours (UTC)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+concurrency:
+  group: prices
+  cancel-in-progress: true
+
+jobs:
+  prices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: market hours guard
+        run: |
+          H=$(TZ=America/New_York date +%H); DOW=$(TZ=America/New_York date +%u); M=$(TZ=America/New_York date +%M)
+          if [ "$DOW" -gt 5 ] || [ "$H" -lt 9 ] || [ "$H" -ge 16 ] || { [ "$H" -eq 9 ] && [ "$M" -lt 30 ]; }; then
+            echo "closed"; echo "SKIP=1" >> "$GITHUB_ENV"
+          fi
+      - uses: actions/checkout@v4
+        if: env.SKIP != '1'
+      - uses: actions/setup-python@v5
+        if: env.SKIP != '1'
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: install deps
+        if: env.SKIP != '1'
+        run: pip install -r requirements.txt
+      - name: write prices.json
+        if: env.SKIP != '1'
+        env:
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+        run: python -m bot.prices
+      - name: commit prices
+        if: env.SKIP != '1'
+        run: |
+          git config user.name "trading-bot"
+          git config user.email "trading-bot@users.noreply.github.com"
+          git add data/prices.json
+          git commit -m "prices $(date -u '+%H:%M') UTC" || echo "no change"
+          git pull --rebase -X ours origin main || true
+          git push
