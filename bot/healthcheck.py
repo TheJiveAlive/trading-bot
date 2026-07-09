@@ -102,6 +102,22 @@ def check_broker():
     return broker_t212.health(config.load())
 
 
+def check_fda():
+    from bot.signals.fda import recent_fda_activity
+    # a known biotech to confirm the endpoint responds
+    note = recent_fda_activity("Pfizer Inc")
+    return (True, "openFDA reachable (keyless)" + (" — " + note if note else ""))
+
+
+def check_macro():
+    from bot.signals.macro import macro_signal, _key
+    if not _key():
+        return (True, "no FRED key (optional) — using Yahoo quant regime")
+    tilt, detail = macro_signal()
+    return (bool(detail), "FRED macro {} tilt {:+.2f}".format(detail, tilt) if detail
+            else "FRED key set but no data")
+
+
 def check_dashboard():
     from bot import dashboard
     path, _ = dashboard.generate()
@@ -115,7 +131,8 @@ CHECKS = [
     ("SEC EDGAR insider map", check_edgar), ("EDGAR dilution query", check_dilution),
     ("Reddit (ApeWisdom)", check_reddit), ("Quant regime", check_quant_regime),
     ("Daily research freshness", check_research_fresh), ("Finnhub", check_finnhub),
-    ("Trading 212 broker", check_broker), ("Dashboard generation", check_dashboard),
+    ("Trading 212 broker", check_broker), ("openFDA catalysts", check_fda),
+    ("FRED macro", check_macro), ("Dashboard generation", check_dashboard),
 ]
 
 

@@ -163,8 +163,16 @@ def run_scan():
             q_regime, q_detail["vix"], q_detail["spy_above_200dma"],
             q_detail["credit_appetite_rising"]))
         blended = blend_conservative(risk.regime(research), q_regime)
+        # FRED macro tilt (optional): a strongly negative tilt forces risk-off
+        from bot.signals.macro import macro_signal
+        tilt, mdetail = macro_signal()
+        if mdetail:
+            report.append("  FRED macro: {} (tilt {:+.2f})".format(mdetail, tilt))
+            if tilt <= -0.5 and blended == "risk_on":
+                blended = "neutral"
+                report.append("  ! macro stress — risk_on downgraded to neutral")
         if blended != risk.regime(research):
-            report.append("  ! quant layer more cautious — regime overridden to {}".format(blended))
+            report.append("  ! regime overridden to {} (conservative blend)".format(blended))
         research = dict(research or {})
         research["market_regime"] = blended
 
