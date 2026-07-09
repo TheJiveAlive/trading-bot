@@ -525,20 +525,10 @@ def _fetch_state():
     from bot.signals.reddit import fetch_mentions
     reddit = fetch_mentions()
 
-    news, seen_n = [], set()
-    for t in [p["ticker"] for p in positions] + [c[0] for c in candidates[:3]]:
-        if t in seen_n:
-            continue
-        seen_n.add(t)
-        for item in market.ticker_news(t)[:2]:
-            c = item.get("content") or {}
-            title = c.get("title") or item.get("title")
-            url = ((c.get("clickThroughUrl") or {}).get("url")
-                   or (c.get("canonicalUrl") or {}).get("url") or "")
-            if title:
-                news.append({"ticker": t, "title": title, "url": url,
-                             "src": (c.get("provider") or {}).get("displayName") or "",
-                             "when": (c.get("pubDate") or "")[:16].replace("T", " ")})
+    from bot.signals.news_feed import collect_headlines
+    news_tickers = list(dict.fromkeys(
+        [p["ticker"] for p in positions] + [c[0] for c in candidates[:4]]))
+    news = collect_headlines(news_tickers)
 
     research = risk.load_research()
     return {
