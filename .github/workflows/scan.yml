@@ -79,13 +79,16 @@ jobs:
           def parse(t):
               try: return datetime.datetime.fromisoformat(t.replace("Z","+00:00"))
               except Exception: return None
-          wanted = ["trading-scan","hourly-intel","daily-research","weekly-review","backtest"]
+          # logical key -> actual workflow FILE name (these differ!)
+          wanted = {"trading-scan":"scan.yml","hourly-intel":"intel.yml",
+                    "daily-research":"research.yml","weekly-review":"review.yml",
+                    "backtest":"backtest.yml"}
           now = datetime.datetime.now(datetime.timezone.utc)
           out = {"generated": now.isoformat(timespec="seconds"), "workflows": {}}
-          for wf in wanted:
+          for wf, fname in wanted.items():
               try:
                   # last 3 runs, so we can show a currently-running one AND the last finished
-                  r = subprocess.run(["gh","run","list","--workflow",wf+".yml","--limit","3",
+                  r = subprocess.run(["gh","run","list","--workflow",fname,"--limit","3",
                       "--json","conclusion,createdAt,startedAt,updatedAt,status"],
                       capture_output=True,text=True,timeout=30)
                   arr = json.loads(r.stdout or "[]")

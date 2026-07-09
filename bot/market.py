@@ -69,6 +69,15 @@ def make_universe_filter(cfg):
 
 
 def last_price(ticker):
+    # prefer Alpaca IEX when configured (real-time, no Yahoo throttling)
+    try:
+        from bot import alpaca
+        if alpaca.configured():
+            px = alpaca.latest_prices([ticker])
+            if px.get(ticker):
+                return px[ticker]
+    except Exception:
+        pass
     try:
         h = yf.Ticker(ticker).history(period="5d")
         if h is None or h.empty:

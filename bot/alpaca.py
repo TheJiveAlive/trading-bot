@@ -60,6 +60,24 @@ def latest_prices(tickers):
     return out
 
 
+def latest_quote(ticker):
+    """(bid, ask) from Alpaca IEX, or (None, None). Real bid/ask fixes the
+    stale-spread false vetoes that Yahoo's .info bid/ask causes."""
+    if not configured():
+        return (None, None)
+    try:
+        r = requests.get(DATA_BASE + "/stocks/quotes/latest",
+                         params={"symbols": ticker, "feed": "iex"},
+                         headers=_headers(), timeout=15)
+        if r.status_code != 200:
+            return (None, None)
+        q = (r.json().get("quotes") or {}).get(ticker) or {}
+        bid, ask = q.get("bp"), q.get("ap")
+        return (float(bid) if bid else None, float(ask) if ask else None)
+    except Exception:
+        return (None, None)
+
+
 def health():
     if not configured():
         return (True, "no Alpaca key (optional) — using Yahoo for quotes")

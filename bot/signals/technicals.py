@@ -87,9 +87,16 @@ def compute_metrics(ticker):
         m["above_ma20"] = last > ma20
         m["extension_pct"] = round((last / ma20 - 1) * 100, 1)
 
+    # real bid/ask from Alpaca IEX when available (fixes Yahoo's stale .info
+    # bid/ask that caused false 50%-spread vetoes); fall back to Yahoo
     try:
-        info = tkr.info or {}
-        bid, ask = info.get("bid"), info.get("ask")
+        from bot import alpaca
+        bid = ask = None
+        if alpaca.configured():
+            bid, ask = alpaca.latest_quote(ticker)
+        if not (bid and ask):
+            info = tkr.info or {}
+            bid, ask = info.get("bid"), info.get("ask")
         if bid and ask and ask > bid > 0:
             m["spread_pct"] = round((ask - bid) / ((ask + bid) / 2) * 100, 2)
     except Exception:

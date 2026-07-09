@@ -243,16 +243,21 @@ def _sched_script():
     return """
 <script>
 (function(){
-  // UTC schedules (minute past hour, list of UTC hours), weekdays only
-  var SCANS={min:33,hours:[13,14,15,16,17,18,19,20,21]};
-  var INTEL={min:8,hours:[14,15,16,17,18,19,20]};
-  var RESEARCH={min:37,hours:[12]};
+  // UTC schedules (min past hour, UTC hours, allowed weekdays 0=Sun..6=Sat)
+  var WD=[1,2,3,4,5];
+  var SCANS={min:33,hours:[13,14,15,16,17,18,19,20,21],days:WD};
+  var INTEL={min:8,hours:[14,17,20],days:WD};
+  var RESEARCH={min:37,hours:[12],days:WD};
+  var REVIEW={min:3,hours:[16],days:[0]};
+  // maps the "Running on GitHub" rows (nr-<key>) to their schedule
+  var WORKFLOWS={"trading-scan":SCANS,"hourly-intel":INTEL,
+                 "daily-research":RESEARCH,"weekly-review":REVIEW,"backtest":null};
   function nextRun(s){
-    var now=new Date();
-    for(var d=0;d<5;d++){
+    if(!s)return null;
+    var days=s.days||WD;var now=new Date();
+    for(var d=0;d<8;d++){
       var day=new Date(now.getTime()+d*86400000);
-      var dow=day.getUTCDay();
-      if(dow===0||dow===6)continue;
+      if(days.indexOf(day.getUTCDay())<0)continue;
       for(var i=0;i<s.hours.length;i++){
         var t=new Date(Date.UTC(day.getUTCFullYear(),day.getUTCMonth(),day.getUTCDate(),s.hours[i],s.min,0));
         if(t>now)return t;
@@ -281,6 +286,15 @@ def _sched_script():
       var nx=nextRun(d[1]);if(!nx){el.textContent="—";return;}
       var ms=nx-now;el.textContent="in "+fmt(ms);
       el.className="sv"+(ms<120000?" now":(ms<600000?" soon":""));
+    });
+    // next-run countdown next to each workflow row in "Running on GitHub"
+    Object.keys(WORKFLOWS).forEach(function(k){
+      var el=document.getElementById("nr-"+k);if(!el)return;
+      var s=WORKFLOWS[k];
+      if(!s){el.textContent="on demand";return;}
+      var nx=nextRun(s);
+      if(nx){var ms=nx-now;el.textContent="in "+fmt(ms);
+        el.style.color=ms<300000?"var(--teal)":"var(--dim)";}
     });
     var dot=document.getElementById("scandot");
     var open=marketOpen();
@@ -1023,14 +1037,17 @@ def _github_panel(st):
                 bar = ""
         rows.append('<tr><td style="width:14px"><span class="sdot {d}"></span></td>'
                     '<td class="mono" style="white-space:nowrap">{lb}</td>'
-                    '<td class="note {c}">{t}{bar}</td></tr>'.format(
-                        d=dot, lb=label, c=cls, t=txt, bar=bar))
+                    '<td class="note {c}">{t}{bar}</td>'
+                    '<td class="mono mut" style="white-space:nowrap;text-align:right" '
+                    'id="nr-{k}">—</td></tr>'.format(
+                        d=dot, lb=label, c=cls, t=txt, bar=bar, k=key))
     updated = health.get("generated", "")[:16].replace("T", " ")
     note = ('<div class="note" style="margin-top:8px">🟢 last run OK · 🔴 failed · '
-            '🟡 running now (live timer) · grey = idle/not-run. Durations are actual '
-            'run times.</div>')
+            '🟡 running now (live timer) · grey = idle. Right column = next scheduled '
+            'run (live countdown).</div>')
     return panel("Running on GitHub", "status " + (updated or "—"),
-                 '<table>{}</table>{}'.format("".join(rows), note))
+                 '<table><tr><th></th><th>Task</th><th>Last run</th>'
+                 '<th class="r">Next</th></tr>{}</table>{}'.format("".join(rows), note))
 
 
 def _overview(st):
