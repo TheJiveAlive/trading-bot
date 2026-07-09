@@ -1,21 +1,20 @@
 {
-  "date": "2026-07-08",
-  "market_regime": "risk_off",
-  "regime_reason": "US-Iran tensions re-escalated sharply (Trump declared the ceasefire memorandum 'over' after US strikes on Iranian-linked targets), sending oil up over 5% and pressuring equities broadly (Dow -1.1%, S&P -0.3%, Nasdaq pared to near-flat) with VIX up 3.4% to 16.67; only energy and consumer defensive closed green.",
+  "date": "2026-07-09",
+  "market_regime": "neutral",
+  "regime_reason": "Tuesday-Wednesday's risk-off dip on US-Iran escalation reversed into a broad Thursday rally (Nasdaq +1.2%, S&P +0.8%, Dow +0.4%) as oil fell and semis led, but VIX is still elevated near 17 (vs ~16.3 a week ago) and June CPI due 7/14 remains hot at 4.2% YoY, so this reads as a bounce inside a still-jumpy tape rather than a clean risk-on signal.",
   "sector_bias": {
-    "Technology": -0.4,
-    "Energy": 0.6,
-    "Consumer Defensive": 0.3,
-    "Healthcare": 0.1,
-    "Financial Services": -0.2,
-    "Industrials": -0.2,
-    "Consumer Cyclical": -0.3
+    "Healthcare": 0.5,
+    "Financial Services": 0.4,
+    "Industrials": 0.3,
+    "Real Estate": 0.2,
+    "Technology": 0.1,
+    "Energy": -0.3
   },
   "watchlist": [
-    {"ticker": "RIG", "note": "Transocean: >$1B multi-year Equinor harsh-environment rig contract (7/8), Q2 earnings set for 8/5."},
-    {"ticker": "ABSI", "note": "Absci: Truist PT raised to $17 (7/2) after positive Phase 1 ABS-201 data (6/24); +47% on the week."},
-    {"ticker": "HDSN", "note": "Hudson Technologies: 10%+ owner Hartree Partners bought 764,202 sh ($4.48M) over 6/30-7/2, board also adding."}
+    {"ticker": "RIG", "note": "Transocean: $1B+ Equinor rig contract (7/8); Valaris all-stock merger now faces a DOJ second-request delay and shareholder-fairness scrutiny, earnings 8/5."},
+    {"ticker": "ABSI", "note": "Absci: Truist/H.C. Wainwright/Guggenheim PT hikes to $15-17 (6/25-7/2) after positive Phase 1 ABS-201 data; +47% week, +87% month."},
+    {"ticker": "HDSN", "note": "Hudson Technologies: 10% owner Hartree Partners extended its buying spree through 7/7 (~$4.5M total since 6/30), sustained insider conviction."}
   ],
   "avoid": ["DVLT", "SHPH", "PALI", "VMAR", "NVVE", "SNAL", "SDM", "MCRP", "JMG", "REE", "CASI", "EOSE"],
-  "notes": "User watchlist ticker DVLT is a serial diluter -- shares outstanding up ~1518% YoY to 855M after a $60M raise in May, and a newly proposed ~$2B structured financing could dilute over 50% more; today's pop is tied to a speculative minerals-tokenization MOU and a meme-coin launch, not a real re-rating catalyst, so it goes to avoid despite the headline move. Held position VMAR (42 sh @ $1.41, now $1.22/-13.5%, stop $1.30) has no new negative news today beyond the already-flagged reverse split and 7/2 insider sale. New avoid entries: REE (Nasdaq-delisted 7/7, -64% to $0.07) and CASI (delisted 7/6, -39% to $0.15) both crashed post-delisting; EOSE priced a dilutive $75M raise with Hudson Bay Capital and is down ~40% in weeks to $4.73."
+  "notes": "User watchlist ticker DVLT (Datavault AI) stays avoid -- still ~$0.36 on a meme-coin launch and a speculative $700M materials-tokenization MOU, no durable fundamental catalyst, prior dilution history unresolved. Held positions: AVO's insider buying continues (10%-owner GlobalHarvest bought another $8.3M on 7/6, no negative news) while LRMR saw a Monday 17% selloff on an anaphylaxis safety signal in its nomlabofusp trial before rebounding on a 7/8 director buy -- worth watching, not yet a sell signal. VMAR stays on avoid (distressed financials, mixed insider signals, sold its Fort Lauderdale property 7/9 to raise cash)."
 }
