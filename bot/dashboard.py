@@ -896,6 +896,46 @@ def _positions_panel(st):
     return panel("&#128200; Open positions", "live", inner)
 
 
+def _positions_heatmap(st):
+    """Finviz-style map: each holding a tile sized by position value, coloured
+    by P/L%. Updates live with the 30s price poll."""
+    if not st["positions"]:
+        return ""
+    tiles = []
+    total = sum((p["now"] or p["avg_cost"]) * p["shares"] for p in st["positions"]) or 1
+    for p in st["positions"]:
+        val = (p["now"] or p["avg_cost"]) * p["shares"]
+        grow = max(1, int(val / total * 100))
+        pct = p["pl_pct"] if p["pl_pct"] is not None else 0
+        tiles.append(
+            '<div class="htile" data-tkr="{t}" data-cost="{c}" data-sh="{sh}" '
+            'style="flex-grow:{g};background:{bg}">'
+            '<div class="ht-t">{t}</div><div class="ht-p ht-pct">{pct:+.1f}%</div>'
+            '<div class="ht-v">${v:,.0f}</div></div>'.format(
+                t=p["ticker"], c=round(p["avg_cost"], 4), sh=p["shares"], g=grow,
+                bg=_heat_color(pct), pct=pct, v=val))
+    css = ("<style>"
+           ".heatmap{display:flex;gap:4px;flex-wrap:wrap;min-height:96px;}"
+           ".htile{flex-basis:90px;min-width:80px;border-radius:6px;padding:9px 10px;"
+           "display:flex;flex-direction:column;justify-content:center;color:#fff;"
+           "text-shadow:0 1px 2px rgba(0,0,0,.4);transition:background .5s;}"
+           ".ht-t{font-weight:800;font-size:15px;font-family:ui-monospace,monospace;}"
+           ".ht-p{font-size:13px;font-weight:700;font-family:ui-monospace,monospace;}"
+           ".ht-v{font-size:10px;opacity:.85;font-family:ui-monospace,monospace;}"
+           "</style>")
+    return css + '<div class="heatmap" id="heatmap">' + "".join(tiles) + "</div>"
+
+
+def _heat_color(pct):
+    """Green for gains, red for losses, intensity by magnitude."""
+    p = max(-15, min(pct, 15))
+    if p >= 0:
+        a = 0.25 + (p / 15) * 0.55
+        return "rgba(30,190,120,{:.2f})".format(a)
+    a = 0.25 + (abs(p) / 15) * 0.55
+    return "rgba(230,80,75,{:.2f})".format(a)
+
+
 def _positions_live_js():
     return """
 <script>
@@ -914,6 +954,14 @@ def _positions_live_js():
         pl.className="mono r pos-pl "+(pct>=0?"gain":"loss");pl.style.fontWeight="700";}
       var sl=row.querySelector(".pos-sell");if(sl)sl.textContent="$"+(hwm*(1-stop/100)).toFixed(2);
       row.setAttribute("data-hwm",hwm);
+    });
+    // live-recolour the heatmap tiles too
+    document.querySelectorAll("#heatmap .htile").forEach(function(t){
+      var tk=t.getAttribute("data-tkr"),p=prices[tk];if(p==null)return;
+      var cost=+t.getAttribute("data-cost"),pct=cost?(p/cost-1)*100:0;
+      var q=Math.max(-15,Math.min(pct,15)),a=0.25+Math.abs(q)/15*0.55;
+      t.style.background=(q>=0?"rgba(30,190,120,":"rgba(230,80,75,")+a.toFixed(2)+")";
+      var pe=t.querySelector(".ht-pct");if(pe)pe.textContent=(pct>=0?"+":"")+pct.toFixed(1)+"%";
     });
   }
   function poll(){fetch(URL+"?t="+Date.now()).then(function(r){return r.json();})
@@ -1098,6 +1146,9 @@ def _overview(st):
     body = _kpis(st)
     body += _extra_metrics(st)
     # POSITIONS front and centre (big, live-refreshing) — equity curve removed
+    hm = _positions_heatmap(st)
+    if hm:
+        body += panel("&#129513; Position heatmap", "live", hm)
     body += _positions_panel(st)
     body += '<div class="grid2">'
     body += _research_panel(st)

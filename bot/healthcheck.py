@@ -107,6 +107,16 @@ def check_alpaca():
     return alpaca.health()
 
 
+def check_events():
+    from bot.signals.events import short_interest, recent_8k
+    from bot import config
+    cfg = config.load()
+    si = short_interest("AAPL")
+    d8k = recent_8k(cfg, "AAPL", days=30)
+    return (True, "8-K + short-interest reachable (AAPL days-to-cover {}, last 8-K {}d ago)".format(
+        si.get("days_to_cover", "?"), d8k))
+
+
 def check_fda():
     from bot.signals.fda import recent_fda_activity
     # a known biotech to confirm the endpoint responds
@@ -137,8 +147,8 @@ CHECKS = [
     ("Reddit (ApeWisdom)", check_reddit), ("Quant regime", check_quant_regime),
     ("Daily research freshness", check_research_fresh), ("Finnhub", check_finnhub),
     ("Trading 212 broker", check_broker), ("Alpaca data feed", check_alpaca),
-    ("openFDA catalysts", check_fda), ("FRED macro", check_macro),
-    ("Dashboard generation", check_dashboard),
+    ("8-K + short interest", check_events), ("openFDA catalysts", check_fda),
+    ("FRED macro", check_macro), ("Dashboard generation", check_dashboard),
 ]
 
 

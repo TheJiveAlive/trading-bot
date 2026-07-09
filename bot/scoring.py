@@ -46,6 +46,10 @@ def score_candidates(cfg, insider_hits, sector_ranks, snapshot, research=None,
         b_sc, _ = breakout_score(ticker)
         if b_sc:
             parts["breakout"] = round(b_sc * w.get("breakout_weight", 1.0), 2)
+        from bot.signals.events import event_score
+        ev_sc, ev_detail = event_score(cfg, ticker)
+        if ev_sc:
+            parts["events"] = round(ev_sc * w.get("events_weight", 1.0), 2)
         if ticker in watchlist:
             parts["watchlist"] = 1.0
         bias = risk.sector_bias_bonus(research, info.get("sector"))
