@@ -98,5 +98,54 @@ def adjust_weights():
     return result
 
 
+def auto_apply_tuning():
+    """When learning.auto_apply_tuning is on, pick the best ROBUST stop/take-profit
+    region from the tune sweep and apply it to config, clamped to safe bounds.
+    Robust = the parameter whose neighbourhood also performs well, not the single
+    lucky top row. Never touches hard vetoes or position caps."""
+    import os
+    cfg = botconfig.load()
+    if not cfg.get("learning", {}).get("auto_apply_tuning"):
+        return "auto-tuning disabled"
+    path = os.path.join(ROOT, "data", "tune_results.json")
+    if not os.path.exists(path):
+        return "no tune_results.json yet"
+    rows = json.load(open(path))
+    if not rows:
+        return "empty tune results"
+    # group by (stop, tp); score each by MEDIAN return across its variants
+    from collections import defaultdict
+    import statistics
+    groups = defaultdict(list)
+    for r in rows:
+        groups[(r["stop"], r["tp"])].append(r["return_pct"])
+    ranked = sorted(groups.items(), key=lambda kv: statistics.median(kv[1]), reverse=True)
+    (best_stop, best_tp), rets = ranked[0]
+    # clamp to safe bounds
+    best_stop = max(8.0, min(float(best_stop), 15.0))
+    best_tp = max(15.0, min(float(best_tp), 40.0)) if best_tp < 900 else 40.0
+
+    con = ledger.connect()
+    old = (cfg["selling"]["trailing_stop_pct"], cfg["selling"]["take_profit_pct"])
+    if (best_stop, best_tp) != old:
+        cfg["selling"]["trailing_stop_pct"] = best_stop
+        cfg["selling"]["take_profit_pct"] = best_tp
+        with open(os.path.join(ROOT, "config.json"), "w") as f:
+            json.dump(cfg, f, indent=2)
+        msg = "auto-tuned exits: stop {}->{}%, take-profit {}->{}% (robust median return {:+.1f}%)".format(
+            old[0], best_stop, old[1], best_tp, statistics.median(rets))
+        ledger.log_decision(con, "auto_tune", msg)
+        con.commit()
+    else:
+        msg = "auto-tune: current exits already optimal (stop {}%, tp {}%)".format(*old)
+    con.close()
+    print(msg)
+    return msg
+
+
 if __name__ == "__main__":
-    adjust_weights()
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "tune":
+        auto_apply_tuning()
+    else:
+        adjust_weights()

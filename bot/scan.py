@@ -176,6 +176,13 @@ def run_scan():
         research = dict(research or {})
         research["market_regime"] = blended
 
+    # force_regime overrides everything (full-auto mode); hard vetoes still apply
+    forced = cfg.get("force_regime")
+    if forced in ("risk_on", "neutral", "risk_off"):
+        research = dict(research or {})
+        research["market_regime"] = forced
+        report.append("  force_regime={} (full-auto; hard vetoes still active)".format(forced))
+
     if research.get("_stale"):
         report.append("  ! research.json stale (from {}) — running neutral".format(
             research.get("date")))

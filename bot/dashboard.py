@@ -416,7 +416,7 @@ def _live_ticker(cost_basis):
       document.getElementById("lived").style.background="var(--loss)";
     });
   }
-  poll();setInterval(poll,45000);
+  poll();setInterval(poll,30000);
 })();
 </script>"""
 
@@ -858,7 +858,7 @@ def _positions_panel(st):
     stop_pct = risk.dynamic_stop_pct(cfg, 0, research)
     tp = cfg["selling"]["take_profit_pct"]
     if not st["positions"]:
-        inner = '<div class="mut">flat — no open positions</div>'
+        inner = '<div class="mut" style="padding:20px 0;font-size:14px">flat — no open positions. Waiting for the next scan to deploy capital.</div>'
     else:
         rows = []
         for p in st["positions"]:
@@ -867,26 +867,60 @@ def _positions_panel(st):
             tp_lvl = p["avg_cost"] * (1 + tp / 100)
             cls = "mut" if p["pl_pct"] is None else ("gain" if p["pl_pct"] >= 0 else "loss")
             spark = _sparkline(market.price_series(p["ticker"]), cost=p["avg_cost"])
-            pl_usd = "" if p["pl_usd"] is None else " <span class='mut' style='font-size:10.5px'>({}${:,.0f})</span>".format(
+            pct_txt = "{:+.1f}%".format(p["pl_pct"]) if p["pl_pct"] is not None else "—"
+            plu = "" if p["pl_usd"] is None else " ({}${:,.0f})".format(
                 "+" if p["pl_usd"] >= 0 else "−", abs(p["pl_usd"]))
             rows.append(
-                '<tr><td class="mono"><b>{t}</b></td><td>{spark}</td>'
-                '<td class="mono r">{sh}</td>'
-                '<td class="mono r">${c:.2f}</td><td class="mono r">{n}</td>'
-                '<td class="mono r {cls}">{pct}{plu}</td>'
-                '<td class="mono r loss">${sl:.2f}</td><td class="mono r gain">${tl:.2f}</td></tr>'.format(
-                    t=p["ticker"], spark=spark, sh=p["shares"], c=p["avg_cost"],
+                '<tr class="posrow" data-tkr="{t}" data-cost="{c}" data-sh="{sh}" '
+                'data-stop="{stop}" data-hwm="{hwm}">'
+                '<td class="mono" style="font-size:15px"><b>{t}</b></td><td>{spark}</td>'
+                '<td class="mono r">{sh}</td><td class="mono r">${c:.2f}</td>'
+                '<td class="mono r pos-now" style="font-size:15px">{n}</td>'
+                '<td class="mono r pos-pl {cls}" style="font-size:15px;font-weight:700">{pct}{plu}</td>'
+                '<td class="mono r loss pos-sell">${sl:.2f}</td>'
+                '<td class="mono r gain">${tl:.2f}</td></tr>'.format(
+                    t=p["ticker"], spark=spark, sh=p["shares"], c=round(p["avg_cost"], 4),
+                    stop=stop_pct, hwm=round(hwm, 4),
                     n="${:.2f}".format(p["now"]) if p["now"] else "—", cls=cls,
-                    pct="{:+.1f}%".format(p["pl_pct"]) if p["pl_pct"] is not None else "—",
-                    plu=pl_usd, sl=stop_lvl, tl=tp_lvl))
-        inner = ('<table><tr><th>Ticker</th><th>30d</th><th class="r">Qty</th><th class="r">Avg</th>'
-                 '<th class="r">Now</th><th class="r">P/L</th><th class="r">Sells below</th>'
-                 '<th class="r">Target</th></tr>{}</table>'
-                 '<div class="note" style="margin-top:8px">"Sells below" is the trailing '
-                 'stop from the high-water mark at the current ~{:.0f}% stop; it rises as '
-                 'the price does. Target is the +{:.0f}% take-profit.</div>').format(
-            "".join(rows), stop_pct, tp)
-    return panel("Open positions &amp; exit map", "prices " + st["now"], inner)
+                    pct=pct_txt, plu=plu, sl=stop_lvl, tl=tp_lvl))
+        inner = ('<table id="postbl" style="font-size:13.5px"><tr><th>Ticker</th><th>30d</th>'
+                 '<th class="r">Qty</th><th class="r">Avg</th><th class="r">Now</th>'
+                 '<th class="r">P/L</th><th class="r">Sells below</th><th class="r">Target</th></tr>'
+                 '{}</table>'
+                 '<div class="note" style="margin-top:8px">'
+                 '<span class="ld" style="display:inline-block;width:7px;height:7px;border-radius:50%;'
+                 'background:var(--gain);animation:pulse 1.6s infinite;margin-right:5px"></span>'
+                 'Now &amp; P/L refresh live every 30s from the price feed. "Sells below" = '
+                 'trailing stop (~{:.0f}%); target = +{:.0f}% take-profit.</div>'
+                 '{}').format("".join(rows), stop_pct, tp, _positions_live_js())
+    return panel("&#128200; Open positions", "live", inner)
+
+
+def _positions_live_js():
+    return """
+<script>
+(function(){
+  var URL=\"""" + PRICES_URL + """\";
+  function upd(prices){
+    document.querySelectorAll("#postbl tr.posrow").forEach(function(row){
+      var t=row.getAttribute("data-tkr"),p=prices[t];
+      if(p==null)return;
+      var cost=+row.getAttribute("data-cost"),sh=+row.getAttribute("data-sh"),
+          stop=+row.getAttribute("data-stop"),hwm=Math.max(+row.getAttribute("data-hwm"),p);
+      var pct=cost?(p/cost-1)*100:0,usd=(p-cost)*sh;
+      var now=row.querySelector(".pos-now");if(now)now.textContent="$"+p.toFixed(p<1?3:2);
+      var pl=row.querySelector(".pos-pl");
+      if(pl){pl.textContent=(pct>=0?"+":"")+pct.toFixed(1)+"% ("+(usd>=0?"+":"−")+"$"+Math.abs(usd).toFixed(0)+")";
+        pl.className="mono r pos-pl "+(pct>=0?"gain":"loss");pl.style.fontWeight="700";}
+      var sl=row.querySelector(".pos-sell");if(sl)sl.textContent="$"+(hwm*(1-stop/100)).toFixed(2);
+      row.setAttribute("data-hwm",hwm);
+    });
+  }
+  function poll(){fetch(URL+"?t="+Date.now()).then(function(r){return r.json();})
+    .then(function(d){upd(d.prices||{});}).catch(function(){});}
+  poll();setInterval(poll,30000);
+})();
+</script>"""
 
 
 def _candidates_panel(st, threshold):
@@ -1063,25 +1097,24 @@ def _overview(st):
         '<tr><td class="mut">no trades yet</td></tr>'
     body = _kpis(st)
     body += _extra_metrics(st)
-    body += '<div class="grid2">'
-    body += panel("Equity curve", "snapshot " + st["now"],
-                  _equity_svg(st["curve"], st["deposited"]))
-    body += _research_panel(st)
-    body += "</div>"
-    body += '<div class="grid2">'
-    body += _github_panel(st)
-    body += _intel_panel(st)
-    body += "</div>"
+    # POSITIONS front and centre (big, live-refreshing) — equity curve removed
     body += _positions_panel(st)
     body += '<div class="grid2">'
+    body += _research_panel(st)
+    body += _github_panel(st)
+    body += "</div>"
+    body += '<div class="grid2">'
+    body += _intel_panel(st)
     body += _news_panel(st)
+    body += "</div>"
+    body += '<div class="grid2">'
+    body += _candidates_panel(st, threshold)
     body += panel("Recent trades", "ledger " + st["now"],
                   '<table><tr><th>When</th><th>Side</th><th>Ticker</th>'
                   '<th class="r">Qty</th><th class="r">Price</th></tr>{}</table>'
                   '<div class="note" style="margin-top:8px"><a href="history.html" '
                   'style="color:var(--teal)">full history &rarr;</a></div>'.format(trows))
     body += "</div>"
-    body += _candidates_panel(st, threshold)
     return body
 
 

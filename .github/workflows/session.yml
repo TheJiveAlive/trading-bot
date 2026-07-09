@@ -1,0 +1,100 @@
+name: market-session
+# ONE trigger → runs continuously for the whole US market session, updating
+# prices every ~60s and scanning every ~15 min INTERNALLY. This removes the
+# dependence on GitHub's unreliable per-interval cron: only the session START
+# needs to fire (daily cron OR one manual click), then it self-loops for hours.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '31 13 * * 1-5'   # ~1 min after US open; start of session
+
+permissions:
+  contents: write
+concurrency:
+  group: session
+  cancel-in-progress: false
+
+jobs:
+  session:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350   # ~5h50m, under the 6h job limit; covers the session
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: install deps
+        run: pip install -r requirements.txt
+      - name: materialize secrets
+        env:
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
+          T212_API_KEY: ${{ secrets.T212_API_KEY }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+        run: |
+          mkdir -p data logs publish
+          python3 -c "
+          import json, os
+          json.dump({'smtp_host':'smtp.gmail.com','smtp_port':465,
+                     'smtp_user':os.environ.get('SMTP_USER',''),
+                     'smtp_app_password':os.environ.get('SMTP_APP_PASSWORD',''),
+                     'email_to':os.environ.get('EMAIL_TO',''),
+                     'finnhub_key':os.environ.get('FINNHUB_KEY',''),
+                     't212_api_key':os.environ.get('T212_API_KEY',''),
+                     'fred_api_key':os.environ.get('FRED_API_KEY',''),
+                     'alpaca_key':os.environ.get('ALPACA_KEY',''),
+                     'alpaca_secret':os.environ.get('ALPACA_SECRET','')},
+                    open('data/secrets.json','w'))"
+      - name: run the session loop
+        env:
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+          DASH_KEY: ${{ secrets.DASHBOARD_DEPLOY_KEY }}
+          DASH_REPO: ${{ vars.DASHBOARD_REPO }}
+        run: |
+          git config user.name "trading-bot"
+          git config user.email "trading-bot@users.noreply.github.com"
+          # clone the Pages repo once so we can publish HTML after each scan
+          if [ -n "$DASH_REPO" ]; then
+            echo "$DASH_KEY" > /tmp/dk; chmod 600 /tmp/dk
+            export GIT_SSH_COMMAND="ssh -i /tmp/dk -o StrictHostKeyChecking=no"
+            git clone --depth 1 "git@github.com:$DASH_REPO.git" /tmp/dash 2>/dev/null || true
+          fi
+          reseed() { python3 -c "
+          import json,os
+          json.dump({'smtp_host':'smtp.gmail.com','smtp_port':465,
+                     'alpaca_key':os.environ.get('ALPACA_KEY',''),
+                     'alpaca_secret':os.environ.get('ALPACA_SECRET','')},
+                    open('data/secrets.json','w'))" 2>/dev/null || true; }
+          reseed
+          cycle=0
+          while true; do
+            H=$(TZ=America/New_York date +%H); M=$(TZ=America/New_York date +%M); D=$(TZ=America/New_York date +%u)
+            if [ "$D" -gt 5 ] || [ "$H" -ge 16 ] || [ "$H" -lt 9 ] || { [ "$H" -eq 9 ] && [ "$M" -lt 30 ]; }; then
+              echo "market closed — ending session after $cycle cycles"; break
+            fi
+            python -m bot.prices >/dev/null 2>&1 || true   # ~60s live price refresh
+            SCANNED=0
+            if [ $((cycle % 15)) -eq 0 ]; then
+              echo "cycle $cycle: full scan"; python run.py scan >/dev/null 2>&1 || true; SCANNED=1
+            fi
+            rm -f data/secrets.json
+            git add -A data dashboard.html radar.html history.html >/dev/null 2>&1 || true
+            git commit -q -m "session c$cycle $(date -u '+%H:%M:%S')" >/dev/null 2>&1 || true
+            for i in 1 2 3; do
+              git pull --rebase -X ours -q origin main >/dev/null 2>&1 && git push -q >/dev/null 2>&1 && break; sleep 2
+            done
+            # after a scan, push refreshed HTML to the Pages repo
+            if [ "$SCANNED" = "1" ] && [ -d /tmp/dash ]; then
+              cp publish/*.html /tmp/dash/ 2>/dev/null || true
+              ( cd /tmp/dash && git add -A && git commit -q -m "session dash c$cycle" && git push -q ) 2>/dev/null || true
+            fi
+            reseed
+            cycle=$((cycle+1))
+            sleep 60
+          done

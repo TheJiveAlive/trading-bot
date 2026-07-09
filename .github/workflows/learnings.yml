@@ -51,6 +51,7 @@ jobs:
                      'smtp_app_password':os.environ.get('SMTP_APP_PASSWORD',''),
                      'email_to':os.environ.get('EMAIL_TO','')}, open('data/secrets.json','w'))"
           python -m bot.learn || echo "learning: insufficient evidence"
+          python -m bot.learn tune || echo "auto-tune: skipped"
           rm -f data/secrets.json
       - uses: actions/setup-node@v4
         if: env.SKIP != '1'

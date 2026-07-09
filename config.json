@@ -1,7 +1,6 @@
 {
   "mode": "paper",
   "_mode_comment": "paper = simulated fills in local ledger. live = route orders to the configured broker (see broker section).",
-
   "broker": {
     "name": "trading212",
     "t212_environment": "demo",
@@ -9,26 +8,22 @@
     "max_order_value_usd": 100.0,
     "_guardrails": "t212_environment demo|live. live_orders_enabled MUST be true to send real orders (default false = dry-run, logs intended orders only). Trading 212's API cannot access cards/deposits/withdrawals. Whole shares only. Every order checked against max_order_value_usd. Set t212_api_key in data/secrets.json or the T212_API_KEY secret."
   },
-
   "monthly_deposit_usd": 127.0,
   "deposit_day_of_month": 1,
-
   "universe": {
     "price_min": 1.0,
     "price_max": 20.0,
     "min_avg_dollar_volume": 2000000,
     "exclude_etfs": true
   },
-
   "buying": {
-    "max_buys_per_day": 3,
-    "max_buys_per_week": 8,
-    "min_composite_score": 3.0,
-    "max_positions": 12,
-    "max_position_usd": 8000.0,
-    "_sizing_note": "$100k test scale, wide book (many small whole-share trades). Before live: set max_position_usd back to ~45 to match the real £100/month account."
+    "max_buys_per_day": 6,
+    "max_buys_per_week": 20,
+    "min_composite_score": 2.5,
+    "max_positions": 20,
+    "max_position_usd": 5000.0,
+    "_sizing_note": "FULL-AUTO risk-on: wide book of many small whole-share trades. $100k test scale. Hard vetoes (spread/IV/dilution/earnings) still protect every entry. Before live: cut max_position_usd to ~45 for the real \u00a3100/month account."
   },
-
   "confluence": {
     "min_checks_passed": 4,
     "rvol_min": 1.5,
@@ -39,15 +34,13 @@
     "max_extension_pct": 25.0,
     "avoid_earnings_days": 2
   },
-
-  "user_watchlist": ["DVLT"],
-  "_user_watchlist_note": "Tickers YOU want the daily Claude research to actively evaluate (DD, catalysts, dilution, pump risk). They are NOT auto-bought — research assesses them and they only reach the wildcard/core sleeve if they clear the quality gates. Add/remove tickers freely.",
-
+  "user_watchlist": [],
+  "_user_watchlist_note": "Manual watchlist DISABLED \u2014 the bot trades purely on API-driven signals + scoring + confluence. No hand-picked tickers.",
   "wildcard": {
     "enabled": true,
     "source": "pennystocks",
-    "price_min": 0.20,
-    "price_max": 0.80,
+    "price_min": 0.2,
+    "price_max": 0.8,
     "min_avg_dollar_volume": 500000,
     "max_positions": 3,
     "max_position_usd": 100.0,
@@ -55,9 +48,8 @@
     "require_research_ok": true,
     "trailing_stop_pct": 20.0,
     "take_profit_pct": 40.0,
-    "_note": "Ring-fenced speculative sleeve: sub-$1 r/pennystocks names in the 20-80c band, tiny whole-share bets. STILL must pass the dilution + spread vetoes and a research/intel quality gate (require_research_ok). Wider stop/take-profit than the core (penny stocks swing hard). Separate budget from the core book. Lottery-ticket money by design — keep max_position_usd small."
+    "_note": "Ring-fenced speculative sleeve: sub-$1 r/pennystocks names in the 20-80c band, tiny whole-share bets. STILL must pass the dilution + spread vetoes and a research/intel quality gate (require_research_ok). Wider stop/take-profit than the core (penny stocks swing hard). Separate budget from the core book. Lottery-ticket money by design \u2014 keep max_position_usd small."
   },
-
   "earnings": {
     "catalyst_window_min": 3,
     "catalyst_window_max": 15,
@@ -65,29 +57,29 @@
     "exit_days_before": 1,
     "_note": "Earnings within avoid_earnings_days (2) = hard veto (too close to hold through). Earnings 3-15 days out + positive momentum/news = catalyst bonus. Positions are force-sold 1 day before earnings to avoid the binary event."
   },
-
   "risk": {
     "risk_per_trade_pct": 0.75,
     "max_sector_positions": 2,
     "drawdown_halt_pct": 12.0,
     "daily_loss_halt_pct": 3.0
   },
-
   "learning": {
     "enabled": true,
+    "auto_apply_tuning": true,
     "nudge_pct": 5.0,
     "min_trades_per_signal": 4,
     "weight_floor_x": 0.5,
-    "weight_ceil_x": 1.5
+    "weight_ceil_x": 1.5,
+    "_auto_tuning_note": "auto_apply_tuning: overnight job auto-applies the best ROBUST stop/take-profit region from the tune sweep, clamped to safe bounds (stop 8-15%, TP 15-40%). Never touches hard vetoes or position caps."
   },
-
+  "force_regime": "risk_on",
+  "_force_regime_note": "Overrides the research/quant regime blend. 'risk_on' = full-auto aggressive (lowest buy threshold, widest stops). Set null to restore the adaptive conservative blend. Hard vetoes always apply regardless.",
   "selling": {
-    "trailing_stop_pct": 10.0,
+    "trailing_stop_pct": 8.0,
     "take_profit_pct": 25.0,
     "min_hold_days": 2,
     "max_hold_days": 45
   },
-
   "signals": {
     "insider_lookback_days": 5,
     "insider_min_purchase_usd": 20000,
@@ -99,6 +91,5 @@
     "earnings_weight": 1.0,
     "breakout_weight": 1.0
   },
-
   "edgar_user_agent": "Josh Ive personal research joshua.ive@gmail.com"
 }
