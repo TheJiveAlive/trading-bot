@@ -1,0 +1,41 @@
+name: alpaca-doctor
+# Diagnostic: confirms the Alpaca keys authenticate and what the feed returns.
+# Values are never printed — only auth status and prices.
+on:
+  workflow_dispatch:
+
+jobs:
+  doctor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: install deps
+        run: pip install -r requirements.txt
+      - name: probe alpaca
+        env:
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+        run: |
+          python3 - <<'PY'
+          import os, requests
+          k, s = os.environ.get("ALPACA_KEY",""), os.environ.get("ALPACA_SECRET","")
+          print("key present:", bool(k), "| secret present:", bool(s))
+          print("key looks like paper key (PK):", k.startswith("PK"))
+          H = {"APCA-API-KEY-ID": k, "APCA-API-SECRET-KEY": s}
+          # 1) auth check via account endpoint (paper trading)
+          r = requests.get("https://paper-api.alpaca.markets/v2/account", headers=H, timeout=20)
+          print("account endpoint HTTP:", r.status_code, "(200 = keys valid)")
+          # 2) data feed check on a liquid ticker
+          r2 = requests.get("https://data.alpaca.markets/v2/stocks/trades/latest",
+                            params={"symbols":"AAPL,VMAR","feed":"iex"}, headers=H, timeout=20)
+          print("data endpoint HTTP:", r2.status_code)
+          if r2.status_code == 200:
+              tr = r2.json().get("trades", {})
+              print("AAPL last trade present:", "AAPL" in tr, "| VMAR present:", "VMAR" in tr)
+          else:
+              print("data error body:", r2.text[:160])
+          PY
