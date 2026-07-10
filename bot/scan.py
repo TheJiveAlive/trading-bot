@@ -138,13 +138,16 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
                 c["ticker"], summarize(detail)))
             report.append("  skip {}: confluence {}".format(c["ticker"], summarize(detail)))
             continue
+        cat = c.get("catalyst")
         reason = ("score {} (parts {}); risk-sized {} sh at {:.0f}% stop; "
-                  "confluence: {}").format(
-            c["score"], c["parts"], shares, stop_pct, summarize(detail))
+                  "confluence: {}{}").format(
+            c["score"], c["parts"], shares, stop_pct, summarize(detail),
+            "; catalyst: " + cat if cat else "")
         executor.execute(con, cfg, "buy", c["ticker"], shares, c["price"], reason,
-                         parts=c["parts"])
-        report.append("  BUY {} x{} @ ${:.2f} — score {}".format(
-            c["ticker"], shares, c["price"], c["score"]))
+                         parts=c["parts"], catalyst=cat)
+        report.append("  BUY {} x{} @ ${:.2f} — score {}{}".format(
+            c["ticker"], shares, c["price"], c["score"],
+            " [" + cat + "]" if cat else ""))
         bought += 1
     if bought == 0:
         report.append("  no buy: no candidate cleared all gates this scan")

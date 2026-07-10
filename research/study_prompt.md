@@ -19,7 +19,14 @@ This runs out of trading hours, so take the time to be thorough but concise.
    regions are robust (not just the single best row)? Is the current config in
    a good region?
 3. **Signal quality**: which signals (insider, sector, news, reddit, breakout,
-   earnings) are actually correlating with winners vs losers?
+   earnings, events) are actually correlating with winners vs losers? Query
+   `signal_rewards` in data/ledger.db.
+4. **News catalyst quality** (NEW training marker): query the `catalyst_rewards`
+   table (columns: catalyst, pnl_pct). Which *types* of news catalyst
+   (ma, earnings_beat, analyst_upgrade, contract_win, regulatory_approval,
+   offering, etc.) precede winning vs losing trades? e.g. "entries tagged
+   'analyst_upgrade' averaged -4%, 'contract_win' +8%". If a catalyst type is
+   consistently bad, propose down-weighting or vetoing it. If thin data, say so.
 4. **One testable idea**: propose ONE concrete, bounded improvement worth
    trying next — a new filter, a weight change, a signal. Explain the thesis.
 

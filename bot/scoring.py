@@ -56,6 +56,7 @@ def score_candidates(cfg, insider_hits, sector_ranks, snapshot, research=None,
         if bias:
             parts["sector_bias"] = bias
         composite = sum(parts.values())
+        from bot.signals.news import classify_catalyst
         results.append({
             "ticker": ticker,
             "score": round(composite, 2),
@@ -64,6 +65,7 @@ def score_candidates(cfg, insider_hits, sector_ranks, snapshot, research=None,
             "sector": info.get("sector"),
             "name": info.get("shortName") or ticker,
             "insider_detail": ins,
+            "catalyst": classify_catalyst(news),   # news training marker
         })
     results.sort(key=lambda r: r["score"], reverse=True)
     return results

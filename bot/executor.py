@@ -73,14 +73,15 @@ def _route_live_order(cfg, side, ticker, shares, price, reason):
     return "Queued to pending_orders.json (broker '{}').".format(broker)
 
 
-def execute(con, cfg, side, ticker, shares, price, reason, parts=None):
+def execute(con, cfg, side, ticker, shares, price, reason, parts=None, catalyst=None):
     mode = cfg["mode"]
     pnl_line = ""
     if side == "buy":
         ledger.record_buy(con, ticker, shares, price, mode, reason)
-        if parts:
-            con.execute("INSERT INTO trade_signals (ts,ticker,parts) VALUES (?,?,?)",
-                        (ledger.now(), ticker, json.dumps(parts)))
+        if parts or catalyst:
+            con.execute("INSERT INTO trade_signals (ts,ticker,parts,catalyst) "
+                        "VALUES (?,?,?,?)",
+                        (ledger.now(), ticker, json.dumps(parts or {}), catalyst))
     else:
         pos = _position(con, ticker)
         ledger.record_sell(con, ticker, shares, price, mode, reason)
@@ -89,16 +90,20 @@ def execute(con, cfg, side, ticker, shares, price, reason, parts=None):
             pnl_pct = (price / pos["avg_cost"] - 1) * 100
             pnl_line = "P/L: {}${:.2f} ({:+.1f}%)\n".format(
                 "+" if pnl >= 0 else "-", abs(pnl), pnl_pct)
-            # reward attribution: credit/blame the signals that drove the entry
-            row = con.execute("SELECT parts FROM trade_signals WHERE ticker=? "
+            # reward attribution: credit/blame the signals + catalyst that drove entry
+            row = con.execute("SELECT parts, catalyst FROM trade_signals WHERE ticker=? "
                               "ORDER BY id DESC LIMIT 1", (ticker,)).fetchone()
             if row:
-                for signal, contribution in json.loads(row[0]).items():
+                for signal, contribution in json.loads(row[0] or "{}").items():
                     con.execute("INSERT INTO signal_rewards "
                                 "(ts,ticker,signal,contribution,pnl_pct) "
                                 "VALUES (?,?,?,?,?)",
                                 (ledger.now(), ticker, signal,
                                  float(contribution), round(pnl_pct, 2)))
+                if row[1]:  # news catalyst training marker → outcome
+                    con.execute("INSERT INTO catalyst_rewards "
+                                "(ts,ticker,catalyst,pnl_pct) VALUES (?,?,?,?)",
+                                (ledger.now(), ticker, row[1], round(pnl_pct, 2)))
     broker_note = ""
     if mode == "live":
         broker_note = _route_live_order(cfg, side, ticker, shares, price, reason)

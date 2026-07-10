@@ -25,7 +25,11 @@ CREATE TABLE IF NOT EXISTS scan_candidates (
 CREATE TABLE IF NOT EXISTS equity_history (
     id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT, equity REAL, cash REAL);
 CREATE TABLE IF NOT EXISTS trade_signals (
-    id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT, ticker TEXT, parts TEXT);
+    id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT, ticker TEXT, parts TEXT,
+    catalyst TEXT);
+CREATE TABLE IF NOT EXISTS catalyst_rewards (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT, ticker TEXT,
+    catalyst TEXT, pnl_pct REAL);
 CREATE TABLE IF NOT EXISTS signal_rewards (
     id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT, ticker TEXT,
     signal TEXT, contribution REAL, pnl_pct REAL);
@@ -35,7 +39,16 @@ CREATE TABLE IF NOT EXISTS signal_rewards (
 def connect():
     con = sqlite3.connect(DB_PATH)
     con.executescript(SCHEMA)
+    _migrate(con)
     return con
+
+
+def _migrate(con):
+    """Add columns to pre-existing tables (CREATE IF NOT EXISTS won't alter them)."""
+    cols = [r[1] for r in con.execute("PRAGMA table_info(trade_signals)")]
+    if "catalyst" not in cols:
+        con.execute("ALTER TABLE trade_signals ADD COLUMN catalyst TEXT")
+        con.commit()
 
 
 def now():
