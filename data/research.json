@@ -1,20 +1,20 @@
 {
-  "date": "2026-07-09",
-  "market_regime": "neutral",
-  "regime_reason": "Tuesday-Wednesday's risk-off dip on US-Iran escalation reversed into a broad Thursday rally (Nasdaq +1.2%, S&P +0.8%, Dow +0.4%) as oil fell and semis led, but VIX is still elevated near 17 (vs ~16.3 a week ago) and June CPI due 7/14 remains hot at 4.2% YoY, so this reads as a bounce inside a still-jumpy tape rather than a clean risk-on signal.",
+  "date": "2026-07-10",
+  "market_regime": "risk_on",
+  "regime_reason": "S&P 500 (7,543) and Nasdaq (26,207, +1.3% on SK Hynix's Nasdaq debut and a chip-led rally) are both near record highs while VIX fell 6.3% to 15.84, a clean risk-on read, though June CPI (Tue 7/14, prior print hot at 4.2% YoY) ahead of the July 28-29 FOMC is a real event risk to watch.",
   "sector_bias": {
     "Healthcare": 0.5,
     "Financial Services": 0.4,
     "Industrials": 0.3,
     "Real Estate": 0.2,
-    "Technology": 0.1,
+    "Technology": 0.2,
     "Energy": -0.3
   },
   "watchlist": [
-    {"ticker": "RIG", "note": "Transocean: $1B+ Equinor rig contract (7/8); Valaris all-stock merger now faces a DOJ second-request delay and shareholder-fairness scrutiny, earnings 8/5."},
-    {"ticker": "ABSI", "note": "Absci: Truist/H.C. Wainwright/Guggenheim PT hikes to $15-17 (6/25-7/2) after positive Phase 1 ABS-201 data; +47% week, +87% month."},
-    {"ticker": "HDSN", "note": "Hudson Technologies: 10% owner Hartree Partners extended its buying spree through 7/7 (~$4.5M total since 6/30), sustained insider conviction."}
+    {"ticker": "RIG", "note": "Transocean: $1B+ Equinor Cat-D rig backlog (7/8) plus ~$185M Norway/Australia backlog add; director Chad Deaton bought $173k on 7/2; earnings 8/5. Valaris merger faces DOJ second-request delay."},
+    {"ticker": "ABSI", "note": "Absci: Leerink/Guggenheim/BTIG initiated bullish coverage this week citing ABS-201 as a multi-billion-dollar hair-loss/endometriosis opportunity, proof-of-concept data due 2H26; stock +1.9% today, still riding the 6/24-7/2 PT-hike wave."},
+    {"ticker": "HDSN", "note": "Hudson Technologies: DLA bridge-modification extends its refrigerant supply contract to 11/29/26 (with options to 5/29/27); 10%-owner Hartree Partners' insider buying spree ran through 7/7 (~$4.5M total)."}
   ],
-  "avoid": ["DVLT", "SHPH", "PALI", "VMAR", "NVVE", "SNAL", "SDM", "MCRP", "JMG", "REE", "CASI", "EOSE"],
-  "notes": "User watchlist ticker DVLT (Datavault AI) stays avoid -- still ~$0.36 on a meme-coin launch and a speculative $700M materials-tokenization MOU, no durable fundamental catalyst, prior dilution history unresolved. Held positions: AVO's insider buying continues (10%-owner GlobalHarvest bought another $8.3M on 7/6, no negative news) while LRMR saw a Monday 17% selloff on an anaphylaxis safety signal in its nomlabofusp trial before rebounding on a 7/8 director buy -- worth watching, not yet a sell signal. VMAR stays on avoid (distressed financials, mixed insider signals, sold its Fort Lauderdale property 7/9 to raise cash)."
+  "avoid": ["DVLT", "SHPH", "PALI", "VMAR", "NVVE", "SNAL", "SDM", "MCRP", "JMG", "REE", "CASI", "EOSE", "BRLS", "CERO", "GTI", "JZXN"],
+  "notes": "Held positions: AVO -- director Jay Pack bought $484k on 6/30, GlobalHarvest's insider streak continues, no negative news (analyst PT avg $17.50 vs ~$13.46). LRMR -- filed the first BLA module for nomlabofusp accelerated approval 6/29 with positive long-term open-label data; Baird's PT cut to $5 (noted yesterday) is the only incremental negative to watch. WRAP -- new buy today after a +48% weekly run on an ATF ruling reclassifying BolaWrap plus the WrapShield/Frenel platform launch and a $110k director buy (7/8); real catalysts but the move is extended, so watch for a pullback. New avoid adds: BRLS (Borealis Foods, below Nasdaq's $35M market-value listing standard, cured by 12/29/26 or faces delisting), CERO and GTI (named in Nasdaq's 7/10 delisting notice batch), JZXN (Jiuzi Holdings +102% on an unsigned cooperation MOU with volume ~90x float -- textbook hype pump, no real catalyst)."
 }
