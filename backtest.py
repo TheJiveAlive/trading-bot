@@ -283,8 +283,8 @@ def tune(cfg, start, end):
     rows = []
     for stop in (8.0, 10.0, 12.0, 15.0):
         for tp in (15.0, 20.0, 25.0, 30.0, 999.0):  # 999 = never take profit, ride the stop
-            for buys in (1, 2):
-                for min_score in (2.5, 3.0, 4.0):
+            for buys in (1, 2, 3, 4):  # extended per learnings — validate the live 4/wk cap
+                for min_score in (4.5, 5.0, 5.5, 6.0):  # finer steps where the threshold actually cuts
                     c = copy.deepcopy(cfg)
                     c["selling"]["trailing_stop_pct"] = stop
                     c["selling"]["take_profit_pct"] = tp

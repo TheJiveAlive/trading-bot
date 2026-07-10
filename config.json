@@ -17,12 +17,12 @@
     "exclude_etfs": true
   },
   "buying": {
-    "max_buys_per_day": 6,
-    "max_buys_per_week": 20,
-    "min_composite_score": 2.5,
+    "max_buys_per_day": 2,
+    "max_buys_per_week": 4,
+    "min_composite_score": 5.5,
     "max_positions": 20,
     "max_position_usd": 5000.0,
-    "_sizing_note": "FULL-AUTO risk-on: wide book of many small whole-share trades. $100k test scale. Hard vetoes (spread/IV/dilution/earnings) still protect every entry. Before live: cut max_position_usd to ~45 for the real \u00a3100/month account."
+    "_sizing_note": "FULL-AUTO but SELECTIVE (per learnings 2026-07-10): max_buys_per_week 4 (tune showed 100% of combos worse at higher freq) and min_composite_score 5.5 (above the single-insider ceiling of 5.0, so a candidate needs a 2nd corroborating signal \u2014 not insider alone). Hard vetoes still protect every entry. Before live: cut max_position_usd to ~45."
   },
   "confluence": {
     "min_checks_passed": 4,
