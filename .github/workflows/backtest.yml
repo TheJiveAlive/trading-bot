@@ -29,6 +29,9 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: run backtest
+        env:
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
         run: |
           mkdir -p data/cache logs
           python backtest.py --months "${{ github.event.inputs.months || '6' }}"

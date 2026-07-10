@@ -88,10 +88,27 @@ def collect_events(sess, cikmap, start, end):
 # ---------- phase 2: price history for all involved tickers ----------
 
 def download_history(tickers, start, end):
-    """{ticker: DataFrame(Close, Volume)} covering [start-40d, end]."""
+    """{ticker: DataFrame(Close, Volume)} covering [start-40d, end].
+    Uses Alpaca historical bars when configured (fast, no throttle); falls back
+    to Yahoo for any gaps."""
     hist = {}
     t0 = (start - dt.timedelta(days=60)).isoformat()
     t1 = (end + dt.timedelta(days=2)).isoformat()
+
+    try:
+        from bot import alpaca
+        if alpaca.configured():
+            print("  fetching history via Alpaca (fast path)...", flush=True)
+            hist = alpaca.historical_bars(tickers, t0, t1)
+            print("  Alpaca returned {}/{} tickers".format(len(hist), len(tickers)), flush=True)
+            missing = [t for t in tickers if t not in hist]
+            if not missing:
+                return hist
+            print("  filling {} gaps via Yahoo...".format(len(missing)), flush=True)
+            tickers = missing
+    except Exception as e:
+        print("  Alpaca history unavailable ({}), using Yahoo".format(e), flush=True)
+
     for i in range(0, len(tickers), 200):
         chunk = tickers[i:i + 200]
         df = yf.download(chunk, start=t0, end=t1, interval="1d", progress=False,
