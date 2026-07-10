@@ -262,3 +262,34 @@ def run_scan():
         f.write(text + "\n")
     print(text)
     return text
+
+
+def run_exits():
+    """Lightweight EXIT-ONLY cycle: check held positions against stops / targets
+    / max-hold / pre-earnings and sell if triggered. No expensive insider scan.
+    Cheap enough to run every price cycle (~60s) so stops fire promptly instead
+    of only when a full scan happens to run."""
+    cfg = config.load()
+    con = ledger.connect()
+    research = risk.load_research()
+    # honour force_regime for the dynamic stop, same as a full scan
+    forced = cfg.get("force_regime")
+    if forced in ("risk_on", "neutral", "risk_off"):
+        research = dict(research or {})
+        research["market_regime"] = forced
+    report = ["=== exits {} ===".format(ledger.now())]
+    ledger.apply_monthly_deposit(con, cfg)
+    manage_exits(con, cfg, research, report)
+    equity = ledger.cash(con) + sum(
+        p["shares"] * (market.last_price(p["ticker"]) or p["avg_cost"])
+        for p in ledger.open_positions(con))
+    ledger.record_equity(con, equity, ledger.cash(con))
+    con.commit()
+    con.close()
+    try:
+        from bot import dashboard
+        dashboard.generate()
+    except Exception as e:
+        report.append("dashboard update failed: {}".format(e))
+    print("\n".join(report))
+    return "\n".join(report)

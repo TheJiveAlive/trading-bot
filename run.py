@@ -37,6 +37,9 @@ def main():
     if cmd == "scan":
         from bot.scan import run_scan
         run_scan()
+    elif cmd == "exits":
+        from bot.scan import run_exits
+        run_exits()
     elif cmd == "status":
         status()
     elif cmd == "dashboard":

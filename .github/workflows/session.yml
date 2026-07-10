@@ -81,7 +81,10 @@ jobs:
             python -m bot.prices >/dev/null 2>&1 || true   # ~60s live price refresh
             SCANNED=0
             if [ $((cycle % 15)) -eq 0 ]; then
-              echo "cycle $cycle: full scan"; python run.py scan >/dev/null 2>&1 || true; SCANNED=1
+              echo "cycle $cycle: full scan (entries + exits)"; python run.py scan >/dev/null 2>&1 || true; SCANNED=1
+            else
+              # every other cycle (~60s): EXIT-ONLY check so stops fire promptly
+              python run.py exits >/dev/null 2>&1 || true
             fi
             rm -f data/secrets.json
             git add -A data dashboard.html radar.html history.html >/dev/null 2>&1 || true
