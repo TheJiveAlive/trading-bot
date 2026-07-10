@@ -111,8 +111,10 @@ def _portfolio_rows(positions):
 
 
 def trade_email(side, ticker, shares, price, mode, reasons, positions, cash,
-                pnl_usd=None, pnl_pct=None, note=None):
-    """(subject, html, text). reasons: list of short strings."""
+                pnl_usd=None, pnl_pct=None, note=None, has_chart=True):
+    """(subject, html, text). reasons: list of short strings. has_chart=False
+    omits the chart row entirely (no broken-image box when the PNG can't be
+    generated, e.g. slim cloud runners)."""
     side_u = side.upper()
     side_color = GREEN if side_u == "BUY" else RED
     total = shares * price
@@ -146,6 +148,14 @@ def trade_email(side, ticker, shares, price, mode, reasons, positions, cash,
                      '{f}font-size:12px;color:#92400e;">{n}</td></tr></table></td></tr>'
                      ).format(f=FONT, n=note)
 
+    chart_html = ""
+    if has_chart:
+        chart_html = ('<tr><td style="background:{card};padding:0 24px;" align="center">'
+                      '<img src="cid:chart" width="552" style="max-width:100%;'
+                      'border:1px solid {border};border-radius:8px;" '
+                      'alt="{t} price chart"/></td></tr>').format(
+            card=CARD, border=BORDER, t=ticker)
+
     html = """
 <table width="100%" cellpadding="0" cellspacing="0" style="background:{bg};padding:24px 0;">
 <tr><td align="center">
@@ -171,10 +181,7 @@ def trade_email(side, ticker, shares, price, mode, reasons, positions, cash,
   <tr><td style="background:{card};" align="center"><table cellpadding="0"
     cellspacing="0">{pnl_html}</table></td></tr>
 
-  <tr><td style="background:{card};padding:0 24px;" align="center">
-    <img src="cid:chart" width="552" style="max-width:100%;border:1px solid {border};
-      border-radius:8px;" alt="{ticker} price chart"/>
-  </td></tr>
+  {chart_html}
 
   {note_html}
 
@@ -221,6 +228,7 @@ def trade_email(side, ticker, shares, price, mode, reasons, positions, cash,
         price=price, total=total, today=today,
         mode=mode, mode_bg=GREEN if mode == "live" else "#64748b",
         pnl_html=pnl_html, reasons_html=reasons_html, note_html=note_html,
+        chart_html=chart_html,
         portfolio_rows=_portfolio_rows(positions), cash=cash, equity=equity,
         mode_note="Simulated paper fill." if mode == "paper"
                   else "Live order — see pending_orders.json until confirmed.")

@@ -111,13 +111,15 @@ def execute(con, cfg, side, ticker, shares, price, reason, parts=None):
         pnl_usd = (price - pos["avg_cost"]) * shares
         pnl_pct = (price / pos["avg_cost"] - 1) * 100
     note = broker_note or None
-    subject, html, text = emailfmt.trade_email(
-        side, ticker, shares, price, mode, reasons, positions,
-        ledger.cash(con), pnl_usd=pnl_usd, pnl_pct=pnl_pct, note=note)
     chart = emailfmt.price_chart_png(
         ticker,
         entry_price=(price if side == "buy" else (pos["avg_cost"] if pos else None)),
         exit_price=(price if side == "sell" else None))
-    notify.send_html_email(subject, html, text, images={"chart": chart})
+    subject, html, text = emailfmt.trade_email(
+        side, ticker, shares, price, mode, reasons, positions,
+        ledger.cash(con), pnl_usd=pnl_usd, pnl_pct=pnl_pct, note=note,
+        has_chart=bool(chart))
+    notify.send_html_email(subject, html, text,
+                           images={"chart": chart} if chart else None)
     return {"mode": mode, "side": side, "ticker": ticker,
             "shares": shares, "price": price}

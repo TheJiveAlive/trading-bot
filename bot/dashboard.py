@@ -896,6 +896,182 @@ def _positions_panel(st):
     return panel("&#128200; Open positions", "live", inner)
 
 
+FEED_URL = PRICES_URL.replace("prices.json", "feed.json")
+
+# consistent colours for signal-contribution bars
+SIGNAL_COLORS = {
+    "insider": "#3EDDC5", "sector": "#A78BFA", "fundamentals": "#60A5FA",
+    "news": "#FBBF24", "reddit": "#FB923C", "breakout": "#34D399",
+    "earnings": "#F472B6", "events": "#F87171", "watchlist": "#94A3B8",
+    "sector_bias": "#64748B", "insider_sentiment": "#22D3EE", "wildcard": "#E879F9",
+}
+
+
+def _catalyst_calendar(st):
+    """Upcoming earnings for holdings + top candidates, urgency-coloured."""
+    from bot.signals.technicals import days_to_earnings
+    tickers = [p["ticker"] for p in st["positions"]] + \
+              [c[0] for c in st["candidates"][:4]]
+    held = {p["ticker"] for p in st["positions"]}
+    rows = []
+    for t in dict.fromkeys(tickers):
+        d = days_to_earnings(t)
+        if d is None or d > 45:
+            continue
+        date = (dt.date.today() + dt.timedelta(days=d)).strftime("%a %d %b")
+        if d <= 2:
+            cls, badge = "loss", ("&#9888; exit window" if t in held else "&#9888; too close to buy")
+        elif d <= 7:
+            cls, badge = "warn", "approaching"
+        else:
+            cls, badge = "mut", ""
+        rows.append((d, '<tr><td class="mono"><b>{t}</b>{h}</td>'
+                        '<td class="mono r {c}">{d}d</td><td class="mono r">{dt}</td>'
+                        '<td class="note {c}">{b}</td></tr>'.format(
+                            t=t, h=' <span class="chip tick" style="font-size:9px">held</span>' if t in held else "",
+                            c=cls, d=d, dt=date, b=badge)))
+    rows.sort(key=lambda x: x[0])
+    if not rows:
+        inner = ('<div class="mut">no earnings inside 45 days for holdings or '
+                 'top candidates — no binary events on the radar</div>')
+    else:
+        inner = ('<table><tr><th>Ticker</th><th class="r">In</th><th class="r">Date</th>'
+                 '<th></th></tr>{}</table>'
+                 '<div class="note" style="margin-top:8px">Bot exits positions 1 day '
+                 'before earnings and won\'t buy within 2 days of a print.</div>'
+                 ).format("".join(r for _, r in rows))
+    return panel("&#128197; Catalyst calendar", "earnings dates", inner)
+
+
+def _sector_meter(st):
+    """Sector allocation of the book: stacked bar + concentration warnings."""
+    if not st["positions"]:
+        return panel("&#127959; Sector allocation", "book",
+                     '<div class="mut">flat — nothing allocated</div>')
+    cfg = st["cfg"]
+    by_sector = {}
+    for p in st["positions"]:
+        sec = (market.ticker_info(p["ticker"]).get("sector")) or "Unknown"
+        by_sector.setdefault(sec, {"val": 0.0, "n": 0})
+        by_sector[sec]["val"] += (p["now"] or p["avg_cost"]) * p["shares"]
+        by_sector[sec]["n"] += 1
+    total = sum(v["val"] for v in by_sector.values()) or 1
+    palette = ["#3EDDC5", "#A78BFA", "#60A5FA", "#FBBF24", "#F472B6", "#34D399",
+               "#FB923C", "#22D3EE", "#94A3B8"]
+    segs, chips, warns = [], [], []
+    max_n = cfg["risk"]["max_sector_positions"]
+    for i, (sec, v) in enumerate(sorted(by_sector.items(), key=lambda kv: -kv[1]["val"])):
+        pct = v["val"] / total * 100
+        color = palette[i % len(palette)]
+        segs.append('<i style="width:{:.1f}%;background:{}" title="{} {:.0f}%"></i>'.format(
+            pct, color, sec, pct))
+        chips.append('<span class="chip" style="border-color:{c}55;color:{c}">{s} '
+                     '{p:.0f}% ({n})</span>'.format(c=color, s=sec, p=pct, n=v["n"]))
+        if pct > 40:
+            warns.append("{} is {:.0f}% of the book".format(sec, pct))
+        if v["n"] >= max_n:
+            warns.append("{} at position cap ({}/{})".format(sec, v["n"], max_n))
+    warn_html = ""
+    if warns:
+        warn_html = ('<div class="note warn" style="margin-top:8px">&#9888; ' +
+                     " &middot; ".join(warns) + "</div>")
+    inner = ('<style>.secbar{display:flex;height:14px;border-radius:7px;overflow:hidden;'
+             'margin-bottom:10px}.secbar i{display:block;height:14px}</style>'
+             '<div class="secbar">' + "".join(segs) + '</div>'
+             '<div class="chips">' + "".join(chips) + "</div>" + warn_html)
+    return panel("&#127959; Sector allocation", "book", inner)
+
+
+def _signal_bar(parts, width=140):
+    """Stacked contribution bar for one candidate's score parts."""
+    total = sum(abs(v) for v in parts.values()) or 1
+    segs = []
+    for k, v in sorted(parts.items(), key=lambda kv: -abs(kv[1])):
+        if not v:
+            continue
+        c = SIGNAL_COLORS.get(k, "#7E8CA6")
+        w = abs(v) / total * 100
+        op = "1" if v > 0 else "0.35"
+        segs.append('<i style="width:{:.1f}%;background:{};opacity:{}" '
+                    'title="{} {:+.2f}"></i>'.format(w, c, op, k, v))
+    return ('<div class="sigbar" style="width:{}px">'.format(width) +
+            "".join(segs) + "</div>")
+
+
+def _signal_legend():
+    return ('<div class="chips" style="margin-top:8px">' + "".join(
+        '<span class="chip" style="font-size:10px;border-color:{c}44;color:{c}">{k}</span>'.format(
+            c=c, k=k) for k, c in SIGNAL_COLORS.items()
+        if k in ("insider", "sector", "fundamentals", "news", "reddit",
+                 "breakout", "earnings", "events")) + "</div>")
+
+
+def _drawdown_ribbon(st):
+    """Thin underwater ribbon: % below equity peak over time + current value."""
+    curve = st["curve"]
+    if len(curve) < 3:
+        return ""
+    peak, dd = 0.0, []
+    for _, e in curve:
+        peak = max(peak, e)
+        dd.append((1 - e / peak) * 100 if peak else 0)
+    cur = dd[-1]
+    worst = max(dd)
+    w, h, pad = 900, 46, 2
+    def x(i): return pad + i * (w - 2 * pad) / (len(dd) - 1)
+    def y(v): return pad + (v / max(worst, 1)) * (h - 2 * pad)
+    pts = " ".join("{:.1f},{:.1f}".format(x(i), y(v)) for i, v in enumerate(dd))
+    area = "{:.1f},{} {} {:.1f},{}".format(x(0), pad, pts, x(len(dd) - 1), pad)
+    cls = "gain" if cur < 3 else ("warn" if cur < 8 else "loss")
+    halt = st["cfg"]["risk"]["drawdown_halt_pct"]
+    return ('<div class="panel" style="padding:10px 16px"><div class="ph" style="margin-bottom:4px">'
+            '<h2>Underwater ribbon</h2><span class="asof">drawdown from peak &middot; '
+            'buying halts at {halt}%</span></div>'
+            '<div style="display:flex;align-items:center;gap:14px">'
+            '<div class="mono {cls}" style="font-size:19px;font-weight:700;white-space:nowrap">'
+            '&minus;{cur:.1f}%</div>'
+            '<svg viewBox="0 0 {w} {h}" width="100%" height="{h}" preserveAspectRatio="none">'
+            '<polygon points="{area}" fill="rgba(230,80,75,0.25)"/>'
+            '<polyline points="{pts}" fill="none" stroke="#F87171" stroke-width="1.3"/>'
+            '</svg></div></div>').format(
+        halt=halt, cls=cls, cur=cur, w=w, h=h, area=area, pts=pts)
+
+
+def _decision_feed(st):
+    """Live terminal-style feed of the bot's reasoning; polls feed.json 30s."""
+    items = "".join(
+        '<div class="fitem"><span class="ft mono">{ts}</span>'
+        '<span class="chip">{k}</span><span class="fd">{d}</span></div>'.format(
+            ts=_short(ts), k=kind, d=detail[:150])
+        for ts, kind, detail in st["decisions"][:12]) or \
+        '<div class="mut">no decisions logged yet</div>'
+    css = ("<style>.feed{max-height:280px;overflow-y:auto;display:flex;"
+           "flex-direction:column;gap:6px}"
+           ".fitem{display:flex;gap:8px;align-items:baseline;font-size:11.5px;"
+           "border-bottom:1px solid #121A2C;padding-bottom:6px}"
+           ".fitem .ft{color:#5A6A87;font-size:10px;white-space:nowrap}"
+           ".fitem .fd{color:var(--mut);line-height:1.45}</style>")
+    js = """
+<script>
+(function(){
+  var URL=\"""" + FEED_URL + """\";
+  function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+  function poll(){
+    fetch(URL+"?t="+Date.now()).then(function(r){return r.json();}).then(function(d){
+      var box=document.getElementById("feedbox");if(!box||!d.decisions)return;
+      box.innerHTML=d.decisions.slice(0,12).map(function(x){
+        return '<div class="fitem"><span class="ft mono">'+esc((x.ts||"").slice(5,16).replace("T"," "))+
+          '</span><span class="chip">'+esc(x.kind)+'</span><span class="fd">'+esc(x.detail)+'</span></div>';
+      }).join("");
+    }).catch(function(){});
+  }
+  setInterval(poll,30000);
+})();
+</script>"""
+    return panel("&#128225; Decision feed", "live · 30s",
+                 css + '<div class="feed" id="feedbox">' + items + "</div>" + js)
+
+
 def _positions_heatmap(st):
     """Finviz-style map: each holding a tile sized by position value, coloured
     by P/L%. Updates live with the 30s price poll."""
@@ -993,15 +1169,18 @@ def _candidates_panel(st, threshold):
         rows.append(
             '<tr><td class="mono"><b>{t}</b><div class="mut" style="font-size:10.5px">{name}</div></td>'
             '<td class="mono r">{price}</td>'
-            '<td style="width:110px;padding-top:12px"><div class="bar"><i style="width:{w:.0f}%"></i></div></td>'
+            '<td style="width:150px;padding-top:12px">{sig}</td>'
             '<td class="mono r">{s}</td><td>{v}</td></tr>'
             '<tr><td colspan="5" class="mut" style="font-size:10.5px;padding-top:0">{parts}</td></tr>'.format(
                 t=t, name=(d.get("name") or "")[:32],
                 price="${:.2f}".format(d["price"]) if d.get("price") else "—",
-                w=100 * s / top, s=s, v=verdict, parts=parts))
-    return panel("Scan candidates", "scan " + st["cand_ts"],
-                 '<table><tr><th>Ticker</th><th class="r">Price</th><th>Score</th>'
-                 '<th class="r"></th><th></th></tr>{}</table>'.format("".join(rows)))
+                sig=_signal_bar(d.get("parts") or {}), s=s, v=verdict, parts=parts))
+    css = ('<style>.sigbar{display:flex;height:9px;border-radius:5px;overflow:hidden;'
+           'background:#121A2C}.sigbar i{display:block;height:9px}</style>')
+    return panel("Scan candidates &middot; what drove each score", "scan " + st["cand_ts"],
+                 css + '<table><tr><th>Ticker</th><th class="r">Price</th>'
+                 '<th>Signal mix</th><th class="r">Score</th><th></th></tr>{}</table>{}'.format(
+                     "".join(rows), _signal_legend()))
 
 
 def _research_panel(st):
@@ -1145,27 +1324,33 @@ def _overview(st):
         '<tr><td class="mut">no trades yet</td></tr>'
     body = _kpis(st)
     body += _extra_metrics(st)
+    body += _drawdown_ribbon(st)
     # POSITIONS front and centre (big, live-refreshing) — equity curve removed
     hm = _positions_heatmap(st)
     if hm:
         body += panel("&#129513; Position heatmap", "live", hm)
     body += _positions_panel(st)
     body += '<div class="grid2">'
+    body += _catalyst_calendar(st)
+    body += _sector_meter(st)
+    body += "</div>"
+    body += '<div class="grid2">'
+    body += _decision_feed(st)
+    body += _intel_panel(st)
+    body += "</div>"
+    body += '<div class="grid2">'
     body += _research_panel(st)
     body += _github_panel(st)
     body += "</div>"
     body += '<div class="grid2">'
-    body += _intel_panel(st)
     body += _news_panel(st)
-    body += "</div>"
-    body += '<div class="grid2">'
-    body += _candidates_panel(st, threshold)
     body += panel("Recent trades", "ledger " + st["now"],
                   '<table><tr><th>When</th><th>Side</th><th>Ticker</th>'
                   '<th class="r">Qty</th><th class="r">Price</th></tr>{}</table>'
                   '<div class="note" style="margin-top:8px"><a href="history.html" '
                   'style="color:var(--teal)">full history &rarr;</a></div>'.format(trows))
     body += "</div>"
+    body += _candidates_panel(st, threshold)
     return body
 
 

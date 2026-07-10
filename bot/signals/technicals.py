@@ -15,22 +15,45 @@ import yfinance as yf
 from bot.signals.reddit import pump_risk
 
 
-def days_to_earnings(ticker):
+def days_to_earnings(ticker, _cache={}):
     """Days until next earnings report, or None if unknown/not scheduled.
-    Prefers Finnhub (reliable) when a key is configured; falls back to Yahoo."""
+    Prefers Finnhub (reliable) when a key is configured; falls back to Yahoo.
+    Cached 6h on disk (dates don't move intraday)."""
+    import json as _json, os as _os, time as _time
+    from bot.config import CACHE_DIR
+    path = _os.path.join(CACHE_DIR, "earnings_dates.json")
+    disk = {}
+    if _os.path.exists(path):
+        try:
+            disk = _json.load(open(path))
+        except Exception:
+            disk = {}
+    hit = disk.get(ticker)
+    if hit and _time.time() - hit["at"] < 6 * 3600:
+        return hit["days"]
+
+    def _save(days):
+        disk[ticker] = {"at": _time.time(), "days": days}
+        try:
+            _os.makedirs(CACHE_DIR, exist_ok=True)
+            _json.dump(disk, open(path, "w"))
+        except Exception:
+            pass
+        return days
+
     from bot.signals.finnhub_data import next_earnings_days
     fh = next_earnings_days(ticker)
     if fh is not None:
-        return fh
+        return _save(fh)
     try:
         cal = yf.Ticker(ticker).calendar
         dates = cal.get("Earnings Date") if isinstance(cal, dict) else None
         if dates:
             nxt = min(d for d in dates if d >= dt.date.today())
-            return (nxt - dt.date.today()).days
+            return _save((nxt - dt.date.today()).days)
     except Exception:
         pass
-    return None
+    return _save(None)
 
 
 def _intraday(tkr):

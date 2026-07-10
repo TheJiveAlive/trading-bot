@@ -123,11 +123,33 @@ def price_series(ticker, period="1mo", ttl_min=30):
     return series
 
 
-def ticker_info(ticker):
+def ticker_info(ticker, ttl_min=360):
+    """Yahoo info dict, disk-cached 6h (sector/fundamentals don't move intraday)."""
+    import json, os, time
+    cache = _cache_path("ticker_info.json")
+    data = {}
+    if os.path.exists(cache):
+        try:
+            data = json.load(open(cache))
+        except Exception:
+            data = {}
+    hit = data.get(ticker)
+    if hit and time.time() - hit["at"] < ttl_min * 60:
+        return hit["info"]
     try:
-        return yf.Ticker(ticker).info or {}
+        info = yf.Ticker(ticker).info or {}
     except Exception:
-        return {}
+        info = hit["info"] if hit else {}
+    # keep only the fields the bot uses — the full info dict is huge
+    keep = {k: info.get(k) for k in (
+        "sector", "shortName", "revenueGrowth", "earningsGrowth", "profitMargins",
+        "bid", "ask", "regularMarketChangePercent", "52WeekChange") if k in info}
+    data[ticker] = {"at": time.time(), "info": keep}
+    try:
+        json.dump(data, open(cache, "w"))
+    except Exception:
+        pass
+    return keep
 
 
 def ticker_news(ticker):

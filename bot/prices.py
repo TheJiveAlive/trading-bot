@@ -43,6 +43,20 @@ def build():
     path = os.path.join(DATA_DIR, "prices.json")
     with open(path, "w") as f:
         json.dump(out, f)
+
+    # live decision feed for the dashboard (same commit cadence as prices)
+    con = ledger.connect()
+    decisions = [{"ts": r[0], "kind": r[1], "detail": r[2][:200]} for r in
+                 con.execute("SELECT ts,kind,detail FROM decisions "
+                             "ORDER BY id DESC LIMIT 14")]
+    trades = [{"ts": r[0], "side": r[1], "ticker": r[2], "shares": r[3],
+               "price": r[4]} for r in
+              con.execute("SELECT ts,side,ticker,shares,price FROM trades "
+                          "ORDER BY id DESC LIMIT 6")]
+    con.close()
+    with open(os.path.join(DATA_DIR, "feed.json"), "w") as f:
+        json.dump({"generated": out["generated"], "decisions": decisions,
+                   "trades": trades}, f)
     return path, out
 
 
