@@ -78,18 +78,20 @@ jobs:
           SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
         run: |
+          # email the latest learnings section, Markdown-rendered, BEFORE removing secrets
+          python3 -c "
+          import re
+          from bot import config, notify
+          config.load()
+          try: md=open('data/learnings.md').read()
+          except Exception: md='no learnings file produced'
+          # send only the most recent dated section (from the last '## ' heading)
+          parts=md.split('\n## ')
+          latest=('## '+parts[-1]) if len(parts)>1 else md
+          notify.send_email('[bot] overnight learnings', latest[:6000], markdown=True)" || true
           rm -f data/secrets.json
           git config user.name "trading-bot"
           git config user.email "trading-bot@users.noreply.github.com"
           git add -A
           git commit -m "overnight learnings $(date -u '+%Y-%m-%d')" || echo "no changes"
           for i in 1 2 3; do git pull --rebase -X ours origin main && git push && break; sleep 3; done
-          python3 -c "
-          import os, smtplib, ssl
-          from email.mime.text import MIMEText
-          try: body=open('data/learnings.md').read()[-4000:]
-          except Exception: body='no learnings file produced'
-          msg=MIMEText(body); msg['Subject']='[bot] overnight learnings'
-          msg['From']=os.environ['SMTP_USER']; msg['To']=os.environ['EMAIL_TO']
-          with smtplib.SMTP_SSL('smtp.gmail.com',465,context=ssl.create_default_context()) as s:
-              s.login(os.environ['SMTP_USER'],os.environ['SMTP_APP_PASSWORD']); s.send_message(msg)" || true

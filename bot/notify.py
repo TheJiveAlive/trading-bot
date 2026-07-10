@@ -52,10 +52,59 @@ def _deliver(msg, subject):
         return False
 
 
-def send_email(subject, body):
-    """Report email (research/review/health/learnings): branded dark card with
-    the body in monospace, plus a plain-text alternative for old clients."""
+def _md_to_html(md):
+    """Tiny Markdown → HTML for report emails (headings, bold, bullets, paras)."""
+    import re
+    esc = lambda s: s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    def inline(s):
+        s = esc(s)
+        s = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", s)
+        s = re.sub(r"`(.+?)`", r'<code style="background:#eef2f7;padding:1px 4px;'
+                   r'border-radius:3px;font-size:12px">\1</code>', s)
+        return s
+    out, in_list = [], False
+    for line in md.split("\n"):
+        s = line.rstrip()
+        if not s:
+            if in_list:
+                out.append("</ul>"); in_list = False
+            continue
+        if s.startswith("### "):
+            if in_list: out.append("</ul>"); in_list = False
+            out.append('<h4 style="margin:14px 0 4px;font-size:14px;color:#0f172a">{}</h4>'.format(inline(s[4:])))
+        elif s.startswith("## "):
+            if in_list: out.append("</ul>"); in_list = False
+            out.append('<h3 style="margin:18px 0 6px;font-size:16px;color:#0f172a;'
+                       'border-bottom:1px solid #e2e8f0;padding-bottom:4px">{}</h3>'.format(inline(s[3:])))
+        elif s.startswith("# "):
+            if in_list: out.append("</ul>"); in_list = False
+            out.append('<h2 style="margin:8px 0 8px;font-size:19px;color:#0f172a">{}</h2>'.format(inline(s[2:])))
+        elif s.lstrip().startswith(("- ", "* ")):
+            if not in_list: out.append('<ul style="margin:4px 0 8px 4px;padding-left:18px">'); in_list = True
+            out.append('<li style="margin:3px 0;line-height:1.5">{}</li>'.format(inline(s.lstrip()[2:])))
+        else:
+            if in_list: out.append("</ul>"); in_list = False
+            out.append('<p style="margin:6px 0;line-height:1.55">{}</p>'.format(inline(s)))
+    if in_list: out.append("</ul>")
+    return "".join(out)
+
+
+def send_email(subject, body, markdown=False):
+    """Report email (research/review/health/learnings): branded dark card.
+    markdown=True renders the body as formatted HTML (headings/bold/bullets);
+    otherwise the body is shown verbatim in monospace (good for aligned text)."""
+    if markdown:
+        inner = ('<div style="font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;'
+                 'font-size:13.5px;color:#0f172a">{}</div>').format(_md_to_html(body))
+        return _deliver_report(subject, inner, body)
     esc = (body.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
+    inner = ('<pre style="margin:0;font-family:ui-monospace,SF Mono,Menlo,Consolas,monospace;'
+             'font-size:12px;line-height:1.55;color:#0f172a;white-space:pre-wrap;'
+             'word-wrap:break-word;">{}</pre>').format(esc)
+    return _deliver_report(subject, inner, body)
+
+
+def _deliver_report(subject, inner_html, text_body):
     html = """
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:24px 0;">
 <tr><td align="center">
@@ -66,17 +115,15 @@ def send_email(subject, body):
     <span style="float:right;color:#94a3b8;font-size:11px;padding-top:3px;">{subj}</span>
   </td></tr>
   <tr><td style="background:#ffffff;padding:18px 22px;border:1px solid #e2e8f0;border-top:none;">
-    <pre style="margin:0;font-family:ui-monospace,SF Mono,Menlo,Consolas,monospace;
-      font-size:12px;line-height:1.55;color:#0f172a;white-space:pre-wrap;
-      word-wrap:break-word;">{body}</pre>
+    {inner}
   </td></tr>
   <tr><td style="background:#0f172a;border-radius:0 0 12px 12px;padding:10px 22px;"
     align="center"><span style="font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;
     font-size:10px;color:#94a3b8;">Automated report &middot; not financial advice</span>
   </td></tr>
-</table></td></tr></table>""".format(subj=subject[:60], body=esc)
+</table></td></tr></table>""".format(subj=subject[:60], inner=inner_html)
     msg = MIMEMultipart("alternative")
-    msg.attach(MIMEText(body))
+    msg.attach(MIMEText(text_body))
     msg.attach(MIMEText(html, "html"))
     return _deliver(msg, subject)
 
