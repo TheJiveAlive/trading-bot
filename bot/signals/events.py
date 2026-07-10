@@ -100,8 +100,48 @@ def short_interest(ticker):
     return out
 
 
-def event_score(cfg, ticker):
-    """0..0.8 contextual bonus: fresh 8-K + squeeze fuel. (detail dict too.)"""
+USASPEND = "https://api.usaspending.gov/api/v2/search/spending_by_award/"
+
+
+def gov_contract(company_name, days=45):
+    """Recent federal contract awards to this company (the 'US influence/gov
+    spending' money-flow catalyst). Returns {'total_usd', 'days_since'} or {}.
+    Matches by recipient name — fuzzy, so treat as a soft catalyst, not a veto."""
+    if not company_name or len(company_name) < 4:
+        return {}
+    ck = "gov:" + company_name.upper()[:24]
+    c = _cache_get(ck)
+    if c is not None:
+        return c
+    out = {}
+    try:
+        import datetime as dt
+        end = dt.date.today(); start = end - dt.timedelta(days=days)
+        # first distinctive word of the name (drops Inc/Corp/etc via caller)
+        term = company_name.split()[0]
+        r = requests.post(USASPEND, timeout=20, headers={"Content-Type": "application/json"},
+                          json={"filters": {"award_type_codes": ["A", "B", "C", "D"],
+                                "recipient_search_text": [term],
+                                "time_period": [{"start_date": start.isoformat(),
+                                                 "end_date": end.isoformat()}]},
+                                "fields": ["Recipient Name", "Award Amount", "Start Date"],
+                                "limit": 5, "sort": "Award Amount", "order": "desc"})
+        if r.status_code == 200:
+            res = r.json().get("results", [])
+            # require the recipient name to actually contain our term (avoid noise)
+            match = [x for x in res if term.upper() in (x.get("Recipient Name") or "").upper()]
+            if match:
+                total = sum(float(x.get("Award Amount") or 0) for x in match)
+                if total >= 1_000_000:  # ignore trivial awards
+                    out = {"total_usd": total, "n": len(match)}
+    except Exception:
+        pass
+    _cache_put(ck, out)
+    return out
+
+
+def event_score(cfg, ticker, company_name=None):
+    """0..1.2 contextual bonus: fresh 8-K + squeeze fuel + federal contract."""
     score = 0.0
     detail = {}
     d8k = recent_8k(cfg, ticker)
@@ -118,4 +158,9 @@ def event_score(cfg, ticker):
             score += 0.4    # heavy short interest = squeeze fuel
         elif si["days_to_cover"] >= 3:
             score += 0.2
-    return round(min(score, 0.8), 2), detail
+    if company_name:
+        gc = gov_contract(company_name)
+        if gc.get("total_usd"):
+            detail["gov_contract_usd"] = int(gc["total_usd"])
+            score += 0.4    # recent federal contract = real catalyst
+    return round(min(score, 1.2), 2), detail

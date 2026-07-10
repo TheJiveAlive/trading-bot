@@ -47,7 +47,7 @@ def score_candidates(cfg, insider_hits, sector_ranks, snapshot, research=None,
         if b_sc:
             parts["breakout"] = round(b_sc * w.get("breakout_weight", 1.0), 2)
         from bot.signals.events import event_score
-        ev_sc, ev_detail = event_score(cfg, ticker)
+        ev_sc, ev_detail = event_score(cfg, ticker, company_name=info.get("shortName"))
         if ev_sc:
             parts["events"] = round(ev_sc * w.get("events_weight", 1.0), 2)
         if ticker in watchlist:
