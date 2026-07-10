@@ -685,12 +685,16 @@ def _hall(closed):
     if not closed:
         return ('<div class="mut">no closed trades yet — the halls await their first '
                 'legends and cautionary tales 🫡</div>')
-    best = sorted(closed, key=lambda t: t["pct"], reverse=True)[:3]
-    worst = sorted(closed, key=lambda t: t["pct"])[:3]
+    # Fame = actual winners only; Shame = actual losers only. A trade can never
+    # appear in both, and a loss can never render as a green "win".
+    winners = [t for t in closed if t["pnl"] > 0]
+    losers = [t for t in closed if t["pnl"] < 0]
+    best = sorted(winners, key=lambda t: t["pct"], reverse=True)[:3]
+    worst = sorted(losers, key=lambda t: t["pct"])[:3]
 
-    def card(t, caps, i, good):
+    def card(t, caps, i):
         emoji, cap = caps[i % len(caps)]
-        cls = "gain" if good else "loss"
+        cls = "gain" if t["pnl"] >= 0 else "loss"   # colour by reality, not by hall
         held = ""
         try:
             held = "{}d".format((dt.date.fromisoformat(t["ts"][:10])
@@ -711,15 +715,17 @@ def _hall(closed):
             pct=t["pct"], cap=cap, b=t["buy"], s=t["sell"],
             ns="+" if t["pnl"] >= 0 else "−", amt=abs(t["pnl"]))
 
-    fame = "".join(card(t, FAME_CAPS, i, True) for i, t in enumerate(best))
-    shame = "".join(card(t, SHAME_CAPS, i, False) for i, t in enumerate(worst))
+    empty = '<div class="mut" style="font-size:12px">none yet</div>'
+    fame = "".join(card(t, FAME_CAPS, i) for i, t in enumerate(best)) or empty
+    shame = "".join(card(t, SHAME_CAPS, i) for i, t in enumerate(worst)) or empty
     grid = ('display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px')
     return (
-        '<div class="klabel" style="color:var(--gain)">🏆 Hall of Fame — biggest tendies</div>'
+        '<div class="klabel" style="color:var(--gain)">🏆 Hall of Fame — biggest tendies ({nw} winner{ws})</div>'
         '<div style="{g}">{fame}</div>'
         '<div class="klabel" style="color:var(--loss);margin-top:14px">🤡 Hall of Shame — '
-        'lessons in humility</div><div style="{g}">{shame}</div>').format(
-        g=grid, fame=fame, shame=shame)
+        'lessons in humility ({nl} loser{ls})</div><div style="{g}">{shame}</div>').format(
+        g=grid, fame=fame, shame=shame, nw=len(winners), ws="" if len(winners) == 1 else "s",
+        nl=len(losers), ls="" if len(losers) == 1 else "s")
 
 
 def _smooth_path(pts):
