@@ -72,6 +72,9 @@
     "weight_ceil_x": 1.5,
     "_auto_tuning_note": "auto_apply_tuning: overnight job auto-applies the best ROBUST stop/take-profit region from the tune sweep, clamped to safe bounds (stop 8-15%, TP 15-40%). Never touches hard vetoes or position caps."
   },
+  "realistic_fills": true,
+  "_realistic_fills_note": "Paper + backtest fills pay the real bid/ask spread (buy at ask, sell at bid) — Alpaca quote when available, else estimated by price tier (<$1=4%, <$5=2%, else 0.8% round-trip). Makes paper results predict LIVE reality. Set false only to compare against optimistic last-price fills.",
+
   "force_regime": "risk_on",
   "_force_regime_note": "Overrides the research/quant regime blend. 'risk_on' = full-auto aggressive (lowest buy threshold, widest stops). Set null to restore the adaptive conservative blend. Hard vetoes always apply regardless.",
   "selling": {

@@ -73,8 +73,34 @@ def _route_live_order(cfg, side, ticker, shares, price, reason):
     return "Queued to pending_orders.json (broker '{}').".format(broker)
 
 
+def _realistic_fill(cfg, side, ticker, price):
+    """Make paper fills honest: buy at the ASK, sell at the BID (real Alpaca
+    quote when available, else an estimated spread). Penny/small-cap spreads are
+    1-10%, so last-price fills overstate P/L by that much per round-trip — this
+    makes the paper account predict live reality instead of flattering it."""
+    if not cfg.get("realistic_fills", True):
+        return price
+    bid = ask = None
+    try:
+        from bot import alpaca
+        if alpaca.configured():
+            bid, ask = alpaca.latest_quote(ticker)
+    except Exception:
+        pass
+    if bid and ask and ask > bid > 0:
+        return ask if side == "buy" else bid
+    # no quote → estimate spread by price tier (thinner/cheaper = wider)
+    est = 0.04 if price < 1 else (0.02 if price < 5 else 0.008)
+    return price * (1 + est / 2) if side == "buy" else price * (1 - est / 2)
+
+
 def execute(con, cfg, side, ticker, shares, price, reason, parts=None, catalyst=None):
     mode = cfg["mode"]
+    if mode == "paper":
+        adj = _realistic_fill(cfg, side, ticker, price)
+        if abs(adj - price) > 1e-6:
+            reason += " | fill ${:.4f} (spread-adjusted from ${:.4f})".format(adj, price)
+        price = round(adj, 4)
     pnl_line = ""
     if side == "buy":
         ledger.record_buy(con, ticker, shares, price, mode, reason)

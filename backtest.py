@@ -198,6 +198,14 @@ def parse_txt_form4(sess, path):
 
 # ---------- phase 4: simulation ----------
 
+def _spread_fill(side, price):
+    """Realistic fill: pay the estimated spread (thinner/cheaper = wider). This
+    is the single biggest reason paper/backtest results overstate live P/L on
+    small-caps. Estimates: <$1 = 4%, <$5 = 2%, else 0.8%."""
+    est = 0.04 if price < 1 else (0.02 if price < 5 else 0.008)
+    return price * (1 + est / 2) if side == "buy" else price * (1 - est / 2)
+
+
 def simulate(cfg, weekly_candidates, hist, trading_days, start):
     buy_cfg, sell_cfg = cfg["buying"], cfg["selling"]
     cash, positions, trades = 0.0, {}, []
@@ -229,11 +237,13 @@ def simulate(cfg, weekly_candidates, hist, trading_days, start):
             elif held > sell_cfg["max_hold_days"]:
                 reason = "max_hold"
             if reason:
-                cash += p["shares"] * price
+                fill = _spread_fill("sell", price)   # sell at the bid
+                cash += p["shares"] * fill
                 trades.append({"ticker": tkr, "in": p["opened"].isoformat(),
-                               "out": d, "buy": p["cost"], "sell": price,
-                               "shares": p["shares"], "pct": round(gain, 1),
-                               "usd": round((price - p["cost"]) * p["shares"], 2),
+                               "out": d, "buy": p["cost"], "sell": fill,
+                               "shares": p["shares"],
+                               "pct": round((fill / p["cost"] - 1) * 100, 1),
+                               "usd": round((fill - p["cost"]) * p["shares"], 2),
                                "exit": reason})
                 del positions[tkr]
 
@@ -251,13 +261,14 @@ def simulate(cfg, weekly_candidates, hist, trading_days, start):
                 price = asof(hist[c["ticker"]], d)
                 if price is None or price < 0.5:
                     continue
+                fill = _spread_fill("buy", price)   # buy at the ask
                 budget = min(cash, buy_cfg["max_position_usd"])
-                shares = int(budget // price)
+                shares = int(budget // fill)
                 if shares < 1:
                     continue
-                cash -= shares * price
-                positions[c["ticker"]] = {"shares": shares, "cost": price,
-                                          "hwm": price, "opened": day.date(),
+                cash -= shares * fill
+                positions[c["ticker"]] = {"shares": shares, "cost": fill,
+                                          "hwm": fill, "opened": day.date(),
                                           "score": c["score"]}
                 buys_this_week += 1
                 break
