@@ -1,1 +1,1 @@
-{"generated": "2026-07-10T19:36:08+00:00", "source": "alpaca", "prices": {"BOLD": 2.45, "WRAP": 2.69, "EVMN": 13.06, "IPW": 1.51, "ABSI": 10.525, "AVO": 13.365, "PRQR": 1.72, "VMAR": 1.26, "RIG": 5.175, "LRMR": 4.245, "SHPH": 3.22, "HDSN": 6.43}, "held": ["AVO", "LRMR", "WRAP"]}
+{"generated": "2026-07-10T19:37:11+00:00", "source": "alpaca", "prices": {"EVMN": 13.06, "WRAP": 2.725, "LRMR": 4.24, "RIG": 5.17, "VMAR": 1.26, "ABSI": 10.54, "IPW": 1.51, "HDSN": 6.43, "PRQR": 1.72, "SHPH": 3.22, "AVO": 13.365, "BOLD": 2.45}, "held": ["AVO", "LRMR", "WRAP"]}
