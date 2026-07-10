@@ -3,7 +3,8 @@ name: overnight-learnings
 # that writes proposed improvements to data/learnings.md. Runs nightly.
 on:
   schedule:
-    - cron: '17 2 * * 2-6'   # ~02:17 UTC Tue-Sat (after each US trading day)
+    - cron: '17 20 * * 1-5'  # ~20:17 UTC weekdays — right after the US close (fresh day's trades)
+    - cron: '17 2 * * 2-6'   # ~02:17 UTC — deep overnight pass
   workflow_dispatch:
 
 permissions:
