@@ -203,7 +203,6 @@ def _page(active, body, cfg, research, gen, mood="flat", cost_basis=None):
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta http-equiv="refresh" content="300"/>
 <title>RobinHood Bot</title><style>{css}</style></head><body>
-<canvas id="fx" aria-hidden="true"></canvas>
 <div class="top"><div class="topin">
   <span class="brand"><span class="zap">&#9889;</span> RobinHood Bot</span>
   {nav}
@@ -231,7 +230,7 @@ def _page(active, body, cfg, research, gen, mood="flat", cost_basis=None):
 live quotes poll every 45s during market hours<br/>
 scans hourly &middot; hourly intel &middot; daily research &middot; weekly review</div>
 </div>{sched}{fx}</body></html>""".format(
-        css=CSS, nav=nav, body=body, gen=gen, fx=_fx_script(mood),
+        css=CSS, nav=nav, body=body, gen=gen, fx="",
         sched=_sched_script(), live=_live_ticker(cost_basis or {}),
         mode=cfg["mode"], mc="live" if cfg["mode"] == "live" else "paper",
         reg=regime, regt=MODE_RANK[regime])

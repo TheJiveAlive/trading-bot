@@ -1,0 +1,58 @@
+{
+  "generated": "2026-07-11T08:39:31+00:00",
+  "train_period": "2026-01-10 to 2026-05-18",
+  "test_period": "2026-05-18 to 2026-07-09",
+  "top5_train_combos_tested_oos": [
+    {
+      "stop": 8.0,
+      "tp": 20.0,
+      "buys_wk": 1,
+      "min_score": 4.5,
+      "train_median_pct": 14.38,
+      "test_pct": 0.75,
+      "test_trades": 4
+    },
+    {
+      "stop": 10.0,
+      "tp": 20.0,
+      "buys_wk": 1,
+      "min_score": 4.5,
+      "train_median_pct": 12.7,
+      "test_pct": 4.7,
+      "test_trades": 3
+    },
+    {
+      "stop": 12.0,
+      "tp": 20.0,
+      "buys_wk": 1,
+      "min_score": 4.5,
+      "train_median_pct": 5.08,
+      "test_pct": 4.7,
+      "test_trades": 3
+    },
+    {
+      "stop": 15.0,
+      "tp": 15.0,
+      "buys_wk": 2,
+      "min_score": 4.5,
+      "train_median_pct": 2.97,
+      "test_pct": 5.97,
+      "test_trades": 6
+    },
+    {
+      "stop": 10.0,
+      "tp": 25.0,
+      "buys_wk": 1,
+      "min_score": 4.5,
+      "train_median_pct": 1.62,
+      "test_pct": 4.06,
+      "test_trades": 5
+    }
+  ],
+  "spy_test_return_pct": 2.03,
+  "verdict": {
+    "edge_survives_out_of_sample": true,
+    "beats_spy_out_of_sample": false,
+    "read": "PASS: params picked on train also made 0.75% on unseen data"
+  }
+}
