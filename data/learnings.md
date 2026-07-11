@@ -32,3 +32,14 @@
 - `signal_rewards` and `catalyst_rewards` are both still 0 rows — no live paper position has closed since the 7/7 reset (only 5 trades total, all opens), so signal-quality and news-catalyst-quality questions remain unanswerable from live data; the 60-trade backtest has no signal/catalyst tags to fall back on either (engine-only backtest, per its own caveats).
 
 **Proposed change:** Bump `buying.min_composite_score` from 5.5 to 6.0, holding stop/TP/buys_wk fixed at their current (already-validated-robust) values. Thesis: within the exact cell the bot is running today, 6.0 triples return and nearly halves drawdown vs. 5.5 in the sweep — and it stays consistent with the original design intent (forcing corroboration above the single-insider ceiling of 5.0), just requiring a slightly stronger second signal. Caveat: 6.0 is not robust *on average* across other stop/TP combos (worst bucket tested), so this is a bet on the specific cell already in use, not a claim that 6.0 is universally better — re-check after ~15-20 more live closed trades to see if the live win rate moves toward the 54% the sweep implies.
+
+## 2026-07-11 (later) — Re-buying a name right after its take-profit looks costlier than re-buying after a stop-out
+
+**What the data says:**
+- Exit mix, 60-trade backtest: 45/60 (75%) hit the trailing stop (avg -5.6%, win rate 24.4% — expected, most stops are cut losers), 11/60 (18%) hit take-profit (avg +26.8%, 100% win by definition), 4/60 (7%) rode to max_hold (avg +4.2%, 75% win — not "dead money," a mild net positive).
+- Winners are held ~2x longer than losers (avg 20.7 days vs 10.4 days) — stops cut losers fast, winners are left to run. Healthy asymmetry, no action needed.
+- 13 tickers were re-bought after a prior trade closed. Split by why the prior trade closed: re-entries after a stop-out (n=14) win 42.9% (avg +4.1%) — statistically indistinguishable from the 43.9% win rate on fresh first-entries (n=41), i.e. a stop-out doesn't poison the next entry. Re-entries after a take-profit (n=5) win only 20% (1/5): CABA -5.0%, ONCY -10.3%, STIM -11.0%, LODE -10.3%, one STIM +25.3% winner.
+- Mechanistically plausible: a stop-out doesn't mean the thesis was wrong, so re-scanning behaves like a fresh trade; a take-profit means the easy move already happened, so buying the same name back is chasing extension — the weaker setup here.
+- Caveat: n=5 is too small to act on (one trade swings the rate 20pp) — this is a pattern to watch, not a confirmed edge.
+
+**Proposed change:** No config change yet — flag for tracking. If the post-take-profit re-entry underperformance holds at larger n (re-check after 3-4x more such re-entries accumulate), consider requiring a fresh/updated catalyst before re-buying a ticker within ~10-15 trading days of taking profit on it, rather than letting a plain rescan hitting the same score re-open the same name.
