@@ -349,16 +349,134 @@ def tune(cfg, start, end):
           "zero-spread numbers; prefer robust regions over the single top row.")
 
 
+def _load_candidate_cache():
+    """Newest bt_candidates cache -> (weekly dict keyed by (year,week), start, end)."""
+    import glob
+    caches = sorted(glob.glob(os.path.join(CACHE_DIR, "bt_candidates_*.json")))
+    if not caches:
+        print("no candidate cache — run a full backtest first")
+        sys.exit(1)
+    path = caches[-1]
+    m = re.search(r"bt_candidates_(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})", path)
+    start, end = dt.date.fromisoformat(m.group(1)), dt.date.fromisoformat(m.group(2))
+    with open(path) as f:
+        raw = json.load(f)
+    weekly = {}
+    for k, v in raw.items():
+        y, w = k.rsplit("-", 1)
+        weekly[(int(y), int(w))] = v
+    return weekly, start, end
+
+
+def walkforward(cfg):
+    """OUT-OF-SAMPLE validation — the honest test that separates a real edge
+    from overfitting. Train: pick the best-robust params on the FIRST 70% of
+    weeks. Test: run those params, untouched, on the LAST 30% the optimizer
+    never saw. If the edge only exists in-sample, it isn't an edge.
+    Writes data/walkforward.json for the learning loop."""
+    import copy
+    import statistics
+    from collections import defaultdict
+
+    weekly, start, end = _load_candidate_cache()
+    weeks = sorted(weekly)
+    cut = max(1, int(len(weeks) * 0.7))
+    boundary_week = weeks[cut]
+    boundary = dt.date.fromisocalendar(boundary_week[0], boundary_week[1], 1)
+    train_w = {w: v for w, v in weekly.items() if w < boundary_week}
+    test_w = {w: v for w, v in weekly.items() if w >= boundary_week}
+    print("walk-forward: train {} weeks (to {}), test {} weeks".format(
+        len(train_w), boundary, len(test_w)))
+
+    tickers = sorted({c["ticker"] for v in weekly.values() for c in v})
+    hist = download_history(tickers, start, end)
+    spy = yf.download("SPY", start=start.isoformat(),
+                      end=(end + dt.timedelta(days=1)).isoformat(),
+                      interval="1d", progress=False, auto_adjust=True)
+    all_days = list(spy.index.to_pydatetime())
+    train_days = [d for d in all_days if d.date() < boundary]
+    test_days = [d for d in all_days if d.date() >= boundary]
+
+    def run(days, wk, stop, tp, buys, min_score):
+        c = copy.deepcopy(cfg)
+        c["selling"]["trailing_stop_pct"] = stop
+        c["selling"]["take_profit_pct"] = tp
+        c["buying"]["max_buys_per_week"] = buys
+        w2 = {k: [x for x in v if x["score"] >= min_score] for k, v in wk.items()}
+        cash, positions, trades, curve, final_open = simulate(c, w2, hist, days, start)
+        open_val = sum((p["now"] or p["cost"]) * p["shares"] for p in final_open)
+        dep = c["monthly_deposit_usd"] * len({d[:7] for d, _ in curve}) or 1
+        return round(((cash + open_val) / dep - 1) * 100, 2), len(trades)
+
+    # train: group combos, rank by median return across min_score variants
+    groups = defaultdict(list)
+    for stop in (8.0, 10.0, 12.0, 15.0):
+        for tp in (15.0, 20.0, 25.0, 999.0):
+            for buys in (1, 2, 3, 4):
+                for ms in (4.5, 5.0, 5.5, 6.0):
+                    ret, _ = run(train_days, train_w, stop, tp, buys, ms)
+                    groups[(stop, tp, buys)].append((ms, ret))
+    ranked = sorted(groups.items(),
+                    key=lambda kv: statistics.median(r for _, r in kv[1]), reverse=True)
+
+    results = []
+    for (stop, tp, buys), variants in ranked[:5]:
+        train_med = statistics.median(r for _, r in variants)
+        best_ms = max(variants, key=lambda x: x[1])[0]
+        test_ret, test_trades = run(test_days, test_w, stop, tp, buys, best_ms)
+        results.append({"stop": stop, "tp": tp, "buys_wk": buys, "min_score": best_ms,
+                        "train_median_pct": round(train_med, 2),
+                        "test_pct": test_ret, "test_trades": test_trades})
+
+    spy_c = spy["Close"].squeeze()
+    spy_test = [float(x) for x in spy_c[spy_c.index >= str(boundary)]]
+    spy_test_ret = round((spy_test[-1] / spy_test[0] - 1) * 100, 2) if len(spy_test) > 1 else None
+
+    top = results[0]
+    holds = top["test_pct"] > 0
+    beats_spy = spy_test_ret is not None and top["test_pct"] > spy_test_ret
+    out = {
+        "generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+        "train_period": "{} to {}".format(start, boundary),
+        "test_period": "{} to {}".format(boundary, end),
+        "top5_train_combos_tested_oos": results,
+        "spy_test_return_pct": spy_test_ret,
+        "verdict": {
+            "edge_survives_out_of_sample": holds,
+            "beats_spy_out_of_sample": bool(beats_spy),
+            "read": ("PASS: params picked on train also made {}% on unseen data"
+                     .format(top["test_pct"]) if holds else
+                     "FAIL: train-best params lost {}% on unseen data — in-sample "
+                     "results are overfit; do NOT trust the backtest headline"
+                     .format(top["test_pct"])),
+        },
+    }
+    with open(os.path.join(DATA_DIR, "walkforward.json"), "w") as f:
+        json.dump(out, f, indent=2)
+    print(json.dumps(out["verdict"], indent=2))
+    print("top-5 train combos, tested out-of-sample:")
+    for r in results:
+        print("  stop {stop} tp {tp} buys {buys_wk} ms {min_score}: "
+              "train {train_median_pct}% -> TEST {test_pct}% ({test_trades} trades)".format(**r))
+    print("SPY over test window: {}%".format(spy_test_ret))
+    print("saved: data/walkforward.json")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--months", type=int, default=4)
     ap.add_argument("--tune", action="store_true",
                     help="parameter sweep using cached candidates from a prior full run")
+    ap.add_argument("--walkforward", action="store_true",
+                    help="out-of-sample validation: train on first 70%% of weeks, test on last 30%%")
     args = ap.parse_args()
 
     cfg = botconfig.load()
     end = dt.date.today() - dt.timedelta(days=1)
     start = end - dt.timedelta(days=args.months * 30)
+    if args.walkforward:
+        walkforward(cfg)
+        return
     if args.tune:
         tune(cfg, start, end)
         return

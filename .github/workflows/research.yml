@@ -46,7 +46,8 @@ jobs:
           if [ -n "$ANTHROPIC_API_KEY" ]; then unset CLAUDE_CODE_OAUTH_TOKEN; fi
           claude -p "$(cat research/research_prompt.md)" \
             --allowedTools "WebSearch,WebFetch,Read,Write,Edit" \
-            --permission-mode acceptEdits
+            --permission-mode acceptEdits \
+            || echo "::warning::claude session skipped (usage limit or transient error) — continuing"
 
       - name: commit research
         if: env.SKIP != '1'

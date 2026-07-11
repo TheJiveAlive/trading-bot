@@ -299,29 +299,73 @@ def _sched_script():
     var dot=document.getElementById("scandot");
     var open=marketOpen();
     if(dot)dot.className="dot"+(open?"":" closed");
-    // WSB-style market countdown
+    // WSB-style market countdown — rotates every minute
+    var OPEN_MSGS=[
+      "🔔 market's OPEN — the casino is live 🎰",
+      "🚀 bell's rung, let the tendies flow",
+      "📈 stonks only go up (this is not financial advice, it's a vibe)",
+      "💎🙌 diamond hands engaged, positions armed",
+      "🖍 crayons eaten, orders placed",
+      "sir, this is a casino — and it's open",
+      "⏰ prime tendie-harvesting hours",
+      "the floor is open. so is the ceiling. statistically, mostly the floor.",
+      "buy high, sell low — wait. hang on. other way round",
+      "your wife's boyfriend wishes you luck out there",
+      "📊 charts are moving. nobody knows why. proceeding anyway",
+      "risk management? never met her. (the bot has — 8% stops armed)",
+      "it's not a loss until you sell. (the bot WILL sell. that's the point.)",
+      "nothing is ever priced in",
+      "no GUH moments yet today — the day is young",
+      "the algorithm hungers. feed it volume 🦾",
+      "may your spreads be tight and your fills be kind 🙏",
+      "🦍 apes together strong. bot ape strongest.",
+      "loss porn averted so far. stay tuned.",
+      "turning insider filings into tendies since 2026"];
+    var PRE_MSGS=[
+      "hydrate, stretch, sharpen a crayon 🖍",
+      "DD is just vibes with extra charts",
+      "futures are moving — so obviously the open will do the opposite",
+      "pre-market jitters intensify 😰",
+      "setting phasers to BUY (pending confluence)",
+      "the tendie oven is preheating 🍗",
+      "scared money don't make money. it also don't lose money. choose wisely.",
+      "insider filings read. gates armed. bring the bell. 🔔"];
+    var EVE_MSGS=[
+      "🔕 closed — the casino sleeps, the bags hold themselves",
+      "closed. loss porn processing overnight 🖨",
+      "after hours: where good news goes to get faded",
+      "the bot is studying. you should sleep. 📚",
+      "tendies secured? check the Halls 🏆🤡",
+      "overnight learnings brewing ☕ — smarter by morning",
+      "closed — tomorrow we ride at 9:30 sharp 🚀",
+      "positions tucked in. stops set. goodnight, anon 🌙"];
+    var WKND_MSGS=[
+      "🛌 weekend — market closed. go touch grass, anon",
+      "the only two days stonks can't hurt you",
+      "weekend: practice your gain-porn screenshots (manifesting)",
+      "closed till Monday — the bot dreams of green candles 💤",
+      "no charts, no tears. weekend vibes 🌴",
+      "even the algorithm takes weekends off (the learnings don't)"];
+    function pick(a){return a[Math.floor(now.getTime()/60000)%a.length];}
     var mkt=document.getElementById("mkt");
     if(mkt){
       if(open){
         mkt.className="mkt open";
-        var msgs=["🔔 market's OPEN — the casino is live 🎰",
-          "🚀 bell's rung, let the tendies flow",
-          "📈 stonks only go up (right?)",
-          "💎🙌 hands ready, positions armed"];
-        mkt.textContent=msgs[Math.floor(now.getTime()/60000)%msgs.length];
+        mkt.textContent=pick(OPEN_MSGS);
       }else{
-        // next open = 9:30 ET. Compute via next SCANS-like 13:30/14:30 UTC weekday
-        var openDef={min:30,hours:[13,14]}; // 9:30 ET summer(13:30 UTC)/winter(14:30)
+        var openDef={min:30,hours:[13,14]}; // 9:30 ET summer/winter in UTC
         var nx=nextRun(openDef);
         var dow=now.getUTCDay();
         if(dow===0||dow===6){
           mkt.className="mkt";
-          mkt.textContent="🛌 weekend — market closed. go touch grass, anon";
+          mkt.textContent=pick(WKND_MSGS);
         }else if(nx){
           var ms=nx-now;
           mkt.className="mkt";
-          mkt.textContent="⏰ market opens in "+fmt(ms)+" — "+
-            (ms<1800000?"pre-market jitters incoming 😰":"time to do your DD (or don't) 🤡");
+          // within 3h of open = pre-market flavour; otherwise evening flavour
+          mkt.textContent=(ms<10800000)
+            ? "⏰ opens in "+fmt(ms)+" — "+pick(PRE_MSGS)
+            : pick(EVE_MSGS)+" · opens in "+fmt(ms);
         }
       }
     }
@@ -426,7 +470,7 @@ def _fx_script(mood):
     Honors prefers-reduced-motion (renders nothing)."""
     return """
 <style>#fx{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;
-z-index:1;opacity:.85}@media (prefers-reduced-motion:reduce){#fx{display:none}}</style>
+z-index:1;opacity:.3}@media (prefers-reduced-motion:reduce){#fx{display:none}}</style>
 <script>
 (function(){
   var MOOD=""" + '"' + mood + '"' + """;
@@ -437,12 +481,13 @@ z-index:1;opacity:.85}@media (prefers-reduced-motion:reduce){#fx{display:none}}<
   function size(){W=c.width=innerWidth;H=c.height=innerHeight;}
   size();addEventListener("resize",size);
   var UP=MOOD==="up";
-  var N=UP?Math.min(70,Math.floor(W/22)):Math.min(120,Math.floor(W/12));
-  function coin(){return{x:Math.random()*W,y:Math.random()*-H,r:6+Math.random()*7,
-    vy:1.6+Math.random()*2.4,sp:Math.random()*Math.PI,vs:0.05+Math.random()*0.12,
-    sway:Math.random()*0.6};}
-  function drop(){return{x:Math.random()*W,y:Math.random()*-H,len:10+Math.random()*16,
-    vy:7+Math.random()*7,vx:-1.2};}
+  // subtle: a light drift, not a downpour
+  var N=UP?Math.min(14,Math.floor(W/110)):Math.min(40,Math.floor(W/40));
+  function coin(){return{x:Math.random()*W,y:Math.random()*-H,r:3.5+Math.random()*3.5,
+    vy:0.6+Math.random()*0.9,sp:Math.random()*Math.PI,vs:0.03+Math.random()*0.06,
+    sway:Math.random()*0.4};}
+  function drop(){return{x:Math.random()*W,y:Math.random()*-H,len:7+Math.random()*10,
+    vy:3.5+Math.random()*3.5,vx:-0.8};}
   for(var i=0;i<N;i++)P.push(UP?coin():drop());
   function draw(){
     x.clearRect(0,0,W,H);
@@ -460,7 +505,7 @@ z-index:1;opacity:.85}@media (prefers-reduced-motion:reduce){#fx{display:none}}<
       }else{
         p.y+=p.vy;p.x+=p.vx;
         x.beginPath();x.moveTo(p.x,p.y);x.lineTo(p.x+p.vx*1.5,p.y+p.len);
-        x.strokeStyle="rgba(120,160,220,.35)";x.lineWidth=1.4;x.stroke();
+        x.strokeStyle="rgba(120,160,220,.2)";x.lineWidth=1;x.stroke();
         if(p.y>H){P[i]=drop();P[i].y=-p.len;}
       }
     }

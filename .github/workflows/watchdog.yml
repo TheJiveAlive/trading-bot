@@ -1,0 +1,65 @@
+name: watchdog
+# FAILSAFE: GitHub drops scheduled runs, so this checks whether the important
+# things actually executed and kicks them off if not. Even if the watchdog's
+# own cron only fires some of the time, any single firing re-launches
+# everything that's stale. Cheap (~20s) and safe to run often.
+on:
+  schedule:
+    - cron: '11,29,47 13-20 * * 1-5'   # ~every 18 min through market hours
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: check and kick
+        env:
+          GH_TOKEN: ${{ github.token }}
+          R: TheJiveAlive/trading-bot
+        run: |
+          H=$(TZ=America/New_York date +%H); M=$(TZ=America/New_York date +%M); D=$(TZ=America/New_York date +%u)
+          OPEN=0
+          if [ "$D" -le 5 ] && [ "$H" -ge 9 ] && [ "$H" -lt 16 ]; then
+            if [ "$H" -gt 9 ] || [ "$M" -ge 30 ]; then OPEN=1; fi
+          fi
+          echo "market open: $OPEN"
+
+          # 1) SESSION: if market is open and no session loop is running, start one
+          if [ "$OPEN" = "1" ]; then
+            RUNNING=$(gh run list -R "$R" --workflow session.yml --status in_progress --json databaseId -q 'length')
+            QUEUED=$(gh run list -R "$R" --workflow session.yml --status queued --json databaseId -q 'length')
+            if [ "${RUNNING:-0}" = "0" ] && [ "${QUEUED:-0}" = "0" ]; then
+              echo "!! session not running — kicking market-session"
+              gh workflow run market-session -R "$R" || true
+            else
+              echo "session ok (running=$RUNNING queued=$QUEUED)"
+            fi
+          fi
+
+          # 2) PRICES: if prices.json is stale (>12 min) during market hours, kick it
+          if [ "$OPEN" = "1" ]; then
+            GEN=$(curl -s --max-time 10 "https://raw.githubusercontent.com/$R/main/data/prices.json?t=$(date +%s)" | python3 -c "import json,sys,datetime;d=json.load(sys.stdin);t=datetime.datetime.fromisoformat(d['generated']);print(int((datetime.datetime.now(datetime.timezone.utc)-t).total_seconds()))" 2>/dev/null || echo 99999)
+            echo "prices age: ${GEN}s"
+            if [ "${GEN:-99999}" -gt 720 ]; then
+              echo "!! prices stale — kicking live-prices"
+              gh workflow run live-prices -R "$R" || true
+            fi
+          fi
+
+          # 3) RESEARCH: if today's research never ran (weekday after 13:00 UTC), kick it
+          UH=$(date -u +%H)
+          if [ "$D" -le 5 ] && [ "$UH" -ge 13 ]; then
+            RDATE=$(curl -s --max-time 10 "https://raw.githubusercontent.com/$R/main/data/research.json?t=$(date +%s)" | python3 -c "import json,sys;print(json.load(sys.stdin).get('date',''))" 2>/dev/null || echo "")
+            TODAY=$(date -u +%F)
+            echo "research date: $RDATE (today $TODAY)"
+            if [ "$RDATE" != "$TODAY" ]; then
+              echo "!! research missing today — kicking daily-research"
+              gh workflow run daily-research -R "$R" || true
+            fi
+          fi
+          echo "watchdog done"

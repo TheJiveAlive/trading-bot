@@ -78,12 +78,12 @@ jobs:
             if [ "$D" -gt 5 ] || [ "$H" -ge 16 ] || [ "$H" -lt 9 ] || { [ "$H" -eq 9 ] && [ "$M" -lt 30 ]; }; then
               echo "market closed — ending session after $cycle cycles"; break
             fi
-            python -m bot.prices >/dev/null 2>&1 || true   # ~60s live price refresh
+            python -m bot.prices >/dev/null 2>&1 || true   # ~30s live price refresh
             SCANNED=0
-            if [ $((cycle % 15)) -eq 0 ]; then
+            if [ $((cycle % 30)) -eq 0 ]; then
               echo "cycle $cycle: full scan (entries + exits)"; python run.py scan >/dev/null 2>&1 || true; SCANNED=1
-            else
-              # every other cycle (~60s): EXIT-ONLY check so stops fire promptly
+            elif [ $((cycle % 2)) -eq 0 ]; then
+              # every ~60s: EXIT-ONLY check so stops fire promptly
               python run.py exits >/dev/null 2>&1 || true
             fi
             rm -f data/secrets.json
@@ -99,5 +99,5 @@ jobs:
             fi
             reseed
             cycle=$((cycle+1))
-            sleep 60
+            sleep 30
           done

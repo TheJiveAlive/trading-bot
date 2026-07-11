@@ -7,6 +7,10 @@ This runs out of trading hours, so take the time to be thorough but concise.
 ## Load
 1. `data/backtest_report.json` and `data/tune_results.json` (if present) —
    historical performance and the parameter sweep.
+1b. `data/walkforward.json` (if present) — the OUT-OF-SAMPLE verdict. This is
+   the truth serum: if `edge_survives_out_of_sample` is false, in-sample tune
+   results are overfit noise — say so prominently and weight all other
+   backtest-derived conclusions accordingly.
 2. The last ~30 lines of `data/research_journal.md`.
 3. `dashboard.html` / `history.html` — recent trades, decisions, current book.
 4. `config.json` — current parameters.

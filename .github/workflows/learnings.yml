@@ -37,7 +37,17 @@ jobs:
         run: pip install -r requirements.txt
       - name: refresh parameter sweep (cached candidates → fast)
         if: env.SKIP != '1'
+        env:
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
         run: python backtest.py --months 6 --tune || echo "tune skipped (no cache yet)"
+
+      - name: walk-forward validation (out-of-sample truth serum)
+        if: env.SKIP != '1'
+        env:
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+        run: python backtest.py --walkforward || echo "walkforward skipped (no cache yet)"
       - name: apply bounded signal-weight learning
         if: env.SKIP != '1'
         env:
@@ -70,7 +80,8 @@ jobs:
           if [ -n "$ANTHROPIC_API_KEY" ]; then unset CLAUDE_CODE_OAUTH_TOKEN; fi
           claude -p "$(cat research/study_prompt.md)" \
             --allowedTools "Read,Write,Bash(python3:*),WebSearch,WebFetch" \
-            --permission-mode acceptEdits
+            --permission-mode acceptEdits \
+            || echo "::warning::claude session skipped (usage limit or transient error) — continuing"
       - name: commit + email learnings
         if: env.SKIP != '1'
         env:
