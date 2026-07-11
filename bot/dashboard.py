@@ -398,6 +398,9 @@ def _sched_script():
 PRICES_URL = "https://raw.githubusercontent.com/TheJiveAlive/trading-bot/main/data/prices.json"
 
 
+_LIVE_WORKER = ""   # set from config.live_quote_url in generate()
+
+
 def _live_ticker(cost_basis):
     """Live-updating ticker tape: polls prices.json (CORS-enabled raw URL) every
     45s and shows held positions with live price + P/L%. cost_basis: {tkr: avg}."""
@@ -450,16 +453,29 @@ def _live_ticker(cost_basis):
     setTimeout(function(){document.querySelectorAll(".live .q.f").forEach(function(e){e.classList.remove("f");});},150);
     var gen=data.generated?new Date(data.generated):null;
     var ago=document.getElementById("liveago");
-    if(gen){var s=Math.round((Date.now()-gen)/1000);
-      ago.textContent=(data.source||"")+" · "+(s<90?s+"s ago":Math.round(s/60)+"m ago");}
-    document.getElementById("lived").style.background=gen&&(Date.now()-gen)<600000?"var(--gain)":"var(--dim)";
+    // is the US market open right now? (13:30-20:00 UTC weekdays)
+    var n=new Date(),mins=n.getUTCHours()*60+n.getUTCMinutes(),dow=n.getUTCDay();
+    var open=(dow>=1&&dow<=5&&mins>=810&&mins<1200);
+    var s=gen?Math.round((Date.now()-gen)/1000):99999;
+    if(ago){
+      if(!open){ago.textContent="● MARKET CLOSED — showing last close";ago.style.color="var(--dim)";}
+      else{ago.textContent="● LIVE · "+(data.source||"")+" · "+(s<90?s+"s":Math.round(s/60)+"m")+" ago";
+        ago.style.color=s<330?"var(--gain)":"var(--warn)";}
+    }
+    document.getElementById("lived").style.background=(open&&s<600)?"var(--gain)":"var(--dim)";
   }
+  var WORKER=\"""" + _LIVE_WORKER + """\";
   function poll(){
-    fetch(URL+"?t="+Date.now()).then(function(r){return r.json();}).then(render).catch(function(){
+    var syms=Object.keys(COST);
+    var u=WORKER?(WORKER+"?symbols="+syms.join(",")):(URL+"?t="+Date.now());
+    fetch(u,{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
+      if(WORKER)d.held=syms;   // worker returns only prices; supply held list
+      render(d);
+    }).catch(function(){
       document.getElementById("lived").style.background="var(--loss)";
     });
   }
-  poll();setInterval(poll,30000);
+  poll();setInterval(poll,WORKER?20000:30000);
 })();
 </script>"""
 
@@ -1568,8 +1584,10 @@ def _history(st):
 # ---------------- entry ----------------
 
 def generate():
+    global _LIVE_WORKER
     st = _fetch_state()
     cfg, research, gen = st["cfg"], st["research"], st["now"]
+    _LIVE_WORKER = (cfg.get("live_quote_url") or "")
     # mood drives the ambient effect: net P/L vs deposits, with a small deadband
     net = st["equity"] - st["deposited"] if st["deposited"] else 0.0
     pct = (net / st["deposited"] * 100) if st["deposited"] else 0.0

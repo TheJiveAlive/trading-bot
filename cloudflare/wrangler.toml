@@ -1,0 +1,7 @@
+name = "robinhood-quotes"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+# Alpaca keys are set as SECRETS, never here:
+#   wrangler secret put ALPACA_KEY
+#   wrangler secret put ALPACA_SECRET
