@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-11T08:39:31+00:00",
+  "generated": "2026-07-11T14:26:22+00:00",
   "train_period": "2026-01-10 to 2026-05-18",
   "test_period": "2026-05-18 to 2026-07-09",
   "top5_train_combos_tested_oos": [
@@ -8,7 +8,7 @@
       "tp": 20.0,
       "buys_wk": 1,
       "min_score": 4.5,
-      "train_median_pct": 14.38,
+      "train_median_pct": 18.04,
       "test_pct": 0.75,
       "test_trades": 4
     },
@@ -17,7 +17,7 @@
       "tp": 20.0,
       "buys_wk": 1,
       "min_score": 4.5,
-      "train_median_pct": 12.7,
+      "train_median_pct": 16.14,
       "test_pct": 4.7,
       "test_trades": 3
     },
@@ -26,7 +26,7 @@
       "tp": 20.0,
       "buys_wk": 1,
       "min_score": 4.5,
-      "train_median_pct": 5.08,
+      "train_median_pct": 6.57,
       "test_pct": 4.7,
       "test_trades": 3
     },
@@ -35,7 +35,7 @@
       "tp": 15.0,
       "buys_wk": 2,
       "min_score": 4.5,
-      "train_median_pct": 2.97,
+      "train_median_pct": 2.94,
       "test_pct": 5.97,
       "test_trades": 6
     },
@@ -44,7 +44,7 @@
       "tp": 25.0,
       "buys_wk": 1,
       "min_score": 4.5,
-      "train_median_pct": 1.62,
+      "train_median_pct": 1.42,
       "test_pct": 4.06,
       "test_trades": 5
     }
