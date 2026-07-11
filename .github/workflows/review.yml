@@ -61,8 +61,9 @@ jobs:
           if [ -n "$ANTHROPIC_API_KEY" ]; then unset CLAUDE_CODE_OAUTH_TOKEN; fi
           claude -p "$(cat research/review_prompt.md)" \
             --allowedTools "Read,Write,Bash(python3:*),WebSearch,WebFetch" \
-            --permission-mode acceptEdits \
+            --permission-mode acceptEdits --output-format json > /tmp/claude_review.json \
             || echo "::warning::claude session skipped (usage limit or transient error) — continuing"
+          python -m bot.token_log /tmp/claude_review.json review || true
 
       - name: monthly learning (first Sunday)
         if: env.SKIP != '1'

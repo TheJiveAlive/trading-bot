@@ -3,8 +3,7 @@ name: overnight-learnings
 # that writes proposed improvements to data/learnings.md. Runs nightly.
 on:
   schedule:
-    - cron: '17 20 * * 1-5'  # ~20:17 UTC weekdays — right after the US close (fresh day's trades)
-    - cron: '17 2 * * 2-6'   # ~02:17 UTC — deep overnight pass
+    - cron: '17 2 * * 2-6'   # 1x/day overnight (was 2x) — token thrift; heavy compute is Python-only anyway
   workflow_dispatch:
 
 permissions:
@@ -80,8 +79,9 @@ jobs:
           if [ -n "$ANTHROPIC_API_KEY" ]; then unset CLAUDE_CODE_OAUTH_TOKEN; fi
           claude -p "$(cat research/study_prompt.md)" \
             --allowedTools "Read,Write,Bash(python3:*),WebSearch,WebFetch" \
-            --permission-mode acceptEdits \
+            --permission-mode acceptEdits --output-format json > /tmp/claude_study.json \
             || echo "::warning::claude session skipped (usage limit or transient error) — continuing"
+          python -m bot.token_log /tmp/claude_study.json study || true
       - name: commit + email learnings
         if: env.SKIP != '1'
         env:

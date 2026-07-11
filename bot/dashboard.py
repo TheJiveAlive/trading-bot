@@ -1314,6 +1314,36 @@ def _fmt_dur(s):
     return "{}m {:02d}s".format(s // 60, s % 60)
 
 
+def _token_panel(st):
+    """Claude subscription usage — so you can see what's eating your limits."""
+    try:
+        from bot.token_log import summary
+        day = summary(1)
+        week = summary(7)
+    except Exception:
+        return ""
+    if not day and not week:
+        return panel("&#129504; Claude usage", "tokens",
+                     '<div class="mut">no sessions logged yet — populates as the '
+                     'research/intel/learnings jobs run</div>')
+    def fmt(n): return "{:,}".format(int(n or 0))
+    rows = "".join(
+        '<tr><td class="mono">{lb}</td><td class="mono r">{s}</td>'
+        '<td class="mono r">{i}</td><td class="mono r">{o}</td></tr>'.format(
+            lb=lbl, s=s["sessions"], i=fmt(s["input_tokens"]), o=fmt(s["output_tokens"]))
+        for lbl, s in (("Today", day), ("Last 7d", week)))
+    by = day.get("by_label", {})
+    chips = "".join('<span class="chip">{}: {}</span>'.format(k, v)
+                    for k, v in sorted(by.items(), key=lambda x: -x[1]))
+    return panel("&#129504; Claude usage", "tokens",
+                 '<table><tr><th>Window</th><th class="r">Sessions</th>'
+                 '<th class="r">In</th><th class="r">Out</th></tr>{}</table>'
+                 '<div class="klabel">Today by job</div><div class="chips">{}</div>'
+                 '<div class="note" style="margin-top:6px">Cut usage by lowering job '
+                 'frequency (intel/learnings crons). Heavy backtests are Python — '
+                 'zero tokens.</div>'.format(rows, chips or '<span class="mut">—</span>'))
+
+
 def _github_panel(st):
     health = _load_health()
     runs = health.get("workflows", {})
@@ -1392,6 +1422,7 @@ def _overview(st):
     body += _research_panel(st)
     body += _github_panel(st)
     body += "</div>"
+    body += _token_panel(st)
     body += '<div class="grid2">'
     body += _news_panel(st)
     body += panel("Recent trades", "ledger " + st["now"],

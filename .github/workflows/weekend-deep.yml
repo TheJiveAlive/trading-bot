@@ -1,0 +1,82 @@
+name: weekend-deep
+# Heavy compute while the market is closed. PYTHON-ONLY — zero Claude tokens.
+# Runs long backtests, the full parameter sweep, and walk-forward validation
+# over a longer window than the nightly job affords. Results feed the nightly
+# Claude study (which reads the JSON, cheaply). Designed to be portable: the
+# same steps run on the Linux host next week (self-hosted runner) unchanged.
+on:
+  schedule:
+    - cron: '23 6 * * 6'    # Saturday early — long window, nothing else competing
+    - cron: '23 6 * * 0'    # Sunday early
+  workflow_dispatch:
+    inputs:
+      months:
+        description: "backtest window in months"
+        default: "12"
+
+permissions:
+  contents: write
+concurrency:
+  group: weekend-deep
+
+jobs:
+  deep:
+    runs-on: ubuntu-latest    # swap to [self-hosted, linux] on the OptiPlex
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: install deps
+        run: pip install -r requirements.txt
+      - name: deep backtest (long window) + full sweep + walk-forward
+        env:
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+        run: |
+          M="${{ github.event.inputs.months || '12' }}"
+          echo "=== deep backtest: $M months ==="
+          python backtest.py --months "$M" || echo "backtest partial"
+          echo "=== full parameter sweep ==="
+          python backtest.py --months "$M" --tune || echo "tune partial"
+          echo "=== walk-forward out-of-sample validation ==="
+          python backtest.py --walkforward || echo "walkforward partial"
+      - name: apply bounded auto-tuning from the deeper evidence
+        run: |
+          python -m bot.learn tune || echo "auto-tune skipped"
+      - name: commit results + caches
+        run: |
+          git config user.name "trading-bot"
+          git config user.email "trading-bot@users.noreply.github.com"
+          git add -A data config.json
+          git commit -m "weekend deep run $(date -u '+%Y-%m-%d')" || echo "no changes"
+          for i in 1 2 3; do git pull --rebase -X ours origin main && git push && break; sleep 3; done
+      - name: email a short summary
+        env:
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: |
+          python3 -c "
+          import json, os
+          json.dump({'smtp_host':'smtp.gmail.com','smtp_port':465,
+                     'smtp_user':os.environ.get('SMTP_USER',''),
+                     'smtp_app_password':os.environ.get('SMTP_APP_PASSWORD',''),
+                     'email_to':os.environ.get('EMAIL_TO','')}, open('data/secrets.json','w'))
+          from bot import config, notify
+          config.load()
+          lines=['Weekend deep run complete.','']
+          try:
+              d=json.load(open('data/backtest_report.json'))
+              lines.append('Backtest: {}% vs SPY {}% | {} trades | win {}% | maxDD {}%'.format(
+                  d['return_pct'],d['spy_buy_hold_return_pct'],d['closed_trades'],d['win_rate_pct'],d['max_drawdown_pct']))
+          except Exception: pass
+          try:
+              w=json.load(open('data/walkforward.json'))
+              v=w['verdict']; lines.append(''); lines.append('Walk-forward: '+v['read'])
+              lines.append('beats SPY out-of-sample: {}'.format(v['beats_spy_out_of_sample']))
+          except Exception: pass
+          notify.send_email('[bot] weekend deep run', '\n'.join(lines))
+          os.remove('data/secrets.json')" || true

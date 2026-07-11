@@ -1,7 +1,7 @@
 name: hourly-intel
 on:
   schedule:
-    - cron: '8 14,17,20 * * 1-5'   # every ~3h during US market hours (lighter Claude usage)
+    - cron: '8 15 * * 1-5'   # 1x/day midday (was 3x) — token thrift
   workflow_dispatch:
 
 permissions:
@@ -54,8 +54,9 @@ jobs:
           if [ -n "$ANTHROPIC_API_KEY" ]; then unset CLAUDE_CODE_OAUTH_TOKEN; fi
           claude -p "$(cat research/intel_prompt.md)" \
             --allowedTools "WebSearch,WebFetch,Read,Write" \
-            --permission-mode acceptEdits \
+            --permission-mode acceptEdits --output-format json > /tmp/claude_intel.json \
             || echo "::warning::claude session skipped (usage limit or transient error) — continuing"
+          python -m bot.token_log /tmp/claude_intel.json intel || true
 
       - name: commit intel
         if: env.SKIP != '1'
