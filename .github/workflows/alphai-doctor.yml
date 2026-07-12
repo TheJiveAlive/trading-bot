@@ -24,8 +24,14 @@ jobs:
           ALPHAI_KEY: ${{ secrets.ALPHAI_KEY }}
         run: |
           python3 - <<'PY'
-          from bot.signals.alphai import configured, health, ticker_news, sentiment_bonus
+          from bot.signals.alphai import configured, health, ticker_news, sentiment_bonus, _get
           print("key set    :", configured())
+          raw = _get("/api/news/", {"symbol": "AAPL", "min_relevance": 5})
+          if raw and raw.get("results"):
+              it = raw["results"][0]
+              print("item keys  :", sorted(it.keys()))
+              print("sample     :", {k: str(v)[:60] for k, v in it.items()
+                                     if k != "enrichment"})
           ok, detail = health()
           print("health     :", "OK" if ok else "FAIL", "-", detail)
           news = ticker_news("AAPL")
