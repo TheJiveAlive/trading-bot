@@ -68,3 +68,31 @@ def insider_sentiment_bonus(ticker):
         return round(max(-0.3, min(mspr / 100 * 0.3, 0.3)), 2)
     except Exception:
         return None
+
+
+def analyst_trend(ticker):
+    """-0.4..+0.4 from Finnhub analyst recommendation trend (latest month).
+    BIDIRECTIONAL: net buy/strongBuy support entries; net sell/strongSell is a
+    bearish tell (used to avoid buys and, via the caller, flag held names).
+    None without a key. Free endpoint."""
+    k = _key()
+    if not k:
+        return None
+    try:
+        r = requests.get(BASE + "/stock/recommendation",
+                         params={"symbol": ticker, "token": k}, timeout=15)
+        if r.status_code != 200:
+            return None
+        rows = r.json()
+        if not rows:
+            return None
+        m = rows[0]   # most recent month
+        bull = m.get("strongBuy", 0) + m.get("buy", 0)
+        bear = m.get("strongSell", 0) + m.get("sell", 0)
+        total = bull + bear + m.get("hold", 0)
+        if total < 2:   # too few analysts to be meaningful (common for small-caps)
+            return 0.0
+        net = (bull - bear) / total   # -1..+1
+        return round(max(-0.4, min(net * 0.4, 0.4)), 2)
+    except Exception:
+        return None

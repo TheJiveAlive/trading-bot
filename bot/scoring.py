@@ -32,10 +32,13 @@ def score_candidates(cfg, insider_hits, sector_ranks, snapshot, research=None,
         r_sc = reddit_score((reddit_data or {}).get(ticker))
         if r_sc:
             parts["reddit"] = round(r_sc * w.get("reddit_weight", 0.75), 2)
-        from bot.signals.finnhub_data import insider_sentiment_bonus
+        from bot.signals.finnhub_data import insider_sentiment_bonus, analyst_trend
         fh_sent = insider_sentiment_bonus(ticker)
         if fh_sent:
             parts["insider_sentiment"] = fh_sent
+        at = analyst_trend(ticker)   # bidirectional: +buy consensus / −sell
+        if at:
+            parts["analyst_trend"] = at
         from bot.signals.catalysts import earnings_catalyst_score, breakout_score
         news_raw = news_score(news)
         ret5d = info.get("52WeekChange")  # coarse; refined in confluence
