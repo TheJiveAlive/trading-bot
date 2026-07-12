@@ -94,6 +94,33 @@ def _reconcile(broker_positions):
     return rows
 
 
+def _sync_ledger_cash(cash, state):
+    """Broker = source of truth for cash too. The ledger keeps USD (stocks trade
+    in USD) while the T212 account is GBP; convert the broker's free cash at the
+    shared FX rate and adopt it when the ledger has drifted >2% (fills at T212
+    include their own FX conversion, so drift is expected). Logged as cash_sync."""
+    try:
+        free = float((cash or {}).get("free") or 0)
+        if free <= 0:
+            return
+        from bot import fx
+        if state.get("account_currency", "GBP") == "GBP":
+            free_usd = free * fx.usd_per_gbp()
+        else:
+            free_usd = free
+        con = ledger.connect()
+        cur = ledger.cash(con)
+        if cur > 0 and abs(free_usd - cur) / cur > 0.02:
+            ledger.set_cash(con, free_usd)
+            ledger.log_decision(con, "cash_sync",
+                                "adopted broker free cash ${:.2f} (ledger had ${:.2f})".format(
+                                    free_usd, cur))
+        con.commit()
+        con.close()
+    except Exception:
+        pass
+
+
 def sync(cfg=None, force=False):
     """Refresh data/broker_state.json from Trading 212. Best-effort: on any
     error it writes an error state rather than raising, so callers (dashboard,
@@ -113,6 +140,8 @@ def sync(cfg=None, force=False):
         "configured": broker_t212.configured(),
         "live_orders_enabled": bool(cfg.get("broker", {}).get("live_orders_enabled")),
         "mode": cfg.get("mode"),
+        # T212 account cash/P-L figures come back in the ACCOUNT currency
+        "account_currency": cfg.get("broker", {}).get("account_currency", "GBP"),
         "ok": False,
         "detail": "",
         "cash": None,
@@ -143,8 +172,11 @@ def sync(cfg=None, force=False):
         state["cash"] = cash
         state["positions"] = positions
         state["reconciliation"] = _reconcile(positions)
-        state["detail"] = "{} account reachable: {} position(s), free ${}".format(
-            env, len(positions), (cash or {}).get("free", "?"))
+        _sync_ledger_cash(cash, state)
+        state["detail"] = "{} account reachable: {} position(s), free {}{}".format(
+            env, len(positions),
+            "£" if state["account_currency"] == "GBP" else "$",
+            (cash or {}).get("free", "?"))
     except Exception as e:
         state["detail"] = "Trading 212 error: {}".format(e).replace("\n", " ")[:200]
 

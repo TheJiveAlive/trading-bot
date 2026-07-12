@@ -266,33 +266,15 @@ def _sh(x):
     return ("{:.4f}".format(x)).rstrip("0").rstrip(".")
 
 
-_FX_CACHE = os.path.join(ROOT, "data", "cache", "fx_gbpusd.json")
-_FX_RATE = 0.74     # GBP per USD fallback; refreshed by _fx_rate()
+_FX_RATE = 0.74     # GBP per USD; refreshed by _fx_rate() at each generate()
 
 
 def _fx_rate():
-    """GBP-per-USD rate for display (the bot TRADES in USD; Josh thinks in £).
-    Yahoo GBPUSD=X, cached 12h, falls back to the last known rate."""
+    """GBP-per-USD display rate (the bot TRADES in USD; the account is GBP).
+    Shared logic lives in bot.fx so broker_sync uses the identical rate."""
     global _FX_RATE
-    try:
-        if os.path.exists(_FX_CACHE):
-            with open(_FX_CACHE) as f:
-                c = json.load(f)
-            if time.time() - c.get("at", 0) < 12 * 3600 and c.get("rate"):
-                _FX_RATE = float(c["rate"])
-                return _FX_RATE
-            _FX_RATE = float(c.get("rate") or _FX_RATE)   # stale beats hardcoded
-    except Exception:
-        pass
-    try:
-        gbpusd = market.last_price("GBPUSD=X")            # USD per £1
-        if gbpusd and gbpusd > 0.5:
-            _FX_RATE = round(1.0 / gbpusd, 6)
-            os.makedirs(os.path.dirname(_FX_CACHE), exist_ok=True)
-            with open(_FX_CACHE, "w") as f:
-                json.dump({"rate": _FX_RATE, "at": time.time()}, f)
-    except Exception:
-        pass
+    from bot import fx
+    _FX_RATE = fx.gbp_per_usd()
     return _FX_RATE
 
 
@@ -1205,9 +1187,23 @@ def _hero_chart(curve, days=None, w=960, h=230):
 
 
 def _hero(st):
-    """Themon hero: TOTAL PORTFOLIO VALUE + change + timeframe pills + chart."""
-    net = st["equity"] - st["deposited"] if st["deposited"] else 0.0
-    pct = (net / st["deposited"] * 100) if st["deposited"] else 0.0
+    """Themon hero: TOTAL PORTFOLIO VALUE + change + timeframe pills + chart.
+    When Trading 212 is connected, the headline number IS the broker's own
+    account total (already GBP) — the dashboard reports the account, not an
+    estimate. Ledger history still draws the chart."""
+    b = st.get("broker") or {}
+    b_total = (b.get("cash") or {}).get("total") if b.get("ok") else None
+    dep_gbp = _gbp(st["deposited"])
+    if b_total is not None:
+        eq_disp = "£{:,.2f}".format(b_total)
+        net = b_total - dep_gbp if dep_gbp else 0.0
+        pct = (net / dep_gbp * 100) if dep_gbp else 0.0
+        src_note = "Trading 212 {} account (GBP)".format(b.get("environment", "demo"))
+    else:
+        eq_disp = _money(st["equity"])
+        net = _gbp(st["equity"] - st["deposited"]) if st["deposited"] else 0.0
+        pct = (net / dep_gbp * 100) if dep_gbp else 0.0
+        src_note = "ledger equity, reconciled against Trading 212 below"
     cls = "gain" if net >= 0 else "loss"
     arrow = "&#9650;" if net >= 0 else "&#9660;"
     frames = (("1W", 7), ("1M", 30), ("3M", 90), ("ALL", None))
@@ -1223,9 +1219,9 @@ def _hero(st):
     return """<div class="hero">
 <div class="hrow"><div class="grow">
   <div class="hl">Total portfolio value</div>
-  <div class="hv mono" title="ledger equity, reconciled against Trading 212 below">{eq}</div>
+  <div class="hv mono" title="{src}">{eq}</div>
   <div class="hc {cls}">{sgn}£{net:,.2f} ({arrow} {pct:.1f}%) <span class="mut"
-    style="font-weight:400">vs deposits &middot; shown in GBP, trades in USD (£1 = ${fx})</span></div>
+    style="font-weight:400">vs deposits &middot; {src} &middot; stocks trade in USD (£1 = ${fx})</span></div>
 </div><div class="tfs">{pills}</div></div>
 {charts}
 <script>
@@ -1237,8 +1233,8 @@ function tfSel(b){{
     if(el)el.style.display=(k===b.getAttribute('data-k'))?'block':'none';
   }});
 }}
-</script></div>""".format(eq=_money(st["equity"]), cls=cls,
-                          sgn="+" if net >= 0 else "&#8722;", net=_gbp(abs(net)),
+</script></div>""".format(eq=eq_disp, cls=cls, src=src_note,
+                          sgn="+" if net >= 0 else "&#8722;", net=abs(net),
                           fx="{:.2f}".format(1 / _FX_RATE) if _FX_RATE else "?",
                           arrow=arrow, pct=abs(pct), pills=pills, charts=charts)
 
@@ -1401,6 +1397,7 @@ def _broker_panel(st):
     total = cash.get("total")
     invested = cash.get("invested")
     ppl = cash.get("ppl")
+    # T212 account figures arrive ALREADY in the account currency (GBP) — no conversion
     kpis = (
         '<div class="brk-kpis">'
         '<div><span class="mut">Free cash</span><b class="mono">&#163;{:,.2f}</b></div>'
@@ -1408,8 +1405,8 @@ def _broker_panel(st):
         '<div><span class="mut">Total</span><b class="mono">&#163;{:,.2f}</b></div>'
         '<div><span class="mut">Open P/L</span><b class="mono {pc}">{ps}&#163;{:,.2f}</b></div>'
         '</div>').format(
-        _gbp(free), _gbp(invested), _gbp(total),
-        _gbp(abs(ppl or 0)), pc="gain" if (ppl or 0) >= 0 else "loss",
+        free or 0, invested or 0, total or 0,
+        abs(ppl or 0), pc="gain" if (ppl or 0) >= 0 else "loss",
         ps="+" if (ppl or 0) >= 0 else "−")
 
     # positions held at the broker
@@ -1423,7 +1420,7 @@ def _broker_panel(st):
                 a=p.get("avg_price") or 0,
                 n="${:.2f}".format(p["current_price"]) if p.get("current_price") else "—",
                 pc="gain" if (p.get("pnl") or 0) >= 0 else "loss",
-                ps="+" if (p.get("pnl") or 0) >= 0 else "−", p=_gbp(abs(p.get("pnl") or 0)))
+                ps="+" if (p.get("pnl") or 0) >= 0 else "−", p=abs(p.get("pnl") or 0))
             for p in pos)
         ptbl = ('<table style="font-size:13px;margin-top:6px"><tr><th>Ticker</th>'
                 '<th class="r">Qty</th><th class="r">Avg</th><th class="r">Now</th>'
