@@ -12,6 +12,7 @@ at different rates (prices vs research vs ledger).
 import datetime as dt
 import json
 import os
+import time
 
 from bot import config, ledger, market, risk
 from bot.config import ROOT
@@ -234,9 +235,6 @@ tr:last-child td { border-bottom:none; }
 .sdot.red { background:var(--loss); box-shadow:0 0 6px rgba(255,122,112,.5); }
 .sdot.grey { background:var(--dim); }
 .sdot.run { background:var(--warn); animation:pulse 1.3s infinite; }
-.rbar { height:5px; background:#121A2C; border-radius:3px; margin-top:5px; overflow:hidden; max-width:220px; }
-.rbar i { display:block; height:5px; border-radius:3px;
-  background:linear-gradient(90deg,var(--warn),var(--teal)); transition:width 1s linear; }
 .mstrip { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:8px; }
 .mtile { background:linear-gradient(180deg,#0C1422,#0A0F1B); border:1px solid var(--line);
   border-radius:8px; padding:9px 12px; }
@@ -268,18 +266,56 @@ def _sh(x):
     return ("{:.4f}".format(x)).rstrip("0").rstrip(".")
 
 
+_FX_CACHE = os.path.join(ROOT, "data", "cache", "fx_gbpusd.json")
+_FX_RATE = 0.74     # GBP per USD fallback; refreshed by _fx_rate()
+
+
+def _fx_rate():
+    """GBP-per-USD rate for display (the bot TRADES in USD; Josh thinks in £).
+    Yahoo GBPUSD=X, cached 12h, falls back to the last known rate."""
+    global _FX_RATE
+    try:
+        if os.path.exists(_FX_CACHE):
+            with open(_FX_CACHE) as f:
+                c = json.load(f)
+            if time.time() - c.get("at", 0) < 12 * 3600 and c.get("rate"):
+                _FX_RATE = float(c["rate"])
+                return _FX_RATE
+            _FX_RATE = float(c.get("rate") or _FX_RATE)   # stale beats hardcoded
+    except Exception:
+        pass
+    try:
+        gbpusd = market.last_price("GBPUSD=X")            # USD per £1
+        if gbpusd and gbpusd > 0.5:
+            _FX_RATE = round(1.0 / gbpusd, 6)
+            os.makedirs(os.path.dirname(_FX_CACHE), exist_ok=True)
+            with open(_FX_CACHE, "w") as f:
+                json.dump({"rate": _FX_RATE, "at": time.time()}, f)
+    except Exception:
+        pass
+    return _FX_RATE
+
+
+def _gbp(v_usd):
+    """USD account value -> GBP display value."""
+    return (v_usd or 0) * _FX_RATE
+
+
 def _money(v, sign=False):
-    """Compact currency: $8.0k, $1.2M, $940, −$3.7k. Keeps KPIs short."""
+    """Compact GBP display of a USD value: £8.0k, £1.2M, £940, −£3.7k.
+    Account VALUES show in £ (Josh's currency); per-share PRICES stay in $
+    (the currency they actually trade in)."""
+    v = _gbp(v)
     s = "+" if (sign and v >= 0) else ("−" if v < 0 else "")
     a = abs(v)
     if a >= 1_000_000:
-        body = "${:.2f}M".format(a / 1_000_000)
+        body = "£{:.2f}M".format(a / 1_000_000)
     elif a >= 10_000:
-        body = "${:.1f}k".format(a / 1000)
+        body = "£{:.1f}k".format(a / 1000)
     elif a >= 1_000:
-        body = "${:,.0f}".format(a)
+        body = "£{:,.0f}".format(a)
     else:
-        body = "${:,.2f}".format(a)
+        body = "£{:,.2f}".format(a)
     return s + body
 
 
@@ -419,10 +455,6 @@ def _page(active, body, cfg, research, gen, mood="flat", cost_basis=None):
 <div class="mkt" id="mkt" style="margin:0">checking the tape…</div>
 {live}
 {body}
-<div class="foot">page generated {gen} &middot; browser auto-reloads every 5 min &middot;
-live quotes poll every 45s during market hours &middot; click any ticker for the full
-TradingView chart<br/>
-scans hourly &middot; hourly intel &middot; daily research &middot; weekly review</div>
 </div></div></div>{sched}{fx}</body></html>""".format(
         css=CSS, nav=nav, sidenav=sidenav, body=body, gen=gen, fx="",
         sched=_sched_script(), live=_live_ticker(cost_basis or {}),
@@ -569,23 +601,6 @@ def _sched_script():
       frac=Math.max(0,Math.min(1,frac));bar.style.width=(frac*100).toFixed(1)+"%";}}
   }
   tick();setInterval(tick,1000);
-  // live-tick any currently-running workflow timers + progress bars
-  var runbars=document.querySelectorAll(".rbar");
-  function tickRuns(){
-    runbars.forEach(function(b){
-      var start=parseInt(b.getAttribute("data-start")||"0",10);
-      var avg=parseInt(b.getAttribute("data-avg")||"0",10);
-      start+=1;b.setAttribute("data-start",start);
-      var i=b.querySelector("i");
-      if(avg>0){i.style.width=Math.min(97,Math.round(100*start/avg))+"%";}
-      var lbl=b.parentNode.childNodes[0];
-      if(lbl&&lbl.nodeType===3){
-        var m=Math.floor(start/60),s=start%60;
-        lbl.textContent="running… "+(m>0?m+"m "+(s<10?"0":"")+s+"s":s+"s")+(avg>0?" / ~"+Math.floor(avg/60)+"m "+(avg%60<10?"0":"")+(avg%60)+"s":"");
-      }
-    });
-  }
-  if(runbars.length)setInterval(tickRuns,1000);
 })();
 </script>"""
 
@@ -598,7 +613,10 @@ _LIVE_WORKER = ""   # set from config.live_quote_url in generate()
 
 def _live_ticker(cost_basis):
     """Live-updating ticker tape: polls prices.json (CORS-enabled raw URL) every
-    45s and shows held positions with live price + P/L%. cost_basis: {tkr: avg}."""
+    45s and shows held positions with live price + P/L%. cost_basis: {tkr: avg}.
+    Renders nothing when the book is flat — no ghosts of former positions."""
+    if not cost_basis:
+        return ""
     import json as _json
     return """
 <style>
@@ -921,9 +939,9 @@ def _period_stats(closed):
         nc = "gain" if net >= 0 else "loss"
         rows.append(
             '<tr><td class="mono">{lb}</td><td class="mono r">{n}</td>'
-            '<td class="mono r {nc}">{ns}${na:,.2f}</td>'
+            '<td class="mono r {nc}">{ns}&#163;{na:,.2f}</td>'
             '<td class="mono r gain">{aw}</td><td class="mono r loss">{al}</td></tr>'.format(
-                lb=label, n=len(ts), nc=nc, ns="+" if net >= 0 else "−", na=abs(net),
+                lb=label, n=len(ts), nc=nc, ns="+" if net >= 0 else "−", na=_gbp(abs(net)),
                 aw="+{:.1f}%".format(avg_w) if wins else "—",
                 al="{:.1f}%".format(avg_l) if losses else "—"))
     return ('<table><tr><th>Window</th><th class="r">Trades</th><th class="r">Net P/L</th>'
@@ -973,10 +991,10 @@ def _hall(closed):
             '<span class="{cls}">{ps}{pct:.1f}%</span></div>'
             '<div class="note" style="font-size:11px">{cap}</div>'
             '<div class="mono" style="font-size:10.5px;color:var(--dim);margin-top:3px">'
-            '${b:.2f} → ${s:.2f} · {ns}${amt:,.2f}</div></div>').format(
+            '${b:.2f} → ${s:.2f} · {ns}&#163;{amt:,.2f}</div></div>').format(
             e=emoji, tk=t["ticker"], cls=cls, ps="+" if t["pct"] >= 0 else "",
             pct=t["pct"], cap=cap, b=t["buy"], s=t["sell"],
-            ns="+" if t["pnl"] >= 0 else "−", amt=abs(t["pnl"]))
+            ns="+" if t["pnl"] >= 0 else "−", amt=_gbp(abs(t["pnl"])))
 
     empty = '<div class="mut" style="font-size:12px">none yet</div>'
     fame = "".join(card(t, FAME_CAPS, i) for i, t in enumerate(best)) or empty
@@ -1109,13 +1127,13 @@ def _kpis(st):
     def cls(v): return "gain" if v >= 0 else "loss"
     def sgn(v): return "+" if v >= 0 else "−"
     return """<div class="kpis">
-<div class="kpi"><div class="l">Cash</div><div class="v mono" title="${cashf:,.2f}">{cash}</div><div class="s">{np} open position(s)</div></div>
+<div class="kpi"><div class="l">Cash</div><div class="v mono" title="&#163;{cashf:,.2f}">{cash}</div><div class="s">{np} open position(s)</div></div>
 <div class="kpi"><div class="l">Deposited</div><div class="v mono">{dep}</div><div class="s">total paid in</div></div>
 <div class="kpi"><div class="l">Net P/L</div><div class="v mono {nc}">{net}</div><div class="s">vs deposits</div></div>
 <div class="kpi"><div class="l">Unrealized</div><div class="v mono {uc}">{ur}</div><div class="s">open positions</div></div>
 <div class="kpi"><div class="l">Realized</div><div class="v mono {rc}">{rl}</div><div class="s">{nt} closed trade(s)</div></div>
 </div>""".format(dep=_money(st["deposited"]),
-                 cash=_money(st["cash"]), cashf=st["cash"], np=len(st["positions"]),
+                 cash=_money(st["cash"]), cashf=_gbp(st["cash"]), np=len(st["positions"]),
                  nc=cls(net), net=_money(net, sign=True),
                  uc=cls(unreal), ur=_money(unreal, sign=True),
                  rc=cls(realized), rl=_money(realized, sign=True),
@@ -1152,7 +1170,7 @@ def _hero_chart(curve, days=None, w=960, h=230):
         grid.append('<line x1="0" y1="{y:.1f}" x2="{iw}" y2="{y:.1f}" '
                     'stroke="#141C2E" stroke-width="1"/>'.format(y=yy, iw=iw))
         ylab.append('<text x="{x}" y="{y:.1f}" fill="#57678A" font-size="9.5" '
-                    'font-family="ui-monospace,Menlo,monospace">${v}</text>'.format(
+                    'font-family="ui-monospace,Menlo,monospace">&#163;{v}</text>'.format(
                         x=iw + 8, y=yy + 3, v="{:,.0f}".format(v) if hi >= 200
                         else "{:,.2f}".format(v)))
     xlab = []
@@ -1187,10 +1205,11 @@ def _hero(st):
     cls = "gain" if net >= 0 else "loss"
     arrow = "&#9650;" if net >= 0 else "&#9660;"
     frames = (("1W", 7), ("1M", 30), ("3M", 90), ("ALL", None))
+    curve_gbp = [(ts, _gbp(eq)) for ts, eq in st["curve"]]
     charts = "".join(
         '<div class="hchart" id="eqc-{k}" style="display:{d}">{svg}</div>'.format(
             k=k, d="block" if k == "ALL" else "none",
-            svg=_hero_chart(st["curve"], days))
+            svg=_hero_chart(curve_gbp, days))
         for k, days in frames)
     pills = "".join(
         '<button class="tf{on}" data-k="{k}" onclick="tfSel(this)">{k}</button>'.format(
@@ -1199,8 +1218,8 @@ def _hero(st):
 <div class="hrow"><div class="grow">
   <div class="hl">Total portfolio value</div>
   <div class="hv mono" title="ledger equity, reconciled against Trading 212 below">{eq}</div>
-  <div class="hc {cls}">{sgn}${net:,.2f} ({arrow} {pct:.1f}%) <span class="mut"
-    style="font-weight:400">vs deposits</span></div>
+  <div class="hc {cls}">{sgn}£{net:,.2f} ({arrow} {pct:.1f}%) <span class="mut"
+    style="font-weight:400">vs deposits &middot; shown in GBP, trades in USD (£1 = ${fx})</span></div>
 </div><div class="tfs">{pills}</div></div>
 {charts}
 <script>
@@ -1213,7 +1232,8 @@ function tfSel(b){{
   }});
 }}
 </script></div>""".format(eq=_money(st["equity"]), cls=cls,
-                          sgn="+" if net >= 0 else "&#8722;", net=abs(net),
+                          sgn="+" if net >= 0 else "&#8722;", net=_gbp(abs(net)),
+                          fx="{:.2f}".format(1 / _FX_RATE) if _FX_RATE else "?",
                           arrow=arrow, pct=abs(pct), pills=pills, charts=charts)
 
 
@@ -1360,12 +1380,9 @@ def _broker_panel(st):
         ostate="LIVE" if orders_on else "dry-run")
 
     if not b.get("configured"):
-        inner = ('<div class="mut" style="padding:14px 0;font-size:13.5px">'
-                 'Not yet connected — the bot is running on the <b>paper ledger</b>. '
-                 'Set the <span class="mono">T212_API_KEY</span> secret and this panel '
-                 'becomes the live account of record.<div class="note" style="margin-top:8px">'
-                 '{}</div></div>').format(badges)
-        return panel("&#127974; Broker &mdash; source of truth", "idle", inner)
+        # no key in THIS environment (e.g. a local render) — the published page
+        # is rendered in Actions where the broker is connected. Show nothing.
+        return ""
 
     if not b.get("ok"):
         inner = ('<div class="loss" style="padding:12px 0;font-size:13.5px">'
@@ -1380,27 +1397,27 @@ def _broker_panel(st):
     ppl = cash.get("ppl")
     kpis = (
         '<div class="brk-kpis">'
-        '<div><span class="mut">Free cash</span><b class="mono">${:,.2f}</b></div>'
-        '<div><span class="mut">Invested</span><b class="mono">${:,.2f}</b></div>'
-        '<div><span class="mut">Total</span><b class="mono">${:,.2f}</b></div>'
-        '<div><span class="mut">Open P/L</span><b class="mono {pc}">{ps}${:,.2f}</b></div>'
+        '<div><span class="mut">Free cash</span><b class="mono">&#163;{:,.2f}</b></div>'
+        '<div><span class="mut">Invested</span><b class="mono">&#163;{:,.2f}</b></div>'
+        '<div><span class="mut">Total</span><b class="mono">&#163;{:,.2f}</b></div>'
+        '<div><span class="mut">Open P/L</span><b class="mono {pc}">{ps}&#163;{:,.2f}</b></div>'
         '</div>').format(
-        free or 0, invested or 0, total or 0,
-        abs(ppl or 0), pc="gain" if (ppl or 0) >= 0 else "loss",
+        _gbp(free), _gbp(invested), _gbp(total),
+        _gbp(abs(ppl or 0)), pc="gain" if (ppl or 0) >= 0 else "loss",
         ps="+" if (ppl or 0) >= 0 else "−")
 
     # positions held at the broker
     pos = b.get("positions") or []
     if pos:
         prows = "".join(
-            '<tr><td class="mono"><b>{t}</b></td><td class="mono r">{sh}</td>'
+            '<tr><td class="mono" data-tkr="{t}"><b>{t}</b></td><td class="mono r">{sh}</td>'
             '<td class="mono r">${a:.2f}</td><td class="mono r">{n}</td>'
-            '<td class="mono r {pc}">{ps}${p:,.2f}</td></tr>'.format(
+            '<td class="mono r {pc}">{ps}&#163;{p:,.2f}</td></tr>'.format(
                 t=p["ticker"], sh=_sh(p["shares"]),
                 a=p.get("avg_price") or 0,
                 n="${:.2f}".format(p["current_price"]) if p.get("current_price") else "—",
                 pc="gain" if (p.get("pnl") or 0) >= 0 else "loss",
-                ps="+" if (p.get("pnl") or 0) >= 0 else "−", p=abs(p.get("pnl") or 0))
+                ps="+" if (p.get("pnl") or 0) >= 0 else "−", p=_gbp(abs(p.get("pnl") or 0)))
             for p in pos)
         ptbl = ('<table style="font-size:13px;margin-top:6px"><tr><th>Ticker</th>'
                 '<th class="r">Qty</th><th class="r">Avg</th><th class="r">Now</th>'
@@ -1445,7 +1462,14 @@ def _positions_panel(st):
     stop_pct = risk.dynamic_stop_pct(cfg, 0, research)
     tp = cfg["selling"]["take_profit_pct"]
     if not st["positions"]:
-        inner = '<div class="mut" style="padding:20px 0;font-size:14px">flat — no open positions. Waiting for the next scan to deploy capital.</div>'
+        inner = ('<div style="display:flex;flex-direction:column;align-items:center;'
+                 'gap:6px;padding:26px 0 22px;text-align:center">'
+                 '<div style="width:44px;height:44px;border-radius:50%;border:1px solid var(--line);'
+                 'display:flex;align-items:center;justify-content:center;font-size:19px;'
+                 'background:rgba(62,221,197,.05)">&#127919;</div>'
+                 '<div style="font-size:14px;font-weight:700">100% cash &middot; radar armed</div>'
+                 '<div class="note">the first signal to clear every gate gets the capital</div>'
+                 '</div>')
     else:
         rows = []
         for p in st["positions"]:
@@ -1455,8 +1479,8 @@ def _positions_panel(st):
             cls = "mut" if p["pl_pct"] is None else ("gain" if p["pl_pct"] >= 0 else "loss")
             spark = _sparkline(market.price_series(p["ticker"]), cost=p["avg_cost"])
             pct_txt = "{:+.1f}%".format(p["pl_pct"]) if p["pl_pct"] is not None else "—"
-            plu = "" if p["pl_usd"] is None else " ({}${:,.0f})".format(
-                "+" if p["pl_usd"] >= 0 else "−", abs(p["pl_usd"]))
+            plu = "" if p["pl_usd"] is None else " ({}&#163;{:,.0f})".format(
+                "+" if p["pl_usd"] >= 0 else "−", _gbp(abs(p["pl_usd"])))
             rows.append(
                 '<tr class="posrow" data-tkr="{t}" data-cost="{c}" data-sh="{sh}" '
                 'data-stop="{stop}" data-hwm="{hwm}">'
@@ -1612,8 +1636,7 @@ def _drawdown_ribbon(st):
     cls = "gain" if cur < 3 else ("warn" if cur < 8 else "loss")
     halt = st["cfg"]["risk"]["drawdown_halt_pct"]
     return ('<div class="panel" style="padding:10px 16px"><div class="ph" style="margin-bottom:4px">'
-            '<h2>Underwater ribbon</h2><span class="asof">drawdown from peak &middot; '
-            'buying halts at {halt}%</span></div>'
+            '<h2>Underwater ribbon</h2></div>'
             '<div style="display:flex;align-items:center;gap:14px">'
             '<div class="mono {cls}" style="font-size:19px;font-weight:700;white-space:nowrap">'
             '&minus;{cur:.1f}%</div>'
@@ -1674,9 +1697,9 @@ def _positions_heatmap(st):
             '<div class="htile" data-tkr="{t}" data-cost="{c}" data-sh="{sh}" '
             'style="flex-grow:{g};background:{bg}">'
             '<div class="ht-t">{t}</div><div class="ht-p ht-pct">{pct:+.1f}%</div>'
-            '<div class="ht-v">${v:,.0f}</div></div>'.format(
+            '<div class="ht-v">&#163;{v:,.0f}</div></div>'.format(
                 t=p["ticker"], c=round(p["avg_cost"], 4), sh=_sh(p["shares"]), g=grow,
-                bg=_heat_color(pct), pct=pct, v=val))
+                bg=_heat_color(pct), pct=pct, v=_gbp(val)))
     css = ("<style>"
            ".heatmap{display:flex;gap:4px;flex-wrap:wrap;min-height:96px;}"
            ".htile{flex-basis:90px;min-width:80px;border-radius:6px;padding:9px 10px;"
@@ -1704,6 +1727,7 @@ def _positions_live_js():
 <script>
 (function(){
   var URL=\"""" + PRICES_URL + """\";
+  var FX=""" + "{:.6f}".format(_FX_RATE) + """;  // GBP per USD (display only)
   function upd(prices){
     document.querySelectorAll("#postbl tr.posrow").forEach(function(row){
       var t=row.getAttribute("data-tkr"),p=prices[t];
@@ -1713,7 +1737,7 @@ def _positions_live_js():
       var pct=cost?(p/cost-1)*100:0,usd=(p-cost)*sh;
       var now=row.querySelector(".pos-now");if(now)now.textContent="$"+p.toFixed(p<1?3:2);
       var pl=row.querySelector(".pos-pl");
-      if(pl){pl.textContent=(pct>=0?"+":"")+pct.toFixed(1)+"% ("+(usd>=0?"+":"−")+"$"+Math.abs(usd).toFixed(0)+")";
+      if(pl){pl.textContent=(pct>=0?"+":"")+pct.toFixed(1)+"% ("+(usd>=0?"+":"−")+"\\u00a3"+Math.abs(usd*FX).toFixed(0)+")";
         pl.className="mono r pos-pl "+(pct>=0?"gain":"loss");pl.style.fontWeight="700";}
       var sl=row.querySelector(".pos-sell");if(sl)sl.textContent="$"+(hwm*(1-stop/100)).toFixed(2);
       row.setAttribute("data-hwm",hwm);
@@ -1890,20 +1914,9 @@ def _github_panel(st):
         if not info:
             dot, cls, txt, bar = "grey", "", "not run yet", ""
         else:
-            status = info.get("status")
             concl = info.get("conclusion")
             when = info.get("when", "")[5:16].replace("T", " ")
-            if status in ("in_progress", "queued"):
-                # RUNNING: pulsing amber + live elapsed, progress vs avg duration
-                run_s = info.get("running_s", 0)
-                avg = info.get("avg_s")
-                pct = min(95, int(100 * run_s / avg)) if avg else 40
-                dot, cls = "run", "warn"
-                txt = ("running… {}".format(_fmt_dur(run_s)) +
-                       (" / ~{}".format(_fmt_dur(avg)) if avg else ""))
-                bar = ('<div class="rbar" data-start="{}" data-avg="{}">'
-                       '<i style="width:{}%"></i></div>').format(run_s, avg or 0, pct)
-            elif concl == "success":
+            if concl == "success":
                 dot, cls = "green", "gain"
                 txt = "OK · {} · ran in {}".format(when, _fmt_dur(info.get("duration_s")))
                 bar = ""
@@ -1920,9 +1933,9 @@ def _github_panel(st):
                     'id="nr-{k}">—</td></tr>'.format(
                         d=dot, lb=label, c=cls, t=txt, bar=bar, k=key))
     updated = health.get("generated", "")[:16].replace("T", " ")
-    note = ('<div class="note" style="margin-top:8px">🟢 last run OK · 🔴 failed · '
-            '🟡 running now (live timer) · grey = idle. Right column = next scheduled '
-            'run (live countdown).</div>')
+    note = ('<div class="note" style="margin-top:8px">🟢 last completed run OK · '
+            '🔴 failed · grey = idle. Right column = next scheduled run '
+            '(live countdown).</div>')
     return panel("Running on GitHub", "status " + (updated or "—"),
                  '<table><tr><th></th><th>Task</th><th>Last run</th>'
                  '<th class="r">Next</th></tr>{}</table>{}'.format("".join(rows), note))
@@ -2118,6 +2131,7 @@ def _history(st):
 
 def generate():
     global _LIVE_WORKER
+    _fx_rate()          # refresh the £/$ display rate (cached 12h)
     st = _fetch_state()
     cfg, research, gen = st["cfg"], st["research"], st["now"]
     _LIVE_WORKER = (cfg.get("live_quote_url") or "")

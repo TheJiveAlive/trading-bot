@@ -219,9 +219,6 @@ tr:last-child td { border-bottom:none; }
 .sdot.red { background:var(--loss); box-shadow:0 0 6px rgba(255,122,112,.5); }
 .sdot.grey { background:var(--dim); }
 .sdot.run { background:var(--warn); animation:pulse 1.3s infinite; }
-.rbar { height:5px; background:#121A2C; border-radius:3px; margin-top:5px; overflow:hidden; max-width:220px; }
-.rbar i { display:block; height:5px; border-radius:3px;
-  background:linear-gradient(90deg,var(--warn),var(--teal)); transition:width 1s linear; }
 .mstrip { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:8px; }
 .mtile { background:linear-gradient(180deg,#0C1422,#0A0F1B); border:1px solid var(--line);
   border-radius:8px; padding:9px 12px; }
@@ -310,84 +307,12 @@ document.addEventListener('click',function(e){
 </div>
 <div class="mkt" id="mkt" style="margin:0">checking the tape…</div>
 
-<style>
-.livewrap{max-width:1140px;margin:8px auto 0;padding:0 20px;}
-.live{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:8px 14px;
-  border:1px solid var(--line);border-radius:10px;background:linear-gradient(160deg,#0b1420,#080d16);
-  font-family:ui-monospace,Menlo,monospace;font-size:12.5px;overflow-x:auto;}
-.live .ld{width:8px;height:8px;border-radius:50%;background:var(--gain);
-  animation:pulse 1.6s infinite;flex:none;}
-.live .lbl{color:var(--dim);font-size:9.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;flex:none;}
-.live .q{display:flex;gap:6px;align-items:baseline;white-space:nowrap;}
-.live .q .t{color:var(--violet);font-weight:700;}
-.live .q .p{color:var(--ink);}
-.live .q .c.up{color:var(--gain);} .live .q .c.dn{color:var(--loss);}
-.live .ago{margin-left:auto;color:var(--dim);font-size:10px;flex:none;}
-.live .flash{transition:background .1s;}
-.live .flash.f{background:rgba(78,209,197,.18);border-radius:3px;}
-</style>
-<div class="livewrap"><div class="live" id="live">
-  <span class="ld" id="lived"></span><span class="lbl">Live</span>
-  <span id="livequotes" style="display:flex;gap:16px;flex-wrap:wrap;">connecting…</span>
-  <span class="ago" id="liveago"></span>
-</div></div>
-<script>
-(function(){
-  var COST={};
-  var URL="https://raw.githubusercontent.com/TheJiveAlive/trading-bot/main/data/prices.json";
-  var last={};
-  function render(data){
-    var box=document.getElementById("livequotes");
-    var px=data.prices||{};
-    var held=data.held||Object.keys(COST);
-    if(!held.length){box.textContent="flat — no live positions";return;}
-    var html="";
-    held.forEach(function(t){
-      var p=px[t]; if(p==null)return;
-      var cost=COST[t];
-      var pct=cost?((p/cost-1)*100):null;
-      var cls=pct==null?"":(pct>=0?"up":"dn");
-      var flash=(last[t]!=null&&last[t]!==p)?"flash f":"flash";
-      html+='<span class="q '+flash+'"><span class="t">'+t+'</span>'+
-        '<span class="p">$'+p.toFixed(p<1?3:2)+'</span>'+
-        (pct==null?'':'<span class="c '+cls+'">'+(pct>=0?"+":"")+pct.toFixed(1)+'%</span>')+'</span>';
-      last[t]=p;
-    });
-    box.innerHTML=html||"waiting for quotes…";
-    setTimeout(function(){document.querySelectorAll(".live .q.f").forEach(function(e){e.classList.remove("f");});},150);
-    var gen=data.generated?new Date(data.generated):null;
-    var ago=document.getElementById("liveago");
-    // is the US market open right now? (13:30-20:00 UTC weekdays)
-    var n=new Date(),mins=n.getUTCHours()*60+n.getUTCMinutes(),dow=n.getUTCDay();
-    var open=(dow>=1&&dow<=5&&mins>=810&&mins<1200);
-    var s=gen?Math.round((Date.now()-gen)/1000):99999;
-    if(ago){
-      if(!open){ago.textContent="● MARKET CLOSED — showing last close";ago.style.color="var(--dim)";}
-      else{ago.textContent="● LIVE · "+(data.source||"")+" · "+(s<90?s+"s":Math.round(s/60)+"m")+" ago";
-        ago.style.color=s<330?"var(--gain)":"var(--warn)";}
-    }
-    document.getElementById("lived").style.background=(open&&s<600)?"var(--gain)":"var(--dim)";
-  }
-  var WORKER="";
-  function poll(){
-    var syms=Object.keys(COST);
-    var u=WORKER?(WORKER+"?symbols="+syms.join(",")):(URL+"?t="+Date.now());
-    fetch(u,{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
-      if(WORKER)d.held=syms;   // worker returns only prices; supply held list
-      render(d);
-    }).catch(function(){
-      document.getElementById("lived").style.background="var(--loss)";
-    });
-  }
-  poll();setInterval(poll,WORKER?20000:30000);
-})();
-</script>
 <div class="hero">
 <div class="hrow"><div class="grow">
   <div class="hl">Total portfolio value</div>
-  <div class="hv mono" title="ledger equity, reconciled against Trading 212 below">$100.00</div>
-  <div class="hc gain">+$0.00 (&#9650; 0.0%) <span class="mut"
-    style="font-weight:400">vs deposits</span></div>
+  <div class="hv mono" title="ledger equity, reconciled against Trading 212 below">£74.68</div>
+  <div class="hc gain">+£0.00 (&#9650; 0.0%) <span class="mut"
+    style="font-weight:400">vs deposits &middot; shown in GBP, trades in USD (£1 = $1.34)</span></div>
 </div><div class="tfs"><button class="tf" data-k="1W" onclick="tfSel(this)">1W</button><button class="tf" data-k="1M" onclick="tfSel(this)">1M</button><button class="tf" data-k="3M" onclick="tfSel(this)">3M</button><button class="tf on" data-k="ALL" onclick="tfSel(this)">ALL</button></div></div>
 <div class="hchart" id="eqc-1W" style="display:none"><svg viewBox="0 0 960 230" preserveAspectRatio="none" style="height:230px">
 <defs><linearGradient id="eqfill" x1="0" y1="0" x2="0" y2="1">
@@ -597,22 +522,5 @@ scans hourly &middot; hourly intel &middot; daily research &middot; weekly revie
       frac=Math.max(0,Math.min(1,frac));bar.style.width=(frac*100).toFixed(1)+"%";}}
   }
   tick();setInterval(tick,1000);
-  // live-tick any currently-running workflow timers + progress bars
-  var runbars=document.querySelectorAll(".rbar");
-  function tickRuns(){
-    runbars.forEach(function(b){
-      var start=parseInt(b.getAttribute("data-start")||"0",10);
-      var avg=parseInt(b.getAttribute("data-avg")||"0",10);
-      start+=1;b.setAttribute("data-start",start);
-      var i=b.querySelector("i");
-      if(avg>0){i.style.width=Math.min(97,Math.round(100*start/avg))+"%";}
-      var lbl=b.parentNode.childNodes[0];
-      if(lbl&&lbl.nodeType===3){
-        var m=Math.floor(start/60),s=start%60;
-        lbl.textContent="running… "+(m>0?m+"m "+(s<10?"0":"")+s+"s":s+"s")+(avg>0?" / ~"+Math.floor(avg/60)+"m "+(avg%60<10?"0":"")+(avg%60)+"s":"");
-      }
-    });
-  }
-  if(runbars.length)setInterval(tickRuns,1000);
 })();
 </script></body></html>

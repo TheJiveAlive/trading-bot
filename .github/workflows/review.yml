@@ -3,6 +3,11 @@ on:
   schedule:
     - cron: '3 16 * * 0'   # Sundays ~17:03 UK summer / 16:03 winter
   workflow_dispatch:
+    inputs:
+      resend_only:
+        description: "Just re-send the latest saved review (skip Claude, zero tokens)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -19,7 +24,9 @@ jobs:
           TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           APIKEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          if [ -z "$TOKEN" ] && [ -z "$APIKEY" ]; then
+          if [ "${{ inputs.resend_only }}" = "true" ]; then
+            echo "RESEND=1" >> "$GITHUB_ENV"
+          elif [ -z "$TOKEN" ] && [ -z "$APIKEY" ]; then
             echo "no token/key — skipping (review still runs on the Mac)"
             echo "SKIP=1" >> "$GITHUB_ENV"
           fi
@@ -38,22 +45,22 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: dump week data
-        if: env.SKIP != '1'
+        if: env.SKIP != '1' && env.RESEND != '1'
         run: |
           mkdir -p data/reviews logs
           python -m bot.review_dump
 
       - uses: actions/setup-node@v4
-        if: env.SKIP != '1'
+        if: env.SKIP != '1' && env.RESEND != '1'
         with:
           node-version: '22'
 
       - name: install claude code
-        if: env.SKIP != '1'
+        if: env.SKIP != '1' && env.RESEND != '1'
         run: npm install -g @anthropic-ai/claude-code
 
       - name: run review session
-        if: env.SKIP != '1'
+        if: env.SKIP != '1' && env.RESEND != '1'
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -66,7 +73,7 @@ jobs:
           python -m bot.token_log /tmp/claude_review.json review || true
 
       - name: monthly learning (first Sunday)
-        if: env.SKIP != '1'
+        if: env.SKIP != '1' && env.RESEND != '1'
         env:
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
@@ -85,7 +92,7 @@ jobs:
           fi
 
       - name: commit review output
-        if: env.SKIP != '1'
+        if: env.SKIP != '1' && env.RESEND != '1'
         run: |
           rm -f data/secrets.json
           git config user.name "trading-bot"
@@ -97,7 +104,7 @@ jobs:
             sleep 3
           done
 
-      - name: email review
+      - name: email review (branded card, same format as research/learnings)
         if: env.SKIP != '1'
         env:
           SMTP_USER: ${{ secrets.SMTP_USER }}
@@ -105,13 +112,18 @@ jobs:
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
         run: |
           python3 -c "
-          import glob, os, smtplib, ssl
-          from email.mime.text import MIMEText
+          import json, os
+          json.dump({'smtp_host':'smtp.gmail.com','smtp_port':465,
+                     'smtp_user':os.environ.get('SMTP_USER',''),
+                     'smtp_app_password':os.environ.get('SMTP_APP_PASSWORD',''),
+                     'email_to':os.environ.get('EMAIL_TO','')},
+                    open('data/secrets.json','w'))"
+          python3 -c "
+          import glob, os
+          from bot import notify
           files = sorted(glob.glob('data/reviews/weekly_review_*.md'))
           body = open(files[-1]).read() if files else 'no review file produced'
-          subj = '[bot review] ' + (os.path.basename(files[-1]) if files else 'FAILED')
-          msg = MIMEText(body); msg['Subject'] = subj
-          msg['From'] = os.environ['SMTP_USER']; msg['To'] = os.environ['EMAIL_TO']
-          with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as s:
-              s.login(os.environ['SMTP_USER'], os.environ['SMTP_APP_PASSWORD'])
-              s.send_message(msg)"
+          when = files[-1].split('_')[-1].replace('.md','') if files else 'FAILED'
+          ok = notify.send_email('[bot review] Weekly review — ' + when, body, markdown=True)
+          print('review email sent:', ok)"
+          rm -f data/secrets.json

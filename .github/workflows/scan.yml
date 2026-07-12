@@ -99,16 +99,17 @@ jobs:
                       "--json","conclusion,createdAt,startedAt,updatedAt,status"],
                       capture_output=True,text=True,timeout=30)
                   arr = json.loads(r.stdout or "[]")
+                  # only COMPLETED runs: an in-progress run is usually THIS run
+                  # rendering the page, and it freezes as a stale "running…" lie
+                  arr = [x for x in arr if x.get("status") == "completed"]
                   if not arr: continue
                   latest = arr[0]
-                  status = latest.get("status")   # queued|in_progress|completed
+                  status = latest.get("status")
                   started, updated = parse(latest.get("startedAt")), parse(latest.get("updatedAt"))
                   info = {"status":status, "conclusion":latest.get("conclusion"),
                           "when":latest.get("createdAt","")}
-                  if status == "completed" and started and updated:
+                  if started and updated:
                       info["duration_s"] = int((updated-started).total_seconds())
-                  elif status in ("in_progress","queued") and started:
-                      info["running_s"] = int((now-started).total_seconds())
                   # avg duration of last completed runs (rough progress denominator)
                   durs = [int((parse(x["updatedAt"])-parse(x["startedAt"])).total_seconds())
                           for x in arr if x.get("status")=="completed"
