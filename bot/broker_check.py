@@ -25,28 +25,41 @@ TARGET_NOTIONAL = 5.0
 
 
 def _probe_environments():
-    """When auth fails, probe BOTH T212 environments with the key and report only
-    the HTTP status (never the body/balance). Tells us if the key is a demo key,
-    a live key, or invalid/IP-restricted — without exposing any account data."""
+    """When auth fails, probe BOTH T212 environments AND several auth-header
+    formats with the key, reporting only HTTP status (never the body/balance).
+    Resolves whether this is our header format vs a wrong-env / invalid /
+    IP-restricted key — without exposing any account data."""
+    import base64
     import requests
     key = broker_t212._api_key()
     if not key:
         print("probe       : no key reachable to probe")
         return
-    print("probe       : testing the key against both environments (status only)…")
-    for env, base in (("demo", broker_t212.BASE["demo"]),
-                      ("live", broker_t212.BASE["live"])):
-        try:
-            r = requests.get(base + "/api/v0/equity/account/cash",
-                             headers={"Authorization": key}, timeout=20)
-            verdict = {200: "VALID here", 401: "rejected (wrong env / bad key)",
-                       403: "forbidden (scope or IP restriction)",
-                       429: "rate limited"}.get(r.status_code, "HTTP {}".format(r.status_code))
-            print("   {:5} -> HTTP {}  {}".format(env, r.status_code, verdict))
-        except Exception as e:
-            print("   {:5} -> error {}".format(env, str(e)[:80]))
-    print("   (200 on 'live' + 401 on 'demo' = it's a LIVE key; 401 on both = "
-          "invalid key or IP-restricted)")
+    # candidate auth schemes (T212 docs are inconsistent: raw key vs Basic)
+    schemes = {
+        "raw-key": key,
+        "Bearer": "Bearer " + key,
+        "Basic(key:)": "Basic " + base64.b64encode((key + ":").encode()).decode(),
+    }
+    print("probe       : testing auth formats x environments (status only)…")
+    any200 = None
+    for env, base_url in (("demo", broker_t212.BASE["demo"]),
+                          ("live", broker_t212.BASE["live"])):
+        for name, hdr in schemes.items():
+            try:
+                r = requests.get(base_url + "/api/v0/equity/account/cash",
+                                 headers={"Authorization": hdr}, timeout=20)
+                flag = "  <-- WORKS" if r.status_code == 200 else ""
+                if r.status_code == 200 and not any200:
+                    any200 = (env, name)
+                print("   {:5} {:14} -> HTTP {}{}".format(env, name, r.status_code, flag))
+            except Exception as e:
+                print("   {:5} {:14} -> error {}".format(env, name, str(e)[:60]))
+    if any200:
+        print("   => our connector should use env='{}', auth='{}'".format(*any200))
+    else:
+        print("   => every format 401s on both envs = the KEY is invalid or "
+              "IP-restricted (regenerate WITHOUT an IP restriction).")
 
 
 def main():
