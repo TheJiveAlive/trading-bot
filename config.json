@@ -1,6 +1,6 @@
 {
   "mode": "live",
-  "_mode_comment": "paper = simulated fills in local ledger. live = route orders to the configured broker (see broker section). DEMO REHEARSAL since 2026-07-12: live routing into the Trading 212 PRACTICE account (fake money) — t212_environment MUST stay 'demo' until the real go-live decision.",
+  "_mode_comment": "paper = simulated fills in local ledger. live = route orders to the configured broker (see broker section). DEMO REHEARSAL since 2026-07-12: live routing into the Trading 212 PRACTICE account (fake money) \u2014 t212_environment MUST stay 'demo' until the real go-live decision.",
   "broker": {
     "name": "trading212",
     "t212_environment": "demo",
@@ -11,7 +11,7 @@
     "_guardrails": "t212_environment demo|live. live_orders_enabled MUST be true to send real orders (default false = dry-run, logs intended orders only). Trading 212's API cannot access cards/deposits/withdrawals. Fractional shares supported when top-level fractional_shares is true. Every order checked against max_order_value_usd. Set t212_api_key in data/secrets.json or the T212_API_KEY secret."
   },
   "monthly_deposit_usd": 0.0,
-  "_deposit_note": "0 during the T212 demo rehearsal — the practice account gets no real deposits, so auto-crediting the ledger would drift it away from the broker. Restore (~127) at real go-live.",
+  "_deposit_note": "0 during the T212 demo rehearsal \u2014 the practice account gets no real deposits, so auto-crediting the ledger would drift it away from the broker. Restore (~127) at real go-live.",
   "deposit_day_of_month": 1,
   "universe": {
     "price_min": 1.0,
@@ -77,14 +77,13 @@
   },
   "fractional_shares": true,
   "_fractional_note": "Trading 212's API supports fractional (decimal) share quantities. true = size positions to exact dollar amounts (4dp); false = whole shares only. With fractional on, max_position_usd is deployed precisely and expensive names are reachable.",
-
   "realistic_fills": true,
   "_realistic_fills_note": "Paper + backtest fills pay the real bid/ask spread (buy at ask, sell at bid) \u2014 Alpaca quote when available, else estimated by price tier (<$1=4%, <$5=2%, else 0.8% round-trip). Makes paper results predict LIVE reality. Set false only to compare against optimistic last-price fills.",
   "force_regime": "risk_on",
   "_force_regime_note": "Overrides the research/quant regime blend. 'risk_on' = full-auto aggressive (lowest buy threshold, widest stops). Set null to restore the adaptive conservative blend. Hard vetoes always apply regardless.",
   "selling": {
-    "trailing_stop_pct": 12.0,
-    "take_profit_pct": 30.0,
+    "trailing_stop_pct": 15.0,
+    "take_profit_pct": 40.0,
     "min_hold_days": 1,
     "max_hold_days": 30,
     "_note": "TIGHTENED for the demo rehearsal (2026-07-12): stop 12 now matches the risk.py clamp ceiling (15 was silently capped anyway), TP 30 locks gains sooner, max_hold 30 recycles the small book faster. Auto-tuning may adjust stop/TP within its 8-15/15-40 bounds."

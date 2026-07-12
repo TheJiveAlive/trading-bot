@@ -1,58 +1,58 @@
 {
-  "generated": "2026-07-12T11:01:17+00:00",
+  "generated": "2026-07-12T21:37:36+00:00",
   "train_period": "2026-01-10 to 2026-05-18",
   "test_period": "2026-05-18 to 2026-07-09",
   "top5_train_combos_tested_oos": [
     {
       "stop": 8.0,
-      "tp": 20.0,
+      "tp": 15.0,
       "buys_wk": 1,
       "min_score": 4.5,
-      "train_median_pct": 18.04,
-      "test_pct": 0.75,
-      "test_trades": 4
-    },
-    {
-      "stop": 10.0,
-      "tp": 20.0,
-      "buys_wk": 1,
-      "min_score": 4.5,
-      "train_median_pct": 16.14,
-      "test_pct": 4.7,
-      "test_trades": 3
+      "train_median_pct": -100.0,
+      "test_pct": -100.0,
+      "test_trades": 0
     },
     {
       "stop": 8.0,
-      "tp": 25.0,
+      "tp": 15.0,
       "buys_wk": 2,
       "min_score": 4.5,
-      "train_median_pct": 11.18,
-      "test_pct": 6.4,
-      "test_trades": 8
+      "train_median_pct": -100.0,
+      "test_pct": -100.0,
+      "test_trades": 0
     },
     {
-      "stop": 15.0,
-      "tp": 20.0,
-      "buys_wk": 2,
+      "stop": 8.0,
+      "tp": 15.0,
+      "buys_wk": 3,
       "min_score": 4.5,
-      "train_median_pct": 9.26,
-      "test_pct": 3.46,
-      "test_trades": 5
+      "train_median_pct": -100.0,
+      "test_pct": -100.0,
+      "test_trades": 0
+    },
+    {
+      "stop": 8.0,
+      "tp": 15.0,
+      "buys_wk": 4,
+      "min_score": 4.5,
+      "train_median_pct": -100.0,
+      "test_pct": -100.0,
+      "test_trades": 0
     },
     {
       "stop": 8.0,
       "tp": 20.0,
-      "buys_wk": 2,
+      "buys_wk": 1,
       "min_score": 4.5,
-      "train_median_pct": 7.81,
-      "test_pct": 6.4,
-      "test_trades": 8
+      "train_median_pct": -100.0,
+      "test_pct": -100.0,
+      "test_trades": 0
     }
   ],
   "spy_test_return_pct": 2.03,
   "verdict": {
-    "edge_survives_out_of_sample": true,
+    "edge_survives_out_of_sample": false,
     "beats_spy_out_of_sample": false,
-    "read": "PASS: params picked on train also made 0.75% on unseen data"
+    "read": "FAIL: train-best params lost -100.0% on unseen data \u2014 in-sample results are overfit; do NOT trust the backtest headline"
   }
 }
