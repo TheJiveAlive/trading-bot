@@ -118,16 +118,22 @@ def ticker_news(ticker, min_relevance=6):
                                "collapse": "story"})
     items = []
     for a in (data or {}).get("results", [])[:6]:
+        # article fields live under 'original'; scores under 'enrichment'
+        orig = a.get("original") or {}
         enrich = a.get("enrichment") or {}
         sent = ""
         for ta in ((enrich.get("ai_trading_insights") or {}).get("ticker_analysis") or []):
             if (ta.get("ticker") or "").upper() == ticker:
                 sent = ((ta.get("impact_analysis") or {}).get("sentiment") or "")
+        title = orig.get("title") or a.get("title") or ""
+        if not title:
+            continue
         items.append({
-            "title": a.get("title") or "",
-            "url": a.get("url") or a.get("link") or a.get("article_url") or "",
-            "src": a.get("source") or a.get("domain") or "alphai",
-            "when": (a.get("published_at") or a.get("published") or "")[:16].replace("T", " "),
+            "title": title,
+            "url": orig.get("url") or orig.get("link") or "",
+            "src": orig.get("source") or orig.get("domain") or "alphai",
+            "when": (orig.get("published_at") or orig.get("published")
+                     or "")[:16].replace("T", " "),
             "relevance": enrich.get("relevance_score"),
             "sentiment": sent,
         })
