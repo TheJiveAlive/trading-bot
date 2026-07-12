@@ -177,7 +177,7 @@ def main():
     print("\ntest order  : placing NON-EXECUTING limit BUY {} x{} @ ${:.2f} "
           "(market ${:.2f}, ~50% below → will NOT fill)".format(TEST_TICKER, qty, limit, px))
     res = broker_t212.place_limit_order(cfg, TEST_TICKER, qty, limit,
-                                        time_validity="GTC", dry_run=False)
+                                        time_validity="GOOD_TILL_CANCEL", dry_run=False)
     print("place result:", res)
 
     print("\npending orders now:")

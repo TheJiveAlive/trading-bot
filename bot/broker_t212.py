@@ -194,7 +194,7 @@ def list_orders(cfg):
 
 
 def place_limit_order(cfg, ticker, signed_shares, limit_price,
-                      time_validity="GTC", dry_run=True):
+                      time_validity="GOOD_TILL_CANCEL", dry_run=True):
     """Place a LIMIT order. A limit far from the market rests as a 'pending'
     order and never fills — used for connection tests. Honours fractional_shares
     and the max_order_value_usd cap. Same dry-run gating as market orders."""
