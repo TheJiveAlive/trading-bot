@@ -51,8 +51,13 @@ def _route_live_order(cfg, side, ticker, shares, price, reason):
     broker = cfg.get("broker", {}).get("name", "trading212")
     signed = shares if side == "buy" else -shares
     if broker == "trading212":
+        from bot import broker_t212
+        # No key yet → clean dry-run note, never a queued error order. This makes
+        # flipping mode:live safe before the T212_API_KEY secret is set.
+        if not broker_t212.configured():
+            return ("DRY-RUN (Trading 212 not connected — no API key): would {} {} x{}. "
+                    "Set T212_API_KEY to route this order.".format(side, ticker, shares))
         try:
-            from bot import broker_t212
             res = broker_t212.place_market_order(
                 cfg, ticker, signed, price_hint=price,
                 dry_run=not cfg.get("broker", {}).get("live_orders_enabled", False))

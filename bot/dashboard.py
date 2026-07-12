@@ -616,6 +616,14 @@ def _fetch_state():
     news = collect_headlines(news_tickers)
 
     research = risk.load_research()
+
+    # broker truth: refresh (throttled, read-only, no-op without a key) then read
+    try:
+        from bot import broker_sync
+        broker = broker_sync.sync(cfg)
+    except Exception:
+        broker = {}
+
     return {
         "cfg": cfg, "now": now, "positions": positions, "cash": cash,
         "equity": equity, "deposited": deposited, "curve": curve,
@@ -623,7 +631,7 @@ def _fetch_state():
         "decisions": decisions, "candidates": candidates,
         "cand_ts": _short(cand_ts), "rewards": rewards,
         "buys_wk": buys_wk, "research": research,
-        "reddit": reddit, "news": news, "intel": intel,
+        "reddit": reddit, "news": news, "intel": intel, "broker": broker,
     }
 
 
@@ -928,6 +936,107 @@ def _kpis(st):
                  uc=cls(unreal), ur=_money(unreal, sign=True),
                  rc=cls(realized), rl=_money(realized, sign=True),
                  nt=len(st["closed"]))
+
+
+def _broker_panel(st):
+    """Trading 212 as the source of truth: real account cash + positions, and a
+    reconciliation against the local ledger. Renders nothing until a key is set
+    (bot runs on the paper ledger meanwhile)."""
+    b = st.get("broker") or {}
+    if not b:
+        return ""
+    env = (b.get("environment") or "demo").upper()
+    env_cls = "gain" if env == "DEMO" else "loss"
+    mode = (b.get("mode") or "paper")
+    orders_on = b.get("live_orders_enabled")
+
+    # status line badges
+    badges = ('<span class="mono {ec}" style="font-weight:700">{env}</span> '
+              '&middot; mode <b class="mono">{m}</b> &middot; '
+              'orders <b class="mono {oc}">{ostate}</b>').format(
+        ec=env_cls, env=env, m=mode,
+        oc="gain" if orders_on else "mut",
+        ostate="LIVE" if orders_on else "dry-run")
+
+    if not b.get("configured"):
+        inner = ('<div class="mut" style="padding:14px 0;font-size:13.5px">'
+                 'Not yet connected — the bot is running on the <b>paper ledger</b>. '
+                 'Set the <span class="mono">T212_API_KEY</span> secret and this panel '
+                 'becomes the live account of record.<div class="note" style="margin-top:8px">'
+                 '{}</div></div>').format(badges)
+        return panel("&#127974; Broker &mdash; source of truth", "idle", inner)
+
+    if not b.get("ok"):
+        inner = ('<div class="loss" style="padding:12px 0;font-size:13.5px">'
+                 '{}</div><div class="note" style="margin-top:6px">{}</div>').format(
+            b.get("detail", "broker unreachable"), badges)
+        return panel("&#127974; Broker &mdash; source of truth", _short(b.get("generated", "")), inner)
+
+    cash = b.get("cash") or {}
+    free = cash.get("free")
+    total = cash.get("total")
+    invested = cash.get("invested")
+    ppl = cash.get("ppl")
+    kpis = (
+        '<div class="brk-kpis">'
+        '<div><span class="mut">Free cash</span><b class="mono">${:,.2f}</b></div>'
+        '<div><span class="mut">Invested</span><b class="mono">${:,.2f}</b></div>'
+        '<div><span class="mut">Total</span><b class="mono">${:,.2f}</b></div>'
+        '<div><span class="mut">Open P/L</span><b class="mono {pc}">{ps}${:,.2f}</b></div>'
+        '</div>').format(
+        free or 0, invested or 0, total or 0,
+        abs(ppl or 0), pc="gain" if (ppl or 0) >= 0 else "loss",
+        ps="+" if (ppl or 0) >= 0 else "−")
+
+    # positions held at the broker
+    pos = b.get("positions") or []
+    if pos:
+        prows = "".join(
+            '<tr><td class="mono"><b>{t}</b></td><td class="mono r">{sh}</td>'
+            '<td class="mono r">${a:.2f}</td><td class="mono r">{n}</td>'
+            '<td class="mono r {pc}">{ps}${p:,.2f}</td></tr>'.format(
+                t=p["ticker"], sh=_sh(p["shares"]),
+                a=p.get("avg_price") or 0,
+                n="${:.2f}".format(p["current_price"]) if p.get("current_price") else "—",
+                pc="gain" if (p.get("pnl") or 0) >= 0 else "loss",
+                ps="+" if (p.get("pnl") or 0) >= 0 else "−", p=abs(p.get("pnl") or 0))
+            for p in pos)
+        ptbl = ('<table style="font-size:13px;margin-top:6px"><tr><th>Ticker</th>'
+                '<th class="r">Qty</th><th class="r">Avg</th><th class="r">Now</th>'
+                '<th class="r">P/L</th></tr>{}</table>').format(prows)
+    else:
+        ptbl = '<div class="mut" style="padding:8px 0;font-size:13px">no open broker positions</div>'
+
+    # reconciliation: ledger vs broker
+    recon = b.get("reconciliation") or []
+    drift = [r for r in recon if r["status"] != "match"]
+    if not recon:
+        rec_html = ('<div class="note" style="margin-top:8px"><span class="ok">&#10003;</span> '
+                    'nothing to reconcile yet.</div>')
+    elif not drift:
+        rec_html = ('<div class="note" style="margin-top:8px"><span class="ok">&#10003;</span> '
+                    'ledger and broker agree on all {} position(s).</div>'.format(len(recon)))
+    else:
+        dr = "".join(
+            '<tr><td class="mono"><b>{t}</b></td><td class="mono r">{l}</td>'
+            '<td class="mono r">{b}</td><td class="mono no">{s}</td></tr>'.format(
+                t=r["ticker"],
+                l=_sh(r["ledger_shares"]) if r["ledger_shares"] is not None else "—",
+                b=_sh(r["broker_shares"]) if r["broker_shares"] is not None else "—",
+                s=r["status"].replace("_", " "))
+            for r in drift)
+        rec_html = ('<div class="note" style="margin-top:8px"><span class="no">&#9888;</span> '
+                    '{} position(s) differ between ledger and broker:</div>'
+                    '<table style="font-size:12.5px;margin-top:4px"><tr><th>Ticker</th>'
+                    '<th class="r">Ledger</th><th class="r">Broker</th><th>Status</th></tr>'
+                    '{}</table>').format(len(drift), dr)
+
+    inner = ('<div class="note" style="margin-bottom:8px">{}</div>{}{}{}'
+             '<style>.brk-kpis{{display:flex;flex-wrap:wrap;gap:14px;margin:6px 0}}'
+             '.brk-kpis>div{{display:flex;flex-direction:column;min-width:96px}}'
+             '.brk-kpis .mut{{font-size:11px;text-transform:uppercase;letter-spacing:.04em}}'
+             '.brk-kpis b{{font-size:16px}}</style>').format(badges, kpis, ptbl, rec_html)
+    return panel("&#127974; Broker &mdash; source of truth", _short(b.get("generated", "")), inner)
 
 
 def _positions_panel(st):
@@ -1432,6 +1541,8 @@ def _overview(st):
     body = _kpis(st)
     body += _extra_metrics(st)
     body += _drawdown_ribbon(st)
+    # Broker (Trading 212) as the source of truth — shown above the ledger view
+    body += _broker_panel(st)
     # POSITIONS front and centre (big, live-refreshing) — equity curve removed
     hm = _positions_heatmap(st)
     if hm:

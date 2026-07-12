@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """CLI for the trading bot.
 
-  python3 run.py scan     — run one full scan cycle (signals, exits, maybe buy)
-  python3 run.py status   — show cash, positions, recent trades and decisions
+  python3 run.py scan        — run one full scan cycle (signals, exits, maybe buy)
+  python3 run.py status      — show cash, positions, recent trades and decisions
+  python3 run.py broker-sync — pull real Trading 212 account state (read-only)
 """
 import sys
 
@@ -42,6 +43,10 @@ def main():
         run_exits()
     elif cmd == "status":
         status()
+    elif cmd == "broker-sync":
+        from bot.broker_sync import sync
+        s = sync(force=True)
+        print("broker sync [{}]: {}".format("OK" if s["ok"] else "idle/err", s["detail"]))
     elif cmd == "dashboard":
         from bot.dashboard import generate
         try:

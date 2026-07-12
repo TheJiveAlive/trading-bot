@@ -34,7 +34,7 @@ jobs:
       - name: install deps
         if: env.SKIP != '1'
         run: pip install -r requirements.txt
-      - name: materialize secrets (alpaca + smtp for exit alerts)
+      - name: materialize secrets (alpaca + smtp for exit alerts + t212 for broker truth)
         if: env.SKIP != '1'
         env:
           ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
@@ -42,6 +42,7 @@ jobs:
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          T212_API_KEY: ${{ secrets.T212_API_KEY }}
         run: |
           mkdir -p data logs publish
           python3 -c "
@@ -51,7 +52,8 @@ jobs:
                      'smtp_app_password':os.environ.get('SMTP_APP_PASSWORD',''),
                      'email_to':os.environ.get('EMAIL_TO',''),
                      'alpaca_key':os.environ.get('ALPACA_KEY',''),
-                     'alpaca_secret':os.environ.get('ALPACA_SECRET','')},
+                     'alpaca_secret':os.environ.get('ALPACA_SECRET',''),
+                     't212_api_key':os.environ.get('T212_API_KEY','')},
                     open('data/secrets.json','w'))"
       - name: prices + exit check (stops fire every 5 min, not once a day)
         if: env.SKIP != '1'

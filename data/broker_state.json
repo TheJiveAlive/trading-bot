@@ -1,0 +1,12 @@
+{
+  "generated": "2026-07-12T11:06:16Z",
+  "environment": "demo",
+  "configured": false,
+  "live_orders_enabled": false,
+  "mode": "paper",
+  "ok": false,
+  "detail": "no T212 API key set \u2014 broker sync idle (dashboard is showing the paper ledger)",
+  "cash": null,
+  "positions": [],
+  "reconciliation": []
+}
