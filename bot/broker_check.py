@@ -42,6 +42,10 @@ def _probe_environments():
     fp = hashlib.sha256(key.encode()).hexdigest()[:8]
     print("   key check   : len={} alnum={} whitespace={} sha256={} secret_set={}".format(
         len(key), key.isalnum(), any(c.isspace() for c in key), fp, bool(secret)))
+    if secret:
+        print("   secret check: len={} alnum={} whitespace={} sha256={}".format(
+            len(secret), secret.isalnum(), any(c.isspace() for c in secret),
+            hashlib.sha256(secret.encode()).hexdigest()[:8]))
     # candidate auth schemes (T212 uses Basic key:secret; keep others for diagnosis)
     schemes = {
         "raw-key": key,
@@ -51,6 +55,9 @@ def _probe_environments():
     if secret:
         schemes["Basic(key:secret)"] = "Basic " + base64.b64encode(
             "{}:{}".format(key, secret).encode()).decode()
+        # swapped order — catches the two values being in the wrong secrets
+        schemes["Basic(secret:key)"] = "Basic " + base64.b64encode(
+            "{}:{}".format(secret, key).encode()).decode()
     print("probe       : testing auth formats x environments (status only)…")
     any200 = None
     for env, base_url in (("demo", broker_t212.BASE["demo"]),
