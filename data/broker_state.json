@@ -1,11 +1,12 @@
 {
-  "generated": "2026-07-12T21:27:27Z",
+  "generated": "2026-07-12T21:35:50Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
   "mode": "live",
+  "account_currency": "GBP",
   "ok": true,
-  "detail": "demo account reachable: 0 position(s), free $100.0",
+  "detail": "demo account reachable: 0 position(s), free \u00a3100.0",
   "cash": {
     "free": 100.0,
     "total": 100.0,
