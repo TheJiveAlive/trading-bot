@@ -1,0 +1,36 @@
+name: finnhub-doctor
+on:
+  workflow_dispatch:
+jobs:
+  doctor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12', cache: pip}
+      - name: install
+        run: pip install -r requirements.txt
+      - name: probe finnhub
+        env:
+          FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
+        run: |
+          python3 - <<'PY'
+          import os, requests
+          k = os.environ.get("FINNHUB_KEY","")
+          print("key present:", bool(k), "| length:", len(k))
+          B="https://finnhub.io/api/v1"
+          # 1) auth check (quote endpoint)
+          r=requests.get(B+"/quote",params={"symbol":"AAPL","token":k},timeout=15)
+          print("quote endpoint HTTP:", r.status_code, "(200 = key valid)", "| AAPL price:", r.json().get("c") if r.status_code==200 else r.text[:120])
+          # 2) earnings calendar
+          import datetime as dt
+          t=dt.date.today()
+          r2=requests.get(B+"/calendar/earnings",params={"symbol":"AAPL","from":t.isoformat(),"to":(t+dt.timedelta(days=120)).isoformat(),"token":k},timeout=15)
+          print("earnings endpoint HTTP:", r2.status_code, "| entries:", len(r2.json().get("earningsCalendar",[])) if r2.status_code==200 else "-")
+          # 3) analyst recommendation trend
+          r3=requests.get(B+"/stock/recommendation",params={"symbol":"AAPL","token":k},timeout=15)
+          print("recommendation endpoint HTTP:", r3.status_code, "| latest:", (r3.json()[0] if r3.status_code==200 and r3.json() else "-"))
+          # 4) insider sentiment (the one we already use)
+          r4=requests.get(B+"/stock/insider-sentiment",params={"symbol":"AAPL","from":(t-dt.timedelta(days=90)).isoformat(),"to":t.isoformat(),"token":k},timeout=15)
+          print("insider-sentiment HTTP:", r4.status_code, "| rows:", len(r4.json().get("data",[])) if r4.status_code==200 else "-")
+          PY
