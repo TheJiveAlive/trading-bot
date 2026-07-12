@@ -97,6 +97,7 @@
     "news_weight": 1.0,
     "reddit_weight": 0.75,
     "trending_weight": 0.5,
+    "alphai_weight": 1.0,
     "earnings_weight": 1.0,
     "breakout_weight": 1.0,
     "events_weight": 1.0

@@ -38,6 +38,10 @@ def score_candidates(cfg, insider_hits, sector_ranks, snapshot, research=None,
             parts["trending"] = round(tr_sc * w.get("trending_weight", 0.5), 2)
             if r_sc:   # trending AND buzzing on Reddit = confirmed multi-platform attention
                 parts["trending"] = round(parts["trending"] * 1.5, 2)
+        from bot.signals.alphai import sentiment_bonus as alphai_sentiment
+        ai_sc = alphai_sentiment(ticker)     # bidirectional -0.5..+0.5 (keyed)
+        if ai_sc:
+            parts["ai_news"] = round(ai_sc * w.get("alphai_weight", 1.0), 2)
         from bot.signals.finnhub_data import insider_sentiment_bonus, analyst_trend
         fh_sent = insider_sentiment_bonus(ticker)
         if fh_sent:

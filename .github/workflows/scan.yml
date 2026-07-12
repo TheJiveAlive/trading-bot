@@ -58,6 +58,7 @@ jobs:
           FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
           T212_API_KEY: ${{ secrets.T212_API_KEY }}
           T212_API_SECRET: ${{ secrets.T212_API_SECRET }}
+          ALPHAI_KEY: ${{ secrets.ALPHAI_KEY }}
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
           ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
@@ -72,6 +73,7 @@ jobs:
                      'finnhub_key':os.environ.get('FINNHUB_KEY',''),
                      't212_api_key':os.environ.get('T212_API_KEY',''),
                      't212_api_secret':os.environ.get('T212_API_SECRET',''),
+                     'alphai_key':os.environ.get('ALPHAI_KEY',''),
                      'fred_api_key':os.environ.get('FRED_API_KEY',''),
                      'alpaca_key':os.environ.get('ALPACA_KEY',''),
                      'alpaca_secret':os.environ.get('ALPACA_SECRET','')},

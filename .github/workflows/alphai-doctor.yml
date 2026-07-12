@@ -1,0 +1,36 @@
+name: alphai-doctor
+# Manual check that the ALPHAI_KEY secret works: hits the news feed and a
+# sentiment summary, prints statuses/counts only (never the key).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: install dependencies
+        run: pip install -r requirements.txt
+      - name: check alphai
+        env:
+          ALPHAI_KEY: ${{ secrets.ALPHAI_KEY }}
+        run: |
+          python3 - <<'PY'
+          from bot.signals.alphai import configured, health, ticker_news, sentiment_bonus
+          print("key set    :", configured())
+          ok, detail = health()
+          print("health     :", "OK" if ok else "FAIL", "-", detail)
+          news = ticker_news("AAPL")
+          print("AAPL news  :", len(news), "items")
+          for n in news[:3]:
+              print("   rel", n.get("relevance"), n.get("sentiment") or "-", "|", n["title"][:70])
+          print("AAPL 7d sentiment bonus:", sentiment_bonus("AAPL"))
+          PY

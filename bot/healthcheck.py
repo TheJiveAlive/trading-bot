@@ -97,6 +97,11 @@ def check_finnhub():
             else "no key (optional) — using Yahoo fallbacks")
 
 
+def check_alphai():
+    from bot.signals.alphai import health as ah
+    return ah()
+
+
 def check_broker():
     from bot import broker_t212, config
     return broker_t212.health(config.load())
@@ -146,6 +151,7 @@ CHECKS = [
     ("SEC EDGAR insider map", check_edgar), ("EDGAR dilution query", check_dilution),
     ("Reddit (ApeWisdom)", check_reddit), ("Quant regime", check_quant_regime),
     ("Daily research freshness", check_research_fresh), ("Finnhub", check_finnhub),
+    ("alphai news", check_alphai),
     ("Trading 212 broker", check_broker), ("Alpaca data feed", check_alpaca),
     ("8-K + short interest", check_events), ("openFDA catalysts", check_fda),
     ("FRED macro", check_macro), ("Dashboard generation", check_dashboard),

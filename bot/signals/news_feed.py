@@ -106,6 +106,27 @@ def _finnhub_news(ticker):
         return []
 
 
+def _alphai_news(ticker):
+    """alphai LLM-scored news adapted to the internal item shape (keyed; [] without)."""
+    try:
+        from bot.signals.alphai import ticker_news, configured
+        if not configured():
+            return []
+        out = []
+        for it in ticker_news(ticker):
+            when = None
+            try:
+                when = dt.datetime.strptime(it.get("when", ""), "%Y-%m-%d %H:%M")
+            except Exception:
+                pass
+            out.append({"title": it["title"], "url": it["url"],
+                        "src": "{} · rel {}".format(it["src"], it.get("relevance", "?")),
+                        "dt": when})
+        return out
+    except Exception:
+        return []
+
+
 def _fresh_and_clean(items):
     now = dt.datetime.utcnow()
     keep = []
@@ -172,7 +193,8 @@ def collect_headlines(tickers, per_ticker=2, min_items=8):
             pass
     out, seen = [], set()
     for t in tickers:
-        merged = _fresh_and_clean(_google_news(t) + _yahoo_news(t) + _finnhub_news(t))
+        merged = _fresh_and_clean(_google_news(t) + _yahoo_news(t) + _finnhub_news(t)
+                                  + _alphai_news(t))
         merged.sort(key=lambda x: x.get("dt") or dt.datetime.min, reverse=True)
         for it in merged[:per_ticker]:
             k = (it["title"] or "")[:60]

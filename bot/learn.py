@@ -25,6 +25,7 @@ DEFAULTS = {
     "news_weight": 1.0,
     "reddit_weight": 0.75,
     "trending_weight": 0.5,
+    "alphai_weight": 1.0,
 }
 PART_TO_WEIGHT = {
     "insider": "insider_weight",
@@ -33,6 +34,7 @@ PART_TO_WEIGHT = {
     "news": "news_weight",
     "reddit": "reddit_weight",
     "trending": "trending_weight",
+    "ai_news": "alphai_weight",
 }
 
 
