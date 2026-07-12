@@ -88,6 +88,8 @@ def log_candidates(con, candidates):
 
 def apply_monthly_deposit(con, cfg):
     """Credit the monthly deposit once per calendar month on/after deposit day."""
+    if cfg.get("monthly_deposit_usd", 0) <= 0:
+        return False    # disabled (e.g. T212 demo rehearsal — no real deposits)
     today = dt.date.today()
     tag = today.strftime("%Y-%m")
     if today.day < cfg["deposit_day_of_month"]:

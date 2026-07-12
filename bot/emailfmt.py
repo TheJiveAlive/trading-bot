@@ -22,6 +22,18 @@ FONT = ("font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,"
         "Helvetica,Arial,sans-serif;")
 
 
+def _sh(x):
+    """Share quantity for humans: whole → '42', fractional → '2.35' (no
+    trailing zeros, max 4dp) — keeps fractional-share emails tidy."""
+    try:
+        x = float(x)
+    except (TypeError, ValueError):
+        return str(x)
+    if abs(x - round(x)) < 1e-9:
+        return str(int(round(x)))
+    return ("{:.4f}".format(x)).rstrip("0").rstrip(".")
+
+
 def price_chart_png(ticker, entry_price=None, entry_date=None,
                     exit_price=None, exit_date=None, period="3mo"):
     """PNG bytes: price line with entry/exit markers. None on any failure."""
@@ -105,7 +117,7 @@ def _portfolio_rows(positions):
             '<td style="padding:8px 10px;{f}font-size:13px;color:{m};" align="right">{n}</td>'
             '<td style="padding:8px 10px;{f}font-size:13px;font-weight:700;color:{pc};" align="right">{p}</td>'
             '</tr>'.format(
-                f=FONT, i=INK, m=MUTED, pc=color, t=p["ticker"], sh=p["shares"],
+                f=FONT, i=INK, m=MUTED, pc=color, t=p["ticker"], sh=_sh(p["shares"]),
                 c=p["avg_cost"], n="${:.2f}".format(now) if now else "—", p=pct_txt))
     return "".join(rows)
 
@@ -122,7 +134,7 @@ def trade_email(side, ticker, shares, price, mode, reasons, positions, cash,
 
     subject = "{} {} — {} shares @ ${:.2f}".format(
         "🟢" if side_u == "BUY" else "🔴", "{} {}".format(side_u, ticker),
-        shares, price)
+        _sh(shares), price)
     if pnl_usd is not None:
         subject += "  ·  P/L {}${:.2f} ({:+.1f}%)".format(
             "+" if pnl_usd >= 0 else "−", abs(pnl_usd), pnl_pct)
@@ -224,16 +236,16 @@ def trade_email(side, ticker, shares, price, mode, reasons, positions, cash,
 </table>
 </td></tr></table>""".format(
         bg=BG, card=CARD, ink=INK, muted=MUTED, border=BORDER, f=FONT,
-        side=side_u, side_color=side_color, ticker=ticker, shares=shares,
+        side=side_u, side_color=side_color, ticker=ticker, shares=_sh(shares),
         price=price, total=total, today=today,
         mode=mode, mode_bg=GREEN if mode == "live" else "#64748b",
         pnl_html=pnl_html, reasons_html=reasons_html, note_html=note_html,
         chart_html=chart_html,
         portfolio_rows=_portfolio_rows(positions), cash=cash, equity=equity,
         mode_note="Simulated paper fill." if mode == "paper"
-                  else "Live order — see pending_orders.json until confirmed.")
+                  else "Order routed to Trading 212 — dashboard broker panel is the account of record.")
 
-    text_lines = ["{} {} x{} @ ${:.2f} (${:,.2f})".format(side_u, ticker, shares, price, total)]
+    text_lines = ["{} {} x{} @ ${:.2f} (${:,.2f})".format(side_u, ticker, _sh(shares), price, total)]
     if pnl_usd is not None:
         text_lines.append("P/L: {}${:.2f} ({:+.1f}%)".format(
             "+" if pnl_usd >= 0 else "-", abs(pnl_usd), pnl_pct))

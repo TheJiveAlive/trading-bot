@@ -148,6 +148,17 @@ def main():
             p.get("ticker"), p.get("quantity"), p.get("averagePrice"),
             p.get("currentPrice"), p.get("ppl")))
 
+    cancel_id = (os.environ.get("CANCEL_ORDER_ID") or "").strip()
+    if cancel_id:
+        if env != "demo":
+            print("\nRESULT: REFUSING to cancel — environment is '{}', not 'demo'.".format(env))
+            sys.exit(2)
+        time.sleep(2)
+        res = broker_t212.cancel_order(cfg, cancel_id)
+        print("\ncancel      :", res)
+        print("RESULT: order {} cancelled.".format(cancel_id))
+        return
+
     if os.environ.get("PLACE_TEST_ORDER") != "true":
         print("\ntest order  : skipped (read-only check).")
         print("RESULT: connection OK — account is visible.")

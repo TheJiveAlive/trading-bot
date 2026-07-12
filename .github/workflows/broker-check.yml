@@ -8,6 +8,10 @@ on:
         description: "Also place a non-executing pending test order (DEMO only)"
         type: boolean
         default: false
+      cancel_order_id:
+        description: "Cancel this pending order id (cleanup)"
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -42,6 +46,7 @@ jobs:
       - name: run connection check
         env:
           PLACE_TEST_ORDER: ${{ inputs.place_test_order }}
+          CANCEL_ORDER_ID: ${{ inputs.cancel_order_id }}
         run: python -m bot.broker_check
       - name: cleanup secrets
         if: always()
