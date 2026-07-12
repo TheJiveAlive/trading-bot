@@ -37,9 +37,21 @@ def _write(state):
 
 
 def _fresh_enough():
+    """Throttle by the 'generated' timestamp INSIDE the file — file mtime lies
+    on CI (git checkout stamps the committed, possibly-stale file as brand new).
+    Also never trust a cached 'no key' state when a key IS available now."""
     if not os.path.exists(BROKER_STATE):
         return False
-    return (dt.datetime.now().timestamp() - os.path.getmtime(BROKER_STATE)) < _MIN_INTERVAL_S
+    try:
+        with open(BROKER_STATE) as f:
+            s = json.load(f)
+        if not s.get("configured") and broker_t212.configured():
+            return False    # stale pre-key state; a key exists now — refresh
+        gen = dt.datetime.fromisoformat(s["generated"].replace("Z", "+00:00"))
+        age = (dt.datetime.now(dt.timezone.utc) - gen).total_seconds()
+        return 0 <= age < _MIN_INTERVAL_S
+    except Exception:
+        return False
 
 
 def _reconcile(broker_positions):
