@@ -815,6 +815,12 @@ def _fetch_state():
     from bot.signals.news_feed import collect_headlines
     news_tickers = list(dict.fromkeys(
         [p["ticker"] for p in positions] + [c[0] for c in candidates[:4]]))
+    if len(news_tickers) < 4 and reddit:
+        # flat/quiet book: keep the headlines panel alive with the loudest radar names
+        top_buzz = sorted(reddit.items(), key=lambda kv: kv[1].get("mentions", 0),
+                          reverse=True)
+        news_tickers += [t for t, _ in top_buzz[:6] if t not in news_tickers]
+        news_tickers = news_tickers[:6]
     news = collect_headlines(news_tickers)
 
     research = risk.load_research()
@@ -1818,7 +1824,8 @@ def _research_panel(st):
 
 def _news_panel(st):
     if not st["news"]:
-        inner = '<div class="mut">no recent headlines for held or candidate tickers</div>'
+        inner = ('<div class="mut">warming up — headlines land here on the next fetch '
+                 'and persist for a week</div>')
     else:
         inner = "".join(
             '<div class="newsit"><div class="t"><span class="chip tick">{t}</span> '

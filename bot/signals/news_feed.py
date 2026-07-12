@@ -89,8 +89,47 @@ def _fresh_and_clean(items):
     return keep
 
 
-def collect_headlines(tickers, per_ticker=2):
-    """[{ticker,title,url,src,when}] fresh & de-junked, cached 20 min."""
+ROLLING = os.path.join(CACHE_DIR, "headlines_rolling.json")
+ROLLING_MAX = 60
+ROLLING_MAX_AGE_DAYS = 7
+
+
+def _load_rolling():
+    try:
+        with open(ROLLING) as f:
+            items = json.load(f)
+        cutoff = time.time() - ROLLING_MAX_AGE_DAYS * 86400
+        return [it for it in items if it.get("seen_at", 0) > cutoff]
+    except Exception:
+        return []
+
+
+def _merge_rolling(fresh):
+    """Persist headlines across refreshes: newest-first, deduped, capped at
+    ROLLING_MAX for ROLLING_MAX_AGE_DAYS — the panel never goes blank just
+    because one fetch came up dry."""
+    rolling = _load_rolling()
+    seen = {(it.get("title") or "")[:60] for it in fresh}
+    merged = list(fresh)
+    for it in rolling:
+        k = (it.get("title") or "")[:60]
+        if k not in seen:
+            seen.add(k)
+            merged.append(it)
+    merged = merged[:ROLLING_MAX]
+    try:
+        with open(ROLLING, "w") as f:
+            json.dump(merged, f)
+    except Exception:
+        pass
+    return merged
+
+
+def collect_headlines(tickers, per_ticker=2, min_items=8):
+    """[{ticker,title,url,src,when}] fresh & de-junked, cached 20 min.
+    PERSISTENT: fresh headlines merge into a 7-day rolling archive which
+    backfills the result, so recent headlines stay on the dashboard even when
+    the current fetch returns little (flat book, quiet weekend, source hiccup)."""
     key = ",".join(sorted(set(tickers)))
     if os.path.exists(CACHE):
         try:
@@ -111,10 +150,12 @@ def collect_headlines(tickers, per_ticker=2):
             seen.add(k)
             out.append({"ticker": t, "title": it["title"], "url": it["url"],
                         "src": it["src"],
-                        "when": it["dt"].strftime("%d %b %H:%M") if it.get("dt") else ""})
+                        "when": it["dt"].strftime("%d %b %H:%M") if it.get("dt") else "",
+                        "seen_at": time.time()})
+    result = _merge_rolling(out)[:max(min_items, len(out))]
     try:
         with open(CACHE, "w") as f:
-            json.dump({"key": key, "at": time.time(), "items": out}, f)
+            json.dump({"key": key, "at": time.time(), "items": result}, f)
     except Exception:
         pass
-    return out
+    return result
