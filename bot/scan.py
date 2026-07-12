@@ -47,14 +47,34 @@ def manage_exits(con, cfg, research, report):
                     pos["ticker"]))
             stop_pct = risk.dynamic_stop_pct(cfg, pos_news, research)
 
+        # RSI overbought = momentum exhaustion → take profit sooner (sell-side
+        # use of the same indicator that gates entries). Only when already green.
+        eff_tp = take_profit
+        rsi = None
+        if held_days >= sell_cfg["min_hold_days"] and gain_pct > 5:
+            from bot.signals.technicals import compute_metrics
+            rsi = compute_metrics(pos["ticker"]).get("rsi")
+            if rsi is not None and rsi >= 80:
+                eff_tp = min(take_profit, max(gain_pct, 8))  # lock the gain in now
+
+        # insider SELLING on a held name = bearish exit trigger (mirror signal)
+        isell_exit = False
+        if held_days >= sell_cfg["min_hold_days"] and not is_wc:
+            from bot.signals.events import insider_selling
+            if insider_selling(cfg, pos["ticker"]).get("total_usd", 0) >= 100000:
+                isell_exit = True
+
         from bot.signals.catalysts import earnings_exit_due
         reason = None
         if not is_wc and earnings_exit_due(cfg, pos["ticker"]):
             reason = "pre-earnings exit: avoiding the binary print"
+        elif isell_exit:
+            reason = "insider selling — bearish tell, exiting"
         elif dd_pct >= stop_pct and held_days >= sell_cfg["min_hold_days"]:
             reason = "trailing stop ({:.0f}%): {:.1f}% off high".format(stop_pct, dd_pct)
-        elif gain_pct >= take_profit:
-            reason = "take profit: +{:.1f}%".format(gain_pct)
+        elif gain_pct >= eff_tp:
+            reason = ("take profit: +{:.1f}%".format(gain_pct) +
+                      (" (RSI {} overbought — locked in)".format(rsi) if eff_tp < take_profit else ""))
         elif held_days > sell_cfg["max_hold_days"]:
             reason = "max hold {} days reached".format(sell_cfg["max_hold_days"])
 

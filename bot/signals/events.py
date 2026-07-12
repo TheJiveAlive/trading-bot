@@ -140,6 +140,53 @@ def gov_contract(company_name, days=45):
     return out
 
 
+def insider_selling(cfg, ticker, days=10):
+    """Total open-market insider SELL $ (Form 4 code S) in the lookback — the
+    mirror of the core insider-BUY signal. Cluster selling is a bearish tell:
+    used to avoid new buys AND to flag held positions for exit. Cached 8h."""
+    import datetime as dt
+    import xml.etree.ElementTree as ET
+    ck = "isell:" + ticker
+    c = _cache_get(ck)
+    if c is not None:
+        return c
+    out = {"total_usd": 0.0, "n": 0}
+    cik = _ticker_to_cik().get(ticker.upper())
+    if cik:
+        try:
+            end = dt.date.today(); start = end - dt.timedelta(days=days)
+            r = requests.get(FTS, params={"q": "", "forms": "4", "ciks": cik,
+                             "dateRange": "custom", "startdt": start.isoformat(),
+                             "enddt": end.isoformat()},
+                             headers={"User-Agent": cfg["edgar_user_agent"]}, timeout=15)
+            if r.status_code == 200:
+                hits = r.json().get("hits", {}).get("hits", [])[:4]
+                for h in hits:
+                    src = h.get("_source", {})
+                    adsh = src.get("adsh", "")
+                    doc = h.get("_id", "").split(":", 1)[-1] or "primary_doc.xml"
+                    ic = int((src.get("ciks") or [cik])[0])
+                    url = "https://www.sec.gov/Archives/edgar/data/{}/{}/{}".format(
+                        ic, adsh.replace("-", ""), doc)
+                    try:
+                        rr = requests.get(url, headers={"User-Agent": cfg["edgar_user_agent"]}, timeout=15)
+                        root = ET.fromstring(rr.content)
+                        for txn in root.iter("nonDerivativeTransaction"):
+                            if (txn.findtext(".//transactionCoding/transactionCode") == "S"
+                                    and txn.findtext(".//transactionAcquiredDisposedCode/value") == "D"):
+                                sh = float(txn.findtext(".//transactionShares/value") or 0)
+                                px = float(txn.findtext(".//transactionPricePerShare/value") or 0)
+                                out["total_usd"] += sh * px
+                        if out["total_usd"] > 0:
+                            out["n"] += 1
+                    except Exception:
+                        continue
+        except Exception:
+            pass
+    _cache_put(ck, out)
+    return out
+
+
 def event_score(cfg, ticker, company_name=None):
     """0..1.2 contextual bonus: fresh 8-K + squeeze fuel + federal contract."""
     score = 0.0

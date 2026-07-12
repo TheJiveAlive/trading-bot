@@ -56,6 +56,25 @@ def days_to_earnings(ticker, _cache={}):
     return _save(None)
 
 
+def _rsi(closes, period=14):
+    """Wilder RSI (0-100). Bidirectional: <30 oversold (bounce potential),
+    >70 overbought (exhaustion). Used on both the buy and sell side."""
+    if len(closes) < period + 1:
+        return None
+    deltas = [closes[i] - closes[i - 1] for i in range(1, len(closes))]
+    gains = [d if d > 0 else 0 for d in deltas]
+    losses = [-d if d < 0 else 0 for d in deltas]
+    ag = sum(gains[:period]) / period
+    al = sum(losses[:period]) / period
+    for i in range(period, len(deltas)):   # Wilder smoothing
+        ag = (ag * (period - 1) + gains[i]) / period
+        al = (al * (period - 1) + losses[i]) / period
+    if al == 0:
+        return 100.0
+    rs = ag / al
+    return round(100 - 100 / (1 + rs), 1)
+
+
 def _intraday(tkr):
     h = tkr.history(period="5d", interval="5m")
     return None if h is None or h.empty else h
@@ -71,7 +90,7 @@ def compute_metrics(ticker):
     m = {"rvol": None, "above_vwap": None, "ret5d_pct": None,
          "above_ma20": None, "extension_pct": None, "day_range_pos": None,
          "spread_pct": None, "atm_iv": None, "call_put_ratio": None,
-         "last": None}
+         "rsi": None, "last": None}
     tkr = yf.Ticker(ticker)
 
     intra = _intraday(tkr)
@@ -109,6 +128,7 @@ def compute_metrics(ticker):
         ma20 = float(closes.iloc[-20:].mean())
         m["above_ma20"] = last > ma20
         m["extension_pct"] = round((last / ma20 - 1) * 100, 1)
+        m["rsi"] = _rsi([float(x) for x in closes.tolist()])
 
     # real bid/ask from Alpaca IEX when available (fixes Yahoo's stale .info
     # bid/ask that caused false 50%-spread vetoes); fall back to Yahoo
@@ -163,10 +183,16 @@ def confluence_check(cfg, ticker, news_sc, reddit_info=None, n_insiders=0):
         "news_ok": news_sc >= 0,
         "options_flow": None if m["call_put_ratio"] is None
                         else m["call_put_ratio"] > 1.0,
+        # RSI: healthy entry zone is not-overbought (avoid chasing exhaustion)
+        "rsi_ok": None if m["rsi"] is None else m["rsi"] < 78,
     }
     from bot.signals.dilution import check_dilution
     dil = check_dilution(cfg, ticker)
     checks["clean_dilution_history"] = not dil["chronic"]
+    # insider SELLING (mirror of the buy signal): heavy recent sells = bearish
+    from bot.signals.events import insider_selling
+    isell = insider_selling(cfg, ticker)
+    checks["no_insider_selling"] = isell.get("total_usd", 0) < 50000
     vetoes = []
     if m["spread_pct"] is not None and m["spread_pct"] > c["hard_fail_spread_pct"]:
         vetoes.append("spread {}% > {}%".format(m["spread_pct"], c["hard_fail_spread_pct"]))
