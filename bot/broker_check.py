@@ -24,6 +24,31 @@ TEST_TICKER = "AAPL"     # highly liquid → reliably resolves in T212's instrum
 TARGET_NOTIONAL = 5.0
 
 
+def _probe_environments():
+    """When auth fails, probe BOTH T212 environments with the key and report only
+    the HTTP status (never the body/balance). Tells us if the key is a demo key,
+    a live key, or invalid/IP-restricted — without exposing any account data."""
+    import requests
+    key = broker_t212._api_key()
+    if not key:
+        print("probe       : no key reachable to probe")
+        return
+    print("probe       : testing the key against both environments (status only)…")
+    for env, base in (("demo", broker_t212.BASE["demo"]),
+                      ("live", broker_t212.BASE["live"])):
+        try:
+            r = requests.get(base + "/api/v0/equity/account/cash",
+                             headers={"Authorization": key}, timeout=20)
+            verdict = {200: "VALID here", 401: "rejected (wrong env / bad key)",
+                       403: "forbidden (scope or IP restriction)",
+                       429: "rate limited"}.get(r.status_code, "HTTP {}".format(r.status_code))
+            print("   {:5} -> HTTP {}  {}".format(env, r.status_code, verdict))
+        except Exception as e:
+            print("   {:5} -> error {}".format(env, str(e)[:80]))
+    print("   (200 on 'live' + 401 on 'demo' = it's a LIVE key; 401 on both = "
+          "invalid key or IP-restricted)")
+
+
 def main():
     cfg = config.load()
     env = cfg.get("broker", {}).get("t212_environment", "demo")
@@ -37,6 +62,7 @@ def main():
     ok, detail = broker_t212.health(cfg)
     print("health      :", "OK" if ok else "FAIL", "-", detail)
     if not ok:
+        _probe_environments()
         sys.exit(1)
 
     cash = broker_t212.account_cash(cfg) or {}
