@@ -1,0 +1,46 @@
+name: broker-check
+# Manual Trading 212 connection test. Read-only by default; can place a single
+# NON-EXECUTING pending limit order on the DEMO account (guarded in code).
+on:
+  workflow_dispatch:
+    inputs:
+      place_test_order:
+        description: "Also place a non-executing pending test order (DEMO only)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: install dependencies
+        run: pip install -r requirements.txt
+      - name: materialize secrets (t212 + alpaca for pricing)
+        env:
+          T212_API_KEY: ${{ secrets.T212_API_KEY }}
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+        run: |
+          mkdir -p data
+          python3 -c "
+          import json, os
+          json.dump({'t212_api_key':os.environ.get('T212_API_KEY',''),
+                     'alpaca_key':os.environ.get('ALPACA_KEY',''),
+                     'alpaca_secret':os.environ.get('ALPACA_SECRET','')},
+                    open('data/secrets.json','w'))"
+      - name: run connection check
+        env:
+          PLACE_TEST_ORDER: ${{ inputs.place_test_order }}
+        run: python -m bot.broker_check
+      - name: cleanup secrets
+        if: always()
+        run: rm -f data/secrets.json

@@ -160,6 +160,54 @@ def place_market_order(cfg, ticker, signed_shares, price_hint=None, dry_run=True
     return {"dry_run": False, "sent": order, "response": r.json()}
 
 
+def list_orders(cfg):
+    """Open/pending equity orders at Trading 212 (read-only)."""
+    return _get(cfg, "/api/v0/equity/orders")
+
+
+def place_limit_order(cfg, ticker, signed_shares, limit_price,
+                      time_validity="GTC", dry_run=True):
+    """Place a LIMIT order. A limit far from the market rests as a 'pending'
+    order and never fills — used for connection tests. Honours fractional_shares
+    and the max_order_value_usd cap. Same dry-run gating as market orders."""
+    broker = cfg.get("broker", {})
+    if cfg.get("fractional_shares"):
+        qty = round(float(signed_shares), 4)
+    else:
+        if int(signed_shares) != signed_shares:
+            raise T212Error("fractional shares disabled — whole shares only")
+        qty = int(signed_shares)
+    if qty == 0:
+        raise T212Error("zero quantity")
+    cap = broker.get("max_order_value_usd", 100.0)
+    if abs(qty) * limit_price > cap:
+        raise T212Error("order value ${:.2f} exceeds max_order_value_usd ${:.2f}".format(
+            abs(qty) * limit_price, cap))
+    is_dry = dry_run or not broker.get("live_orders_enabled", False)
+    t212_ticker = resolve_ticker(cfg, ticker)
+    if not t212_ticker:
+        raise T212Error("ticker {} not found in Trading 212 instrument list".format(ticker))
+    order = {"ticker": t212_ticker, "quantity": qty,
+             "limitPrice": round(limit_price, 2), "timeValidity": time_validity}
+    if is_dry:
+        return {"dry_run": True, "would_send": order,
+                "environment": broker.get("t212_environment", "demo")}
+    r = requests.post(_base(cfg) + "/api/v0/equity/orders/limit",
+                      headers=_headers(), json=order, timeout=25)
+    if r.status_code >= 400:
+        raise T212Error("limit order rejected ({}): {}".format(r.status_code, r.text[:200]))
+    return {"dry_run": False, "sent": order, "response": r.json()}
+
+
+def cancel_order(cfg, order_id):
+    """Cancel a pending equity order by id."""
+    r = requests.delete(_base(cfg) + "/api/v0/equity/orders/{}".format(order_id),
+                        headers=_headers(), timeout=25)
+    if r.status_code >= 400:
+        raise T212Error("cancel rejected ({}): {}".format(r.status_code, r.text[:200]))
+    return {"cancelled": order_id, "http": r.status_code}
+
+
 def health(cfg):
     """(ok, detail) for the dashboard / healthcheck."""
     if not configured():
