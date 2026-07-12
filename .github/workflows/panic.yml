@@ -1,0 +1,71 @@
+name: panic-flatten
+# EMERGENCY: sell every position at market, cancel all pending broker orders,
+# email a summary. Manual only — type FLATTEN to confirm.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type FLATTEN to confirm selling everything"
+        type: string
+        required: true
+
+permissions:
+  contents: write
+concurrency:
+  group: scan          # serialize with trading scans so we never race a buy
+  cancel-in-progress: false
+
+jobs:
+  flatten:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: confirmation guard
+        run: |
+          if [ "${{ inputs.confirm }}" != "FLATTEN" ]; then
+            echo "::error::confirmation phrase not typed — aborting (nothing sold)"
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: install dependencies
+        run: pip install -r requirements.txt
+      - name: materialize secrets
+        env:
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          T212_API_KEY: ${{ secrets.T212_API_KEY }}
+          T212_API_SECRET: ${{ secrets.T212_API_SECRET }}
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+        run: |
+          mkdir -p data logs publish
+          python3 -c "
+          import json, os
+          json.dump({'smtp_host':'smtp.gmail.com','smtp_port':465,
+                     'smtp_user':os.environ.get('SMTP_USER',''),
+                     'smtp_app_password':os.environ.get('SMTP_APP_PASSWORD',''),
+                     'email_to':os.environ.get('EMAIL_TO',''),
+                     't212_api_key':os.environ.get('T212_API_KEY',''),
+                     't212_api_secret':os.environ.get('T212_API_SECRET',''),
+                     'alpaca_key':os.environ.get('ALPACA_KEY',''),
+                     'alpaca_secret':os.environ.get('ALPACA_SECRET','')},
+                    open('data/secrets.json','w'))"
+      - name: FLATTEN EVERYTHING
+        run: python run.py flatten
+      - name: persist ledger state
+        if: always()
+        run: |
+          rm -f data/secrets.json
+          git config user.name "trading-bot"
+          git config user.email "trading-bot@users.noreply.github.com"
+          git add -A
+          git commit -m "PANIC FLATTEN $(date -u '+%Y-%m-%d %H:%M') UTC" || echo "no changes"
+          for i in 1 2 3; do
+            git pull --rebase -X ours origin main && git push && break
+            sleep 3
+          done

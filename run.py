@@ -43,6 +43,9 @@ def main():
         run_exits()
     elif cmd == "status":
         status()
+    elif cmd == "flatten":
+        from bot.panic import flatten_all
+        flatten_all()
     elif cmd == "broker-sync":
         from bot.broker_sync import sync
         s = sync(force=True)

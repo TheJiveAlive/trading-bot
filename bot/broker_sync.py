@@ -56,15 +56,20 @@ def _fresh_enough():
 
 def _reconcile(broker_positions):
     """Compare what the ledger THINKS we hold with what the broker ACTUALLY
-    holds. Returns a list of {ticker, ledger_shares, broker_shares, status}."""
+    holds. Returns a list of {ticker, ledger_shares, broker_shares, status}.
+
+    Fill sync: when both sides agree on the shares but the broker's average
+    price differs >0.5% from the ledger's, the broker's REAL fill price is
+    adopted into the ledger (broker = source of truth) and logged."""
     con = ledger.connect()
-    ledger_pos = {p["ticker"].upper(): p["shares"] for p in ledger.open_positions(con)}
-    con.close()
-    broker_pos = {p["ticker"]: p["shares"] for p in broker_positions}
+    ledger_pos = {p["ticker"].upper(): p for p in ledger.open_positions(con)}
+    broker_pos = {p["ticker"]: p for p in broker_positions}
     rows = []
     for tkr in sorted(set(ledger_pos) | set(broker_pos)):
-        lsh = ledger_pos.get(tkr)
-        bsh = broker_pos.get(tkr)
+        lp = ledger_pos.get(tkr)
+        bp = broker_pos.get(tkr)
+        lsh = lp["shares"] if lp else None
+        bsh = bp["shares"] if bp else None
         if lsh is None:
             status = "broker_only"          # broker holds it, ledger doesn't
         elif bsh is None:
@@ -73,8 +78,19 @@ def _reconcile(broker_positions):
             status = "drift"                 # both hold it but sizes disagree >1%
         else:
             status = "match"
+            # adopt the broker's true fill price when it disagrees with our estimate
+            l_avg, b_avg = lp.get("avg_cost"), bp.get("avg_price")
+            if l_avg and b_avg and abs(b_avg - l_avg) / l_avg > 0.005:
+                con.execute("UPDATE positions SET avg_cost=? WHERE ticker=? AND status='open'",
+                            (float(b_avg), tkr))
+                ledger.log_decision(con, "fill_sync",
+                                    "{}: adopted broker fill ${:.4f} (ledger estimated ${:.4f})".format(
+                                        tkr, b_avg, l_avg))
+                status = "fill_synced"
         rows.append({"ticker": tkr, "ledger_shares": lsh,
                      "broker_shares": bsh, "status": status})
+    con.commit()
+    con.close()
     return rows
 
 
