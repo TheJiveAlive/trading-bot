@@ -77,8 +77,8 @@
   "force_regime": "risk_on",
   "_force_regime_note": "Overrides the research/quant regime blend. 'risk_on' = full-auto aggressive (lowest buy threshold, widest stops). Set null to restore the adaptive conservative blend. Hard vetoes always apply regardless.",
   "selling": {
-    "trailing_stop_pct": 10.0,
-    "take_profit_pct": 20.0,
+    "trailing_stop_pct": 15.0,
+    "take_profit_pct": 40.0,
     "min_hold_days": 2,
     "max_hold_days": 45
   },
