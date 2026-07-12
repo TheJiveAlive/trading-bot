@@ -156,6 +156,17 @@ def _now_str():
     return dt.datetime.now().strftime("%a %d %b, %H:%M")
 
 
+def _sh(x):
+    """Format a share quantity: whole → '42', fractional → '2.35' (no trailing 0s)."""
+    try:
+        x = float(x)
+    except (TypeError, ValueError):
+        return str(x)
+    if abs(x - round(x)) < 1e-9:
+        return str(int(round(x)))
+    return ("{:.4f}".format(x)).rstrip("0").rstrip(".")
+
+
 def _money(v, sign=False):
     """Compact currency: $8.0k, $1.2M, $940, −$3.7k. Keeps KPIs short."""
     s = "+" if (sign and v >= 0) else ("−" if v < 0 else "")
@@ -945,7 +956,7 @@ def _positions_panel(st):
                 '<td class="mono r pos-pl {cls}" style="font-size:15px;font-weight:700">{pct}{plu}</td>'
                 '<td class="mono r loss pos-sell">${sl:.2f}</td>'
                 '<td class="mono r gain">${tl:.2f}</td></tr>'.format(
-                    t=p["ticker"], spark=spark, sh=p["shares"], c=round(p["avg_cost"], 4),
+                    t=p["ticker"], spark=spark, sh=_sh(p["shares"]), c=round(p["avg_cost"], 4),
                     stop=stop_pct, hwm=round(hwm, 4),
                     n="${:.2f}".format(p["now"]) if p["now"] else "—", cls=cls,
                     pct=pct_txt, plu=plu, sl=stop_lvl, tl=tp_lvl))
@@ -1154,7 +1165,7 @@ def _positions_heatmap(st):
             'style="flex-grow:{g};background:{bg}">'
             '<div class="ht-t">{t}</div><div class="ht-p ht-pct">{pct:+.1f}%</div>'
             '<div class="ht-v">${v:,.0f}</div></div>'.format(
-                t=p["ticker"], c=round(p["avg_cost"], 4), sh=p["shares"], g=grow,
+                t=p["ticker"], c=round(p["avg_cost"], 4), sh=_sh(p["shares"]), g=grow,
                 bg=_heat_color(pct), pct=pct, v=val))
     css = ("<style>"
            ".heatmap{display:flex;gap:4px;flex-wrap:wrap;min-height:96px;}"

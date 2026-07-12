@@ -6,7 +6,8 @@ GUARDRAILS BY DESIGN
   equity orders. All funding is done by you in the app.
 - Defaults to the DEMO (practice) environment. Live requires an explicit
   config flip AND a live API key.
-- Whole shares only (fractional quantities are rejected) — your rule.
+- Fractional shares supported (Trading 212 accepts decimal quantities) when
+  config.fractional_shares is true; else whole shares only.
 - Every order is checked against max_order_value_usd before it is sent.
 - The API key is read from data/secrets.json (local) or the T212_API_KEY
   env var (cloud secret). It is never logged.
@@ -111,15 +112,21 @@ def resolve_ticker(cfg, ticker):
 
 
 def place_market_order(cfg, ticker, signed_shares, price_hint=None, dry_run=True):
-    """Place a whole-share market order. signed_shares: +buy / -sell.
+    """Place a market order. signed_shares: +buy / -sell (fractional when
+    config.fractional_shares is true, else whole shares only).
 
     Returns a dict describing the result. When dry_run, nothing is sent —
     the intended order is returned with 'dry_run': True.
     """
     broker = cfg.get("broker", {})
-    if int(signed_shares) != signed_shares:
-        raise T212Error("fractional shares are not allowed by this bot")
-    qty = int(signed_shares)
+    # Trading 212 accepts fractional quantities (decimals). Honour the bot's
+    # fractional_shares setting: fractional → keep decimals; else whole only.
+    if cfg.get("fractional_shares"):
+        qty = round(float(signed_shares), 4)
+    else:
+        if int(signed_shares) != signed_shares:
+            raise T212Error("fractional shares disabled — whole shares only")
+        qty = int(signed_shares)
     if qty == 0:
         raise T212Error("zero quantity")
 

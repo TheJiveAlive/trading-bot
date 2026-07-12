@@ -67,17 +67,24 @@ def sector_bias_bonus(research, sector):
         return 0.0
 
 
+def qty(cfg, raw):
+    """Round a share quantity per the fractional/whole-share setting. Fractional
+    → 4dp (Trading 212 supports decimals); whole → floor to integer."""
+    if cfg.get("fractional_shares"):
+        return round(max(0.0, raw), 4)
+    return float(int(max(0.0, raw)))
+
+
 def position_size(cfg, equity, price, stop_pct):
-    """Whole shares such that hitting the stop loses ~risk_per_trade_pct of
-    equity — volatility-aware sizing instead of a flat dollar amount. Still
-    capped by max_position_usd."""
+    """Shares sized so hitting the stop loses ~risk_per_trade_pct of equity
+    (volatility-aware), capped by max_position_usd. Fractional when enabled."""
     risk_budget = equity * cfg["risk"]["risk_per_trade_pct"] / 100.0
     per_share_risk = price * stop_pct / 100.0
     if per_share_risk <= 0:
         return 0
-    shares_by_risk = int(risk_budget / per_share_risk)
-    shares_by_cap = int(cfg["buying"]["max_position_usd"] / price)
-    return max(0, min(shares_by_risk, shares_by_cap))
+    shares_by_risk = risk_budget / per_share_risk
+    shares_by_cap = cfg["buying"]["max_position_usd"] / price
+    return qty(cfg, min(shares_by_risk, shares_by_cap))
 
 
 def trading_halted(con, cfg):

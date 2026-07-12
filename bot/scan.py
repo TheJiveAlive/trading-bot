@@ -142,11 +142,12 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
             p["shares"] * (market.last_price(p["ticker"]) or p["avg_cost"])
             for p in ledger.open_positions(con))
         stop_pct = risk.dynamic_stop_pct(cfg, c["parts"].get("news", 0), research)
-        shares = min(risk.position_size(cfg, equity, c["price"], stop_pct),
-                     int(available // c["price"]))
-        if shares < 1:
+        affordable = risk.qty(cfg, available / c["price"])
+        shares = min(risk.position_size(cfg, equity, c["price"], stop_pct), affordable)
+        min_qty = 0.0001 if cfg.get("fractional_shares") else 1
+        if shares < min_qty:
             ledger.log_decision(con, "skip_buy",
-                                "{} sized to 0 shares (price ${:.2f}, cash ${:.2f})".format(
+                                "{} sized to ~0 shares (price ${:.2f}, cash ${:.2f})".format(
                                     c["ticker"], c["price"], available))
             continue
         ok, detail = confluence_check(

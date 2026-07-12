@@ -86,8 +86,8 @@ def scan_wildcards(con, cfg, research, intel, report):
             report.append("  wildcard skip {}: dilution risk".format(ticker))
             continue
         budget = min(ledger.cash(con), wc["max_position_usd"])
-        shares = int(budget // price)
-        if shares < 1:
+        shares = risk.qty(cfg, budget / price)
+        if shares < (0.0001 if cfg.get("fractional_shares") else 1):
             continue
         from bot import executor
         reason = "[wildcard] r/pennystocks buzz (rank {}, {} mentions), research-vetted, dilution-clean".format(
