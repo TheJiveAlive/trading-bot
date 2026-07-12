@@ -75,6 +75,37 @@ def _yahoo_news(ticker):
     return out
 
 
+def _finnhub_news(ticker):
+    """Finnhub company news (keyed; [] without a key) — cleaner and often faster
+    than the RSS scrape, especially from cloud runners where Google throttles."""
+    from bot.signals.finnhub_data import _key
+    k = _key()
+    if not k:
+        return []
+    try:
+        frm = (dt.date.today() - dt.timedelta(days=MAX_AGE_DAYS)).isoformat()
+        r = requests.get("https://finnhub.io/api/v1/company-news",
+                         params={"symbol": ticker, "from": frm,
+                                 "to": dt.date.today().isoformat(), "token": k},
+                         timeout=15)
+        if r.status_code != 200:
+            return []
+        out = []
+        for item in r.json()[:6]:
+            title = (item.get("headline") or "").strip()
+            when = None
+            try:
+                when = dt.datetime.utcfromtimestamp(item.get("datetime") or 0)
+            except Exception:
+                pass
+            if title:
+                out.append({"title": title, "url": item.get("url") or "",
+                            "src": item.get("source") or "Finnhub", "dt": when})
+        return out
+    except Exception:
+        return []
+
+
 def _fresh_and_clean(items):
     now = dt.datetime.utcnow()
     keep = []
@@ -141,7 +172,7 @@ def collect_headlines(tickers, per_ticker=2, min_items=8):
             pass
     out, seen = [], set()
     for t in tickers:
-        merged = _fresh_and_clean(_google_news(t) + _yahoo_news(t))
+        merged = _fresh_and_clean(_google_news(t) + _yahoo_news(t) + _finnhub_news(t))
         merged.sort(key=lambda x: x.get("dt") or dt.datetime.min, reverse=True)
         for it in merged[:per_ticker]:
             k = (it["title"] or "")[:60]

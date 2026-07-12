@@ -18,12 +18,12 @@
     "exclude_etfs": true
   },
   "buying": {
-    "max_buys_per_day": 2,
-    "max_buys_per_week": 4,
-    "min_composite_score": 5.5,
+    "max_buys_per_day": 3,
+    "max_buys_per_week": 6,
+    "min_composite_score": 5.25,
     "max_positions": 20,
     "max_position_usd": 25.0,
-    "_sizing_note": "FULL-AUTO but SELECTIVE (per learnings 2026-07-10): max_buys_per_week 4 (tune showed 100% of combos worse at higher freq) and min_composite_score 5.5 (above the single-insider ceiling of 5.0, so a candidate needs a 2nd corroborating signal \u2014 not insider alone). Hard vetoes still protect every entry. max_position_usd 25 sized for the $100 T212 demo account (~4 concurrent names, fractional shares make any price reachable)."
+    "_sizing_note": "DEMO-REHEARSAL POSTURE (2026-07-12): buys 3/day 6/wk and min_score 5.25 to get real fills through the T212 pipeline this week \u2014 the point of the rehearsal is exercising the machinery, and hard vetoes + confluence still protect every entry. BEFORE REAL MONEY restore the learnings-backed posture: 2/day 4/wk, min_score 5.5 (tune showed higher frequency worse; 5.5 forces a 2nd corroborating signal beyond a single insider). max_position_usd 25 sized for the $100 demo account."
   },
   "confluence": {
     "min_checks_passed": 4,
@@ -81,10 +81,11 @@
   "force_regime": "risk_on",
   "_force_regime_note": "Overrides the research/quant regime blend. 'risk_on' = full-auto aggressive (lowest buy threshold, widest stops). Set null to restore the adaptive conservative blend. Hard vetoes always apply regardless.",
   "selling": {
-    "trailing_stop_pct": 15.0,
-    "take_profit_pct": 40.0,
-    "min_hold_days": 2,
-    "max_hold_days": 45
+    "trailing_stop_pct": 12.0,
+    "take_profit_pct": 30.0,
+    "min_hold_days": 1,
+    "max_hold_days": 30,
+    "_note": "TIGHTENED for the demo rehearsal (2026-07-12): stop 12 now matches the risk.py clamp ceiling (15 was silently capped anyway), TP 30 locks gains sooner, max_hold 30 recycles the small book faster. Auto-tuning may adjust stop/TP within its 8-15/15-40 bounds."
   },
   "signals": {
     "insider_lookback_days": 5,
@@ -94,6 +95,7 @@
     "fundamentals_weight": 1.5,
     "news_weight": 1.0,
     "reddit_weight": 0.75,
+    "trending_weight": 0.5,
     "earnings_weight": 1.0,
     "breakout_weight": 1.0,
     "events_weight": 1.0

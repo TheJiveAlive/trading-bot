@@ -32,6 +32,12 @@ def score_candidates(cfg, insider_hits, sector_ranks, snapshot, research=None,
         r_sc = reddit_score((reddit_data or {}).get(ticker))
         if r_sc:
             parts["reddit"] = round(r_sc * w.get("reddit_weight", 0.75), 2)
+        from bot.signals.trending import trending_score
+        tr_sc = trending_score(ticker)
+        if tr_sc:
+            parts["trending"] = round(tr_sc * w.get("trending_weight", 0.5), 2)
+            if r_sc:   # trending AND buzzing on Reddit = confirmed multi-platform attention
+                parts["trending"] = round(parts["trending"] * 1.5, 2)
         from bot.signals.finnhub_data import insider_sentiment_bonus, analyst_trend
         fh_sent = insider_sentiment_bonus(ticker)
         if fh_sent:

@@ -24,6 +24,7 @@ DEFAULTS = {
     "fundamentals_weight": 1.5,
     "news_weight": 1.0,
     "reddit_weight": 0.75,
+    "trending_weight": 0.5,
 }
 PART_TO_WEIGHT = {
     "insider": "insider_weight",
@@ -31,6 +32,7 @@ PART_TO_WEIGHT = {
     "fundamentals": "fundamentals_weight",
     "news": "news_weight",
     "reddit": "reddit_weight",
+    "trending": "trending_weight",
 }
 
 
