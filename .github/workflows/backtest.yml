@@ -25,6 +25,18 @@ jobs:
           python-version: '3.12'
           cache: pip
 
+      - name: notify START (email)
+        env: {SMTP_USER: "${{ secrets.SMTP_USER }}", SMTP_APP_PASSWORD: "${{ secrets.SMTP_APP_PASSWORD }}", EMAIL_TO: "${{ secrets.EMAIL_TO }}"}
+        run: |
+          M="${{ github.event.inputs.months || '6' }}"
+          python3 -c "
+          import os,smtplib,ssl
+          from email.mime.text import MIMEText
+          m=MIMEText('Backtest STARTED ($M months).\nRun: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}')
+          m['Subject']='[bot] ▶ backtest STARTED ($M mo)'; m['From']=os.environ['SMTP_USER']; m['To']=os.environ['EMAIL_TO']
+          with smtplib.SMTP_SSL('smtp.gmail.com',465,context=ssl.create_default_context()) as s:
+              s.login(os.environ['SMTP_USER'],os.environ['SMTP_APP_PASSWORD']); s.send_message(m)" || true
+
       - name: install dependencies
         run: pip install -r requirements.txt
 
@@ -45,3 +57,24 @@ jobs:
           git commit -m "backtest $(date -u '+%Y-%m-%d')" || echo "no changes"
           git pull --rebase origin main || true
           git push
+
+      - name: notify FINISH / FAIL (email)
+        if: always()
+        env: {SMTP_USER: "${{ secrets.SMTP_USER }}", SMTP_APP_PASSWORD: "${{ secrets.SMTP_APP_PASSWORD }}", EMAIL_TO: "${{ secrets.EMAIL_TO }}", STATUS: "${{ job.status }}"}
+        run: |
+          python3 -c "
+          import os,json,smtplib,ssl
+          from email.mime.text import MIMEText
+          st=os.environ.get('STATUS','')
+          body='Backtest '+st.upper()+'.\n'
+          if st=='success':
+              try:
+                  d=json.load(open('data/backtest_report.json'))
+                  body+='\n{}% vs SPY {}% | {} trades | win {}% | maxDD {}%'.format(
+                      d['return_pct'],d['spy_buy_hold_return_pct'],d['closed_trades'],d['win_rate_pct'],d['max_drawdown_pct'])
+              except Exception: pass
+          body+='\n\nhttps://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          icon='✅' if st=='success' else '❌'
+          m=MIMEText(body); m['Subject']='[bot] '+icon+' backtest '+st.upper(); m['From']=os.environ['SMTP_USER']; m['To']=os.environ['EMAIL_TO']
+          with smtplib.SMTP_SSL('smtp.gmail.com',465,context=ssl.create_default_context()) as s:
+              s.login(os.environ['SMTP_USER'],os.environ['SMTP_APP_PASSWORD']); s.send_message(m)" || true

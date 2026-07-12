@@ -29,6 +29,20 @@ jobs:
         with:
           python-version: '3.12'
           cache: pip
+      - name: notify START (email)
+        env:
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: |
+          M="${{ github.event.inputs.months || '12' }}"
+          python3 -c "
+          import os,smtplib,ssl
+          from email.mime.text import MIMEText
+          m=MIMEText('Weekend deep run STARTED ($M months): backtest + full sweep + walk-forward.\nYou'\''ll get another email when it finishes or if it fails.\n\nRun: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}')
+          m['Subject']='[bot] ▶ deep run STARTED ($M mo)'; m['From']=os.environ['SMTP_USER']; m['To']=os.environ['EMAIL_TO']
+          with smtplib.SMTP_SSL('smtp.gmail.com',465,context=ssl.create_default_context()) as s:
+              s.login(os.environ['SMTP_USER'],os.environ['SMTP_APP_PASSWORD']); s.send_message(m)" || true
       - name: install deps
         run: pip install -r requirements.txt
       - name: deep backtest (long window) + full sweep + walk-forward
@@ -78,5 +92,20 @@ jobs:
               v=w['verdict']; lines.append(''); lines.append('Walk-forward: '+v['read'])
               lines.append('beats SPY out-of-sample: {}'.format(v['beats_spy_out_of_sample']))
           except Exception: pass
-          notify.send_email('[bot] weekend deep run', '\n'.join(lines))
+          notify.send_email('[bot] ✅ deep run FINISHED', '\n'.join(lines))
           os.remove('data/secrets.json')" || true
+
+      - name: notify FAIL (email)
+        if: failure()
+        env:
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: |
+          python3 -c "
+          import os,smtplib,ssl
+          from email.mime.text import MIMEText
+          m=MIMEText('Weekend deep run FAILED. Check the log:\nhttps://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}')
+          m['Subject']='[bot] ❌ deep run FAILED'; m['From']=os.environ['SMTP_USER']; m['To']=os.environ['EMAIL_TO']
+          with smtplib.SMTP_SSL('smtp.gmail.com',465,context=ssl.create_default_context()) as s:
+              s.login(os.environ['SMTP_USER'],os.environ['SMTP_APP_PASSWORD']); s.send_message(m)" || true
