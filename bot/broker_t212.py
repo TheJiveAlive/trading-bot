@@ -86,7 +86,13 @@ def _base(cfg):
 
 
 def _get(cfg, path):
-    r = requests.get(_base(cfg) + path, headers=_headers(), timeout=25)
+    # T212 rate-limits per endpoint; retry once after a short pause on 429.
+    for attempt in range(2):
+        r = requests.get(_base(cfg) + path, headers=_headers(), timeout=25)
+        if r.status_code == 429 and attempt == 0:
+            time.sleep(3)
+            continue
+        break
     if r.status_code == 401:
         raise T212Error("401 unauthorized — check API key / environment")
     if r.status_code == 429:

@@ -17,6 +17,7 @@ the automated trading loop.
 """
 import os
 import sys
+import time
 
 from bot import config, broker_t212, market
 
@@ -126,18 +127,20 @@ def main():
         print("RESULT: NO KEY reachable — T212_API_KEY is not set in this environment.")
         sys.exit(1)
 
-    ok, detail = broker_t212.health(cfg)
-    print("health      :", "OK" if ok else "FAIL", "-", detail)
-    if not ok:
+    # single cash read (was double-calling via health() → 429). Success == healthy.
+    try:
+        cash = broker_t212.account_cash(cfg) or {}
+    except broker_t212.T212Error as e:
+        print("health      : FAIL -", e)
         _probe_environments()
         sys.exit(1)
-
-    cash = broker_t212.account_cash(cfg) or {}
     free = float(cash.get("free") or 0)
+    print("health      : OK - demo account reachable")
     print("cash        : free ${:,.2f} | invested ${:,.2f} | total ${:,.2f} | open P/L ${:,.2f}".format(
         free, float(cash.get("invested") or 0), float(cash.get("total") or 0),
         float(cash.get("ppl") or 0)))
 
+    time.sleep(2)  # respect T212's per-endpoint rate limit
     pf = broker_t212.portfolio(cfg) or []
     print("positions   :", len(pf))
     for p in pf:
