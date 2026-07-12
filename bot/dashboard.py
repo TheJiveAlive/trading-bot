@@ -17,19 +17,39 @@ from bot import config, ledger, market, risk
 from bot.config import ROOT
 
 CSS = """
-:root { --bg:#070A12; --panel:#0D1322; --panel2:#101829; --line:#1A2338;
-  --ink:#EAF0FB; --mut:#8B99B5; --dim:#5C6B8C; --teal:#3EDDC5; --violet:#9F8CFF;
-  --gain:#3DDC97; --loss:#FF7A70; --warn:#FFB454; }
+:root { --bg:#05070D; --panel:#0A0F1A; --panel2:#0C1220; --line:#1B2334;
+  --ink:#F2F6FE; --mut:#8B99B5; --dim:#57678A; --teal:#3EDDC5; --violet:#9F8CFF;
+  --gain:#2EE58C; --loss:#FF6F66; --warn:#FFB454; }
 * { margin:0; padding:0; box-sizing:border-box; }
 html { -webkit-font-smoothing:antialiased; }
-body { background:radial-gradient(1200px 500px at 70% -10%, #0D1730 0%, var(--bg) 55%);
+body { background:
+  radial-gradient(1100px 480px at 85% -12%, #0B1A33 0%, transparent 60%),
+  radial-gradient(700px 420px at -10% 8%, #0A1426 0%, transparent 55%), var(--bg);
   color:var(--ink); padding-bottom:64px; font-size:14px;
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; }
+  font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; }
 a { color:var(--teal); text-decoration:none; }
 a:hover { text-decoration:underline; }
 .mono { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
   font-variant-numeric:tabular-nums; }
-.top { position:sticky; top:0; z-index:5; background:rgba(7,10,18,.85);
+/* ---------- Themon-style shell: sidebar + content ---------- */
+.shell { display:grid; grid-template-columns:212px minmax(0,1fr); gap:0;
+  max-width:1400px; margin:0 auto; }
+.side { position:sticky; top:0; height:100vh; padding:18px 14px;
+  border-right:1px solid var(--line); display:flex; flex-direction:column; gap:4px;
+  background:linear-gradient(180deg,rgba(10,15,26,.7),rgba(5,7,13,.25)); }
+.side .brand { font-size:14.5px; font-weight:800; letter-spacing:.2px;
+  padding:6px 10px 18px; display:flex; align-items:center; gap:7px; }
+.side .brand .zap { color:var(--teal); }
+.sitem { display:flex; align-items:center; gap:10px; color:var(--mut);
+  font-size:10.5px; font-weight:800; letter-spacing:1.6px; text-transform:uppercase;
+  padding:11px 12px; border-radius:11px; border:1px solid transparent; }
+.sitem:hover { color:var(--ink); text-decoration:none; background:rgba(255,255,255,.025); }
+.sitem.on { color:var(--ink); border-color:#2A3752; background:rgba(20,28,46,.65);
+  box-shadow:0 0 0 1px rgba(62,221,197,.12), 0 0 18px rgba(62,221,197,.07) inset; }
+.sitem svg { width:15px; height:15px; stroke:currentColor; opacity:.85; flex:none; }
+.sfoot { margin-top:auto; display:flex; flex-direction:column; gap:8px; padding:10px 6px; }
+.main { min-width:0; padding:0 22px; }
+.top { display:none; position:sticky; top:0; z-index:5; background:rgba(5,7,13,.88);
   backdrop-filter:blur(10px); border-bottom:1px solid var(--line); padding:12px 20px; }
 .topin { max-width:1140px; margin:0 auto; display:flex; align-items:center;
   gap:16px; flex-wrap:wrap; }
@@ -43,30 +63,111 @@ nav a:hover { text-decoration:none; color:var(--ink); }
 nav a.on { color:#051512;
   background:linear-gradient(120deg,var(--teal),#6FE8D2); }
 .modes { margin-left:auto; display:flex; gap:8px; align-items:center; }
+@media (max-width:940px){
+  .shell { grid-template-columns:1fr; }
+  .side { display:none; }
+  .top { display:block; }
+  .main { padding:0 14px; }
+}
 .pill { border:1px solid var(--line); border-radius:99px; padding:4px 11px;
   font-size:9.5px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; }
 .pill.paper { color:var(--warn); border-color:#4a3a14; background:#171106; }
 .pill.live { color:var(--gain); border-color:#14432f; background:#06180f; }
 .pill.reg-risk_on { color:var(--gain); } .pill.reg-risk_off { color:var(--loss); }
 .pill.reg-neutral { color:var(--mut); }
-.wrap { max-width:1140px; margin:20px auto 0; padding:0 20px; display:flex;
-  flex-direction:column; gap:16px; }
-.kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
-.kpi { background:linear-gradient(160deg,var(--panel2),var(--panel));
-  border:1px solid var(--line); border-radius:12px; padding:14px 16px;
-  box-shadow:0 1px 0 rgba(255,255,255,.04) inset, 0 10px 28px rgba(0,0,0,.35); }
+.wrap { max-width:1140px; margin:16px auto 0; display:flex;
+  flex-direction:column; gap:14px; }
+/* ---------- hero: total portfolio value + timeframes + big chart ---------- */
+.hero { background:linear-gradient(165deg,var(--panel2),var(--panel));
+  border:1px solid var(--line); border-radius:14px; padding:20px 22px 12px; }
+.hero .hl { color:var(--dim); font-size:10px; font-weight:800; letter-spacing:2px;
+  text-transform:uppercase; }
+.hero .hv { font-size:38px; font-weight:800; letter-spacing:-.8px; margin-top:6px;
+  font-variant-numeric:tabular-nums; }
+.hero .hc { font-size:13px; font-weight:700; margin-top:4px; }
+.hero .hrow { display:flex; align-items:flex-start; gap:12px; flex-wrap:wrap; }
+.hero .hrow .grow { flex:1; min-width:220px; }
+.tfs { display:flex; gap:6px; padding-top:6px; }
+.tf { width:38px; height:38px; border-radius:50%; border:1px solid var(--line);
+  background:transparent; color:var(--mut); font-size:10px; font-weight:800;
+  letter-spacing:.5px; cursor:pointer; }
+.tf:hover { color:var(--ink); border-color:#2A3752; }
+.tf.on { background:#EAF0FB; color:#0A0F1A; border-color:#EAF0FB; }
+.hchart { margin-top:10px; }
+.hchart svg { display:block; width:100%; }
+/* ---------- allocation rows ---------- */
+.arow { display:grid; grid-template-columns:minmax(84px,1.1fr) 1fr 1.3fr 52px;
+  gap:10px; align-items:center; padding:9px 2px; border-bottom:1px solid #10182A; }
+.arow:last-child { border-bottom:none; }
+.arow .nm { display:flex; align-items:center; gap:8px; font-weight:700; font-size:12.5px; }
+.adot { width:22px; height:22px; border-radius:50%; flex:none; display:inline-flex;
+  align-items:center; justify-content:center; font-size:8px; font-weight:800; color:#04101c; }
+.abar { height:4px; background:#141C2E; border-radius:2px; overflow:hidden; }
+.abar i { display:block; height:4px; background:#EAF0FB; border-radius:2px; }
+.apc { color:var(--mut); font-size:11.5px; text-align:right; }
+/* ---------- month calendar ---------- */
+.calgrid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+.caldow { color:var(--dim); font-size:8.5px; font-weight:800; letter-spacing:1.2px;
+  text-transform:uppercase; text-align:center; padding:2px 0 6px; }
+.calday { min-height:52px; border:1px solid #131B2D; border-radius:8px; padding:4px 5px;
+  background:rgba(255,255,255,.012); }
+.calday.off { opacity:.42; background:transparent; }
+.calday.out { opacity:.18; border-style:dashed; }
+.calday.today { border-color:var(--teal); box-shadow:0 0 0 1px rgba(62,221,197,.25),
+  0 0 14px rgba(62,221,197,.08) inset; }
+.calnum { color:var(--dim); font-size:9.5px; font-weight:700; }
+.calday.today .calnum { color:var(--teal); }
+.evt { display:block; font-size:8.5px; font-weight:800; letter-spacing:.3px;
+  border-radius:5px; padding:1.5px 4px; margin-top:3px; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis; }
+.evt.earn { background:#241A06; color:var(--warn); border:1px solid #4a3a14; }
+.evt.exit { background:#230D0B; color:var(--loss); border:1px solid #4a2320; }
+.evt.buy  { background:#07200F; color:var(--gain); border:1px solid #14432f; }
+.evt.sell { background:#1A1030; color:var(--violet); border:1px solid #2d2657; }
+.evt.cand { background:#101827; color:var(--mut); border:1px solid var(--line); }
+.legend { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+.legend .evt { display:inline-block; margin-top:0; }
+/* ---------- activity status pills ---------- */
+.stp { display:inline-flex; align-items:center; gap:5px; border:1px solid var(--line);
+  border-radius:99px; padding:2px 9px; font-size:9px; font-weight:800;
+  letter-spacing:.8px; text-transform:uppercase; color:var(--mut); }
+.stp i { width:6px; height:6px; border-radius:50%; display:inline-block; }
+.stp.ok { color:var(--gain); border-color:#14432f; } .stp.ok i { background:var(--gain); }
+.stp.sim { color:var(--mut); } .stp.sim i { background:var(--dim); }
+.stp.pend { color:var(--warn); border-color:#4a3a14; } .stp.pend i { background:var(--warn); }
+/* ---------- tradingview modal ---------- */
+.tvm { display:none; position:fixed; inset:0; z-index:50; background:rgba(3,5,9,.78);
+  backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:26px; }
+.tvm.open { display:flex; }
+.tvbox { width:min(1080px,96vw); height:min(620px,86vh); background:var(--panel);
+  border:1px solid #2A3752; border-radius:14px; overflow:hidden; position:relative;
+  box-shadow:0 30px 80px rgba(0,0,0,.6); }
+.tvhead { display:flex; align-items:center; gap:10px; padding:10px 14px;
+  border-bottom:1px solid var(--line); }
+.tvhead b { font-size:13px; letter-spacing:.5px; }
+.tvclose { margin-left:auto; background:none; border:1px solid var(--line); color:var(--mut);
+  border-radius:8px; padding:4px 10px; font-size:11px; cursor:pointer; }
+.tvclose:hover { color:var(--ink); border-color:#2A3752; }
+#tvchart { width:100%; height:calc(100% - 45px); }
+[data-tkr] { cursor:pointer; }
+.tape { border:1px solid var(--line); border-radius:10px; overflow:hidden;
+  background:var(--panel); }
+.kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; }
+.kpi { background:var(--panel);
+  border:1px solid var(--line); border-radius:12px; padding:13px 15px; }
 .kpi .l { color:var(--dim); font-size:9.5px; font-weight:800; letter-spacing:1.7px;
   text-transform:uppercase; }
-.kpi .v { font-size:24px; font-weight:750; margin-top:7px; letter-spacing:-.3px; }
+.kpi .v { font-size:23px; font-weight:750; margin-top:7px; letter-spacing:-.3px;
+  font-variant-numeric:tabular-nums; }
 .kpi .s { font-size:11px; color:var(--mut); margin-top:4px; }
-.grid2 { display:grid; grid-template-columns:3fr 2fr; gap:16px; }
-.grid2r { display:grid; grid-template-columns:2fr 3fr; gap:16px; }
+.grid2 { display:grid; grid-template-columns:3fr 2fr; gap:14px; }
+.grid2r { display:grid; grid-template-columns:2fr 3fr; gap:14px; }
 @media (max-width:840px){ .grid2,.grid2r { grid-template-columns:1fr; } }
-.panel { background:linear-gradient(160deg,var(--panel2),var(--panel));
-  border:1px solid var(--line); border-radius:12px; padding:16px 18px;
-  overflow-x:auto;
-  box-shadow:0 1px 0 rgba(255,255,255,.04) inset, 0 10px 28px rgba(0,0,0,.35); }
-.ph { display:flex; align-items:baseline; gap:10px; margin-bottom:12px; }
+.panel { background:var(--panel);
+  border:1px solid var(--line); border-radius:14px; padding:0 18px 15px;
+  overflow-x:auto; }
+.ph { display:flex; align-items:center; gap:10px; margin:0 -18px 13px;
+  padding:13px 18px 11px; border-bottom:1px solid #121A2C; }
 .ph h2 { color:var(--mut); font-size:10.5px; font-weight:800; letter-spacing:1.9px;
   text-transform:uppercase; }
 .asof { margin-left:auto; color:var(--dim); font-size:10px; white-space:nowrap;
@@ -204,16 +305,95 @@ def panel(title, asof, inner, extra=""):
         t=title, a=asof, i=inner, x=extra)
 
 
+_ICONS = {
+    "dash": '<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>',
+    "radar": '<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 3v4.5M12 12l6-6"/></svg>',
+    "hist": '<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>',
+}
+
+
+def _tv_symbols(cost_basis):
+    """TradingView symbols for the ticker tape: holdings first, then indices."""
+    syms = [{"proName": t, "title": t} for t in list(cost_basis or {})[:8]]
+    syms += [{"proName": "AMEX:SPY", "title": "SPY"},
+             {"proName": "NASDAQ:QQQ", "title": "QQQ"},
+             {"proName": "CBOE:VIX", "title": "VIX"}]
+    return json.dumps(syms)
+
+
+def _tv_embeds(cost_basis):
+    """TradingView freebies: scrolling ticker tape + click-any-ticker chart modal."""
+    return """
+<div class="tape"><div class="tradingview-widget-container">
+  <div class="tradingview-widget-container__widget"></div>
+  <script src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+  {{"symbols": {syms}, "showSymbolLogo": true, "colorTheme": "dark",
+    "isTransparent": true, "displayMode": "regular", "locale": "en"}}
+  </script>
+</div></div>""".format(syms=_tv_symbols(cost_basis)) + """
+<div class="tvm" id="tvm" onclick="if(event.target===this)tvClose()">
+  <div class="tvbox">
+    <div class="tvhead"><b id="tvtitle">—</b>
+      <span class="note">TradingView &middot; click outside or Esc to close</span>
+      <button class="tvclose" onclick="tvClose()">✕ close</button></div>
+    <div id="tvchart"></div>
+  </div>
+</div>
+<script>
+var _tvReady=false,_tvPending=null;
+function _tvLoad(cb){
+  if(window.TradingView){cb();return;}
+  var s=document.createElement('script');s.src='https://s3.tradingview.com/tv.js';
+  s.onload=cb;document.head.appendChild(s);
+}
+function tvOpen(t){
+  t=(t||'').toUpperCase().replace(/[^A-Z0-9.]/g,'');if(!t)return;
+  document.getElementById('tvtitle').textContent=t+' — full chart';
+  document.getElementById('tvm').classList.add('open');
+  document.getElementById('tvchart').innerHTML='<div class="note" style="padding:20px">loading TradingView…</div>';
+  _tvLoad(function(){
+    document.getElementById('tvchart').innerHTML='';
+    new TradingView.widget({container_id:'tvchart',symbol:t,interval:'D',
+      theme:'dark',style:'1',autosize:true,hide_side_toolbar:false,
+      allow_symbol_change:true,studies:['RSI@tv-basicstudies','Volume@tv-basicstudies']});
+  });
+}
+function tvClose(){document.getElementById('tvm').classList.remove('open');
+  document.getElementById('tvchart').innerHTML='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')tvClose();});
+document.addEventListener('click',function(e){
+  var el=e.target.closest('[data-tkr]');
+  if(el&&!e.target.closest('a'))tvOpen(el.getAttribute('data-tkr'));
+});
+</script>"""
+
+
 def _page(active, body, cfg, research, gen, mood="flat", cost_basis=None):
     regime = risk.regime(research)
     nav = "".join('<a href="{h}" class="{c}">{n}</a>'.format(
         h=h, c="on" if active == h else "", n=n)
         for h, n in (("index.html", "Overview"), ("radar.html", "Radar"),
                      ("history.html", "History")))
+    sidenav = "".join(
+        '<a href="{h}" class="sitem {c}">{icon}{n}</a>'.format(
+            h=h, c="on" if active == h else "", icon=_ICONS[ic], n=n)
+        for h, n, ic in (("index.html", "Dashboard", "dash"),
+                         ("radar.html", "Radar", "radar"),
+                         ("history.html", "History", "hist")))
     return """<!doctype html><html lang="en"><head><meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta http-equiv="refresh" content="300"/>
 <title>RobinHood Bot</title><style>{css}</style></head><body>
+<div class="shell">
+<aside class="side">
+  <span class="brand"><span class="zap">&#9889;</span> RobinHood Bot</span>
+  {sidenav}
+  <div class="sfoot">
+    <span class="pill {mc}">{mode}</span>
+    <span class="pill reg-{reg}">{regt}</span>
+  </div>
+</aside>
+<div class="main">
 <div class="top"><div class="topin">
   <span class="brand"><span class="zap">&#9889;</span> RobinHood Bot</span>
   {nav}
@@ -222,7 +402,9 @@ def _page(active, body, cfg, research, gen, mood="flat", cost_basis=None):
     <span class="pill reg-{reg}">{regt}</span>
   </span>
 </div></div>
-<div class="schedwrap"><div class="sched" id="sched">
+<div class="wrap">
+{tape}
+<div class="sched" id="sched">
   <span class="dot" id="scandot"></span>
   <span class="sl">Trading scan</span>
   <span class="sv" id="scan-next">—</span>
@@ -233,16 +415,18 @@ def _page(active, body, cfg, research, gen, mood="flat", cost_basis=None):
   <span class="sl">Daily research</span>
   <span class="sv" id="research-next">—</span>
   <span class="barwrap"><span class="barfill" id="hourbar"></span></span>
-</div></div>
-<div class="mktbar"><div class="mkt" id="mkt">checking the tape…</div></div>
+</div>
+<div class="mkt" id="mkt" style="margin:0">checking the tape…</div>
 {live}
-<div class="wrap">{body}
+{body}
 <div class="foot">page generated {gen} &middot; browser auto-reloads every 5 min &middot;
-live quotes poll every 45s during market hours<br/>
+live quotes poll every 45s during market hours &middot; click any ticker for the full
+TradingView chart<br/>
 scans hourly &middot; hourly intel &middot; daily research &middot; weekly review</div>
-</div>{sched}{fx}</body></html>""".format(
-        css=CSS, nav=nav, body=body, gen=gen, fx="",
+</div></div></div>{sched}{fx}</body></html>""".format(
+        css=CSS, nav=nav, sidenav=sidenav, body=body, gen=gen, fx="",
         sched=_sched_script(), live=_live_ticker(cost_basis or {}),
+        tape=_tv_embeds(cost_basis),
         mode=cfg["mode"], mc="live" if cfg["mode"] == "live" else "paper",
         reg=regime, regt=MODE_RANK[regime])
 
@@ -925,17 +1109,234 @@ def _kpis(st):
     def cls(v): return "gain" if v >= 0 else "loss"
     def sgn(v): return "+" if v >= 0 else "−"
     return """<div class="kpis">
-<div class="kpi"><div class="l">Total equity</div><div class="v mono" title="${eqf:,.2f}">{eq}</div><div class="s">deposited {dep}</div></div>
 <div class="kpi"><div class="l">Cash</div><div class="v mono" title="${cashf:,.2f}">{cash}</div><div class="s">{np} open position(s)</div></div>
+<div class="kpi"><div class="l">Deposited</div><div class="v mono">{dep}</div><div class="s">total paid in</div></div>
 <div class="kpi"><div class="l">Net P/L</div><div class="v mono {nc}">{net}</div><div class="s">vs deposits</div></div>
 <div class="kpi"><div class="l">Unrealized</div><div class="v mono {uc}">{ur}</div><div class="s">open positions</div></div>
 <div class="kpi"><div class="l">Realized</div><div class="v mono {rc}">{rl}</div><div class="s">{nt} closed trade(s)</div></div>
-</div>""".format(eq=_money(st["equity"]), eqf=st["equity"], dep=_money(st["deposited"]),
+</div>""".format(dep=_money(st["deposited"]),
                  cash=_money(st["cash"]), cashf=st["cash"], np=len(st["positions"]),
                  nc=cls(net), net=_money(net, sign=True),
                  uc=cls(unreal), ur=_money(unreal, sign=True),
                  rc=cls(realized), rl=_money(realized, sign=True),
                  nt=len(st["closed"]))
+
+
+def _hero_chart(curve, days=None, w=960, h=230):
+    """Themon-style equity chart: green line + soft area fill, horizontal
+    gridlines, y labels on the RIGHT, date labels along the bottom."""
+    if days:
+        cutoff = (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=days)
+                  ).isoformat(timespec="seconds")
+        pts = [(ts, eq) for ts, eq in curve if ts >= cutoff]
+    else:
+        pts = list(curve)
+    if len(pts) < 2:
+        return ('<div class="mut" style="padding:34px 0 40px;text-align:center;'
+                'font-size:12.5px">not enough history in this window yet — the '
+                'chart fills in as the bot runs</div>')
+    vals = [eq for _, eq in pts]
+    lo, hi = min(vals), max(vals)
+    pad = max((hi - lo) * 0.15, hi * 0.004, 0.5)
+    lo, hi = lo - pad, hi + pad
+    mr, mb, mt = 58, 24, 8       # right/bottom/top margins
+    iw, ih = w - mr, h - mb - mt
+    def x(i): return i / (len(pts) - 1) * iw
+    def y(v): return mt + ih - (v - lo) / (hi - lo) * ih
+    line = " ".join("{:.1f},{:.1f}".format(x(i), y(v)) for i, (_, v) in enumerate(pts))
+    area = "0,{:.1f} {} {:.1f},{:.1f}".format(mt + ih, line, iw, mt + ih)
+    grid, ylab = [], []
+    for f in (0.0, 0.25, 0.5, 0.75, 1.0):
+        v = lo + (hi - lo) * f
+        yy = y(v)
+        grid.append('<line x1="0" y1="{y:.1f}" x2="{iw}" y2="{y:.1f}" '
+                    'stroke="#141C2E" stroke-width="1"/>'.format(y=yy, iw=iw))
+        ylab.append('<text x="{x}" y="{y:.1f}" fill="#57678A" font-size="9.5" '
+                    'font-family="ui-monospace,Menlo,monospace">${v}</text>'.format(
+                        x=iw + 8, y=yy + 3, v="{:,.0f}".format(v) if hi >= 200
+                        else "{:,.2f}".format(v)))
+    xlab = []
+    n_lab = min(6, len(pts))
+    for k in range(n_lab):
+        i = round(k * (len(pts) - 1) / max(1, n_lab - 1))
+        d = dt.datetime.fromisoformat(pts[i][0].replace("Z", "+00:00"))
+        anchor = "start" if k == 0 else ("end" if k == n_lab - 1 else "middle")
+        xlab.append('<text x="{x:.1f}" y="{y}" fill="#57678A" font-size="9.5" '
+                    'text-anchor="{a}" font-family="ui-monospace,Menlo,monospace">'
+                    '{d}</text>'.format(x=x(i), y=h - 6, a=anchor,
+                                        d=d.strftime("%-d %b")))
+    lx, ly = x(len(pts) - 1), y(vals[-1] + pad)
+    return """<svg viewBox="0 0 {w} {h}" preserveAspectRatio="none" style="height:{h}px">
+<defs><linearGradient id="eqfill" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#2EE58C" stop-opacity="0.22"/>
+  <stop offset="100%" stop-color="#2EE58C" stop-opacity="0"/></linearGradient></defs>
+{grid}
+<polygon points="{area}" fill="url(#eqfill)"/>
+<polyline points="{line}" fill="none" stroke="#2EE58C" stroke-width="2"
+  stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="{lx:.1f}" cy="{lyv:.1f}" r="3.5" fill="#2EE58C"/>
+{ylab}{xlab}</svg>""".format(w=w, h=h, grid="".join(grid), area=area, line=line,
+                             lx=lx, lyv=y(vals[-1]), ylab="".join(ylab),
+                             xlab="".join(xlab))
+
+
+def _hero(st):
+    """Themon hero: TOTAL PORTFOLIO VALUE + change + timeframe pills + chart."""
+    net = st["equity"] - st["deposited"] if st["deposited"] else 0.0
+    pct = (net / st["deposited"] * 100) if st["deposited"] else 0.0
+    cls = "gain" if net >= 0 else "loss"
+    arrow = "&#9650;" if net >= 0 else "&#9660;"
+    frames = (("1W", 7), ("1M", 30), ("3M", 90), ("ALL", None))
+    charts = "".join(
+        '<div class="hchart" id="eqc-{k}" style="display:{d}">{svg}</div>'.format(
+            k=k, d="block" if k == "ALL" else "none",
+            svg=_hero_chart(st["curve"], days))
+        for k, days in frames)
+    pills = "".join(
+        '<button class="tf{on}" data-k="{k}" onclick="tfSel(this)">{k}</button>'.format(
+            on=" on" if k == "ALL" else "", k=k) for k, _ in frames)
+    return """<div class="hero">
+<div class="hrow"><div class="grow">
+  <div class="hl">Total portfolio value</div>
+  <div class="hv mono" title="ledger equity, reconciled against Trading 212 below">{eq}</div>
+  <div class="hc {cls}">{sgn}${net:,.2f} ({arrow} {pct:.1f}%) <span class="mut"
+    style="font-weight:400">vs deposits</span></div>
+</div><div class="tfs">{pills}</div></div>
+{charts}
+<script>
+function tfSel(b){{
+  document.querySelectorAll('.tf').forEach(function(x){{x.classList.remove('on')}});
+  b.classList.add('on');
+  ['1W','1M','3M','ALL'].forEach(function(k){{
+    var el=document.getElementById('eqc-'+k);
+    if(el)el.style.display=(k===b.getAttribute('data-k'))?'block':'none';
+  }});
+}}
+</script></div>""".format(eq=_money(st["equity"]), cls=cls,
+                          sgn="+" if net >= 0 else "&#8722;", net=abs(net),
+                          arrow=arrow, pct=abs(pct), pills=pills, charts=charts)
+
+
+def _tkr_dot(t):
+    """Deterministic coloured coin-style dot for a ticker (Themon asset icon)."""
+    hue = (sum(ord(c) * 37 for c in t) * 137) % 360
+    return ('<span class="adot" style="background:hsl({h},62%,58%)">{ab}</span>'
+            ).format(h=hue, ab=t[:2])
+
+
+def _allocation_panel(st):
+    """Themon ASSET ALLOCATION: holding | value | thin bar | % of portfolio."""
+    total = st["equity"] or 1
+    rows = []
+    items = sorted(st["positions"],
+                   key=lambda p: (p["now"] or p["avg_cost"]) * p["shares"], reverse=True)
+    for p in items:
+        val = (p["now"] or p["avg_cost"]) * p["shares"]
+        pc = val / total * 100
+        rows.append(
+            '<div class="arow" data-tkr="{t}"><span class="nm">{dot}{t}</span>'
+            '<span class="mono" style="font-size:12px">{v}</span>'
+            '<span class="abar"><i style="width:{pc:.1f}%"></i></span>'
+            '<span class="apc mono">{pc:.1f}%</span></div>'.format(
+                t=p["ticker"], dot=_tkr_dot(p["ticker"]), v=_money(val), pc=pc))
+    cash_pc = st["cash"] / total * 100
+    rows.append(
+        '<div class="arow"><span class="nm"><span class="adot" '
+        'style="background:#2A3752;color:#EAF0FB">$</span>Cash</span>'
+        '<span class="mono" style="font-size:12px">{v}</span>'
+        '<span class="abar"><i style="width:{pc:.1f}%;opacity:.55"></i></span>'
+        '<span class="apc mono">{pc:.1f}%</span></div>'.format(
+            v=_money(st["cash"]), pc=cash_pc))
+    head = ('<div class="arow" style="border-bottom:1px solid var(--line);padding-top:0">'
+            '<span class="klabel" style="margin:0">Asset</span>'
+            '<span class="klabel" style="margin:0">Value</span>'
+            '<span class="klabel" style="margin:0">Allocation</span><span></span></div>')
+    return panel("&#9679; Asset allocation", "live", head + "".join(rows))
+
+
+def _month_calendar(st):
+    """Month planner: a real calendar grid of everything the bot holds or is
+    stalking — earnings dates, forced pre-earnings exits, max-hold deadlines,
+    and this month's buys/sells."""
+    import calendar as _cal
+    from bot.signals.technicals import days_to_earnings
+    today = dt.date.today()
+    cfg = st["cfg"]
+    held = [p["ticker"] for p in st["positions"]]
+    cands = [c[0] for c in st["candidates"][:5] if c[0] not in held]
+
+    events = {}   # date -> [(css, label, title)]
+    def add(d, css, label, title):
+        if d.month == today.month and d.year == today.year:
+            events.setdefault(d, []).append((css, label, title))
+
+    # trades already executed this month
+    for ts, side, t, sh, price, *_ in st["trades_asc"]:
+        try:
+            d = dt.date.fromisoformat(ts[:10])
+        except ValueError:
+            continue
+        add(d, "buy" if side == "buy" else "sell",
+            "{} {}".format(side.upper(), t),
+            "{} {} x{} @ ${:.2f}".format(side, t, _sh(sh), price))
+
+    # earnings + forced exits for holdings; earnings for the watch-radar
+    exit_before = int(cfg.get("earnings", {}).get("exit_days_before", 1))
+    for t in held + cands:
+        dd = days_to_earnings(t)
+        if dd is None or dd > 60:
+            continue
+        edate = today + dt.timedelta(days=dd)
+        if t in held:
+            add(edate, "earn", "{} earnings".format(t),
+                "{} reports in {}d — binary event".format(t, dd))
+            add(edate - dt.timedelta(days=exit_before), "exit",
+                "sell {}".format(t),
+                "forced exit {}d before {} earnings".format(exit_before, t))
+        else:
+            add(edate, "cand", "{} earn".format(t),
+                "watchlist name {} reports in {}d".format(t, dd))
+
+    # max-hold deadlines
+    max_hold = int(cfg.get("selling", {}).get("max_hold_days", 45))
+    for p in st["positions"]:
+        try:
+            opened = dt.date.fromisoformat(str(p["opened_at"])[:10])
+        except ValueError:
+            continue
+        add(opened + dt.timedelta(days=max_hold), "exit",
+            "{} max-hold".format(p["ticker"]),
+            "{} hits the {}-day max hold".format(p["ticker"], max_hold))
+
+    first_wd, n_days = _cal.monthrange(today.year, today.month)   # Mon=0
+    cells = ["<div class='caldow'>{}</div>".format(d)
+             for d in ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")]
+    cells += ["<div class='calday out'></div>"] * first_wd
+    for day in range(1, n_days + 1):
+        d = dt.date(today.year, today.month, day)
+        klass = "calday"
+        if d.weekday() >= 5:
+            klass += " off"
+        if d == today:
+            klass += " today"
+        evs = events.get(d, [])
+        chips = "".join('<span class="evt {c}" title="{ti}">{l}</span>'.format(
+            c=c, l=l, ti=ti) for c, l, ti in evs[:3])
+        if len(evs) > 3:
+            chips += '<span class="evt cand">+{} more</span>'.format(len(evs) - 3)
+        cells.append("<div class='{k}'><span class='calnum'>{n}</span>{ch}</div>".format(
+            k=klass, n=day, ch=chips))
+    legend = ('<div class="legend">'
+              '<span class="evt earn">earnings (held)</span>'
+              '<span class="evt exit">forced exit / max-hold</span>'
+              '<span class="evt buy">buy</span><span class="evt sell">sell</span>'
+              '<span class="evt cand">watchlist earnings</span></div>'
+              '<div class="note" style="margin-top:6px">The bot force-sells {}d '
+              'before a holding reports and never buys within {}d of a print.</div>'
+              ).format(exit_before, cfg.get("confluence", {}).get("avoid_earnings_days", 2))
+    inner = '<div class="calgrid">{}</div>{}'.format("".join(cells), legend)
+    return panel("&#128197; {} planner".format(today.strftime("%B %Y")),
+                 today.strftime("%d %b"), inner)
 
 
 def _broker_panel(st):
@@ -1532,22 +1933,32 @@ def _overview(st):
     trades = list(reversed(st["trades_asc"][-6:]))
     trows = "".join(
         '<tr><td class="mono mut">{d}</td><td class="mono {c}"><b>{side}</b></td>'
-        '<td class="mono"><b>{t}</b></td><td class="mono r">{sh}</td>'
-        '<td class="mono r">${p:.2f}</td></tr>'.format(
+        '<td class="mono" data-tkr="{t}"><b>{t}</b></td><td class="mono r">{sh}</td>'
+        '<td class="mono r">${p:.2f}</td>'
+        '<td class="r"><span class="stp {sc}"><i></i>{stat}</span></td></tr>'.format(
             d=_short(ts), c="gain" if side == "buy" else "loss", side=side.upper(),
-            t=t, sh=sh, p=price)
-        for ts, side, t, sh, price, *_ in trades) or \
+            t=t, sh=_sh(sh), p=price,
+            sc="ok" if mode == "live" else "sim",
+            stat="routed" if mode == "live" else "sim")
+        for ts, side, t, sh, price, _v, mode, *_ in trades) or \
         '<tr><td class="mut">no trades yet</td></tr>'
-    body = _kpis(st)
+    # Themon-style hero: total portfolio value + timeframes + big green chart
+    body = _hero(st)
+    body += _kpis(st)
     body += _extra_metrics(st)
     body += _drawdown_ribbon(st)
-    # Broker (Trading 212) as the source of truth — shown above the ledger view
+    # asset allocation next to the broker (Trading 212) source-of-truth panel
+    body += '<div class="grid2r">'
+    body += _allocation_panel(st)
     body += _broker_panel(st)
-    # POSITIONS front and centre (big, live-refreshing) — equity curve removed
+    body += "</div>"
+    # POSITIONS front and centre (big, live-refreshing)
     hm = _positions_heatmap(st)
     if hm:
         body += panel("&#129513; Position heatmap", "live", hm)
     body += _positions_panel(st)
+    # month planner: everything held / stalked laid out on a real calendar
+    body += _month_calendar(st)
     body += '<div class="grid2">'
     body += _catalyst_calendar(st)
     body += _sector_meter(st)
@@ -1563,9 +1974,9 @@ def _overview(st):
     body += _token_panel(st)
     body += '<div class="grid2">'
     body += _news_panel(st)
-    body += panel("Recent trades", "ledger " + st["now"],
+    body += panel("Recent activity", "ledger " + st["now"],
                   '<table><tr><th>When</th><th>Side</th><th>Ticker</th>'
-                  '<th class="r">Qty</th><th class="r">Price</th></tr>{}</table>'
+                  '<th class="r">Qty</th><th class="r">Price</th><th class="r">Status</th></tr>{}</table>'
                   '<div class="note" style="margin-top:8px"><a href="history.html" '
                   'style="color:var(--teal)">full history &rarr;</a></div>'.format(trows))
     body += "</div>"
