@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-11T14:26:22+00:00",
+  "generated": "2026-07-12T11:01:17+00:00",
   "train_period": "2026-01-10 to 2026-05-18",
   "test_period": "2026-05-18 to 2026-07-09",
   "top5_train_combos_tested_oos": [
@@ -22,31 +22,31 @@
       "test_trades": 3
     },
     {
-      "stop": 12.0,
-      "tp": 20.0,
-      "buys_wk": 1,
+      "stop": 8.0,
+      "tp": 25.0,
+      "buys_wk": 2,
       "min_score": 4.5,
-      "train_median_pct": 6.57,
-      "test_pct": 4.7,
-      "test_trades": 3
+      "train_median_pct": 11.18,
+      "test_pct": 6.4,
+      "test_trades": 8
     },
     {
       "stop": 15.0,
-      "tp": 15.0,
+      "tp": 20.0,
       "buys_wk": 2,
       "min_score": 4.5,
-      "train_median_pct": 2.94,
-      "test_pct": 5.97,
-      "test_trades": 6
+      "train_median_pct": 9.26,
+      "test_pct": 3.46,
+      "test_trades": 5
     },
     {
-      "stop": 10.0,
-      "tp": 25.0,
-      "buys_wk": 1,
+      "stop": 8.0,
+      "tp": 20.0,
+      "buys_wk": 2,
       "min_score": 4.5,
-      "train_median_pct": 1.42,
-      "test_pct": 4.06,
-      "test_trades": 5
+      "train_median_pct": 7.81,
+      "test_pct": 6.4,
+      "test_trades": 8
     }
   ],
   "spy_test_return_pct": 2.03,
