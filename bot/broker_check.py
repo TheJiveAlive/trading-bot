@@ -30,11 +30,17 @@ def _probe_environments():
     Resolves whether this is our header format vs a wrong-env / invalid /
     IP-restricted key — without exposing any account data."""
     import base64
+    import hashlib
     import requests
     key = broker_t212._api_key()
     if not key:
         print("probe       : no key reachable to probe")
         return
+    # safe fingerprint (never the value): confirms the key arrives intact/whole.
+    # A valid T212 key is ~30-40 alphanumeric chars with no whitespace.
+    fp = hashlib.sha256(key.encode()).hexdigest()[:8]
+    print("   key check   : len={} alnum={} whitespace={} sha256={}".format(
+        len(key), key.isalnum(), any(c.isspace() for c in key), fp))
     # candidate auth schemes (T212 docs are inconsistent: raw key vs Basic)
     schemes = {
         "raw-key": key,
