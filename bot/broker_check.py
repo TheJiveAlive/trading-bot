@@ -70,6 +70,43 @@ def _probe_environments():
     else:
         print("   => every format 401s on both envs = the KEY is invalid or "
               "IP-restricted (regenerate WITHOUT an IP restriction).")
+    if secret:
+        _scope_map(key, secret)
+
+
+def _scope_map(key, secret):
+    """Auth clearly works (we saw 403 not 401), so map WHICH scopes the key has:
+    hit each read endpoint on demo and report status. 200 = that permission is
+    granted; 403 = that permission is missing from the key."""
+    import base64
+    import requests
+    hdr = "Basic " + base64.b64encode("{}:{}".format(key, secret).encode()).decode()
+    base_url = broker_t212.BASE["demo"]
+    endpoints = [
+        ("account cash", "/api/v0/equity/account/cash"),
+        ("account info", "/api/v0/equity/account/info"),
+        ("portfolio", "/api/v0/equity/portfolio"),
+        ("instruments (metadata)", "/api/v0/equity/metadata/instruments"),
+        ("orders (read)", "/api/v0/equity/orders"),
+        ("history orders", "/api/v0/history/orders?limit=1"),
+    ]
+    print("scope map    : which permissions does this key have (demo, Basic key:secret)?")
+    granted = 0
+    for label, path in endpoints:
+        try:
+            r = requests.get(base_url + path, headers={"Authorization": hdr}, timeout=20)
+            mark = "GRANTED" if r.status_code == 200 else (
+                "MISSING (403)" if r.status_code == 403 else "HTTP {}".format(r.status_code))
+            granted += (r.status_code == 200)
+            print("   {:24} -> {}".format(label, mark))
+        except Exception as e:
+            print("   {:24} -> error {}".format(label, str(e)[:50]))
+    if granted == 0:
+        print("   => ALL endpoints 403: the key was created with NO read permissions "
+              "enabled. Regenerate and tick every permission before confirming.")
+    else:
+        print("   => {} endpoint(s) work — auth is good; just enable the MISSING "
+              "permissions when you regenerate.".format(granted))
 
 
 def main():
