@@ -47,15 +47,37 @@ def _api_key():
         return None
 
 
+def _api_secret():
+    s = os.environ.get("T212_API_SECRET")
+    if s:
+        return s.strip()
+    try:
+        with open(os.path.join(DATA_DIR, "secrets.json")) as f:
+            return (json.load(f).get("t212_api_secret") or "").strip() or None
+    except Exception:
+        return None
+
+
 def configured():
     return _api_key() is not None
 
 
-def _headers():
+def _auth_header():
+    """Authorization header value. Trading 212's API uses HTTP Basic auth with
+    the app key id + secret when a secret is present (Base64 of 'key:secret');
+    falls back to the raw key for older single-key setups."""
     key = _api_key()
     if not key:
         raise T212Error("no Trading 212 API key configured")
-    return {"Authorization": key, "Content-Type": "application/json"}
+    secret = _api_secret()
+    if secret:
+        import base64
+        return "Basic " + base64.b64encode("{}:{}".format(key, secret).encode()).decode()
+    return key
+
+
+def _headers():
+    return {"Authorization": _auth_header(), "Content-Type": "application/json"}
 
 
 def _base(cfg):

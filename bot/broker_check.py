@@ -38,15 +38,19 @@ def _probe_environments():
         return
     # safe fingerprint (never the value): confirms the key arrives intact/whole.
     # A valid T212 key is ~30-40 alphanumeric chars with no whitespace.
+    secret = broker_t212._api_secret()
     fp = hashlib.sha256(key.encode()).hexdigest()[:8]
-    print("   key check   : len={} alnum={} whitespace={} sha256={}".format(
-        len(key), key.isalnum(), any(c.isspace() for c in key), fp))
-    # candidate auth schemes (T212 docs are inconsistent: raw key vs Basic)
+    print("   key check   : len={} alnum={} whitespace={} sha256={} secret_set={}".format(
+        len(key), key.isalnum(), any(c.isspace() for c in key), fp, bool(secret)))
+    # candidate auth schemes (T212 uses Basic key:secret; keep others for diagnosis)
     schemes = {
         "raw-key": key,
         "Bearer": "Bearer " + key,
         "Basic(key:)": "Basic " + base64.b64encode((key + ":").encode()).decode(),
     }
+    if secret:
+        schemes["Basic(key:secret)"] = "Basic " + base64.b64encode(
+            "{}:{}".format(key, secret).encode()).decode()
     print("probe       : testing auth formats x environments (status only)…")
     any200 = None
     for env, base_url in (("demo", broker_t212.BASE["demo"]),

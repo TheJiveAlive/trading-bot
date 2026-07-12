@@ -27,6 +27,7 @@ jobs:
       - name: materialize secrets (t212 + alpaca for pricing)
         env:
           T212_API_KEY: ${{ secrets.T212_API_KEY }}
+          T212_API_SECRET: ${{ secrets.T212_API_SECRET }}
           ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
           ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
         run: |
@@ -34,6 +35,7 @@ jobs:
           python3 -c "
           import json, os
           json.dump({'t212_api_key':os.environ.get('T212_API_KEY',''),
+                     't212_api_secret':os.environ.get('T212_API_SECRET',''),
                      'alpaca_key':os.environ.get('ALPACA_KEY',''),
                      'alpaca_secret':os.environ.get('ALPACA_SECRET','')},
                     open('data/secrets.json','w'))"
