@@ -29,12 +29,19 @@ the risk picture right now (big index move, VIX spike, sector shock)?
     {"ticker":"ABCD","level":"info|warn|urgent","headline":"...","source":"url","time":"approx"}
   ],
   "movers": [{"ticker":"ABCD","note":"why it's moving"}],
-  "flags_for_bot": ["ABCD"]
+  "flags_for_bot": ["ABCD"],
+  "conviction_boosts": [{"ticker":"ABCD","boost":0.5,"why":"one line"}]
 }
 ```
 - `alerts`: max 12, most important first. `level:"urgent"` = something the bot
   should act on (halt, dilution, fraud, crash). `flags_for_bot` = tickers the
   bot should AVOID buying this session because of fresh negative news.
+- `conviction_boosts`: OPTIONAL, max 3, boost 0.25–1.0. Award ONLY when fresh,
+  verifiable, materially positive news is NOT yet reflected in the bot's score
+  (e.g. contract win, FDA clearance, strong print in the last few hours, from a
+  credible source). The bot ADDS this to the ticker's composite score — so be
+  conservative: an empty list is the normal case. Never boost anything you also
+  flagged, anything with dilution risk, or on social buzz alone.
 - If searches are thin, still write the file with empty arrays and an honest
   `tape`. Valid JSON only, tickers uppercase, no invented facts.
 

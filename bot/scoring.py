@@ -19,6 +19,17 @@ def score_candidates(cfg, insider_hits, sector_ranks, snapshot, research=None,
     research = research or {}
     watchlist = set(watchlist or [])
     w = cfg["signals"]
+    # Claude's hourly intel conviction boosts ({ticker: 0.25..1.0}), flags excluded
+    intel = risk.load_intel()
+    flagged = risk.intel_flagged(intel)
+    intel_boosts = {}
+    for b in (intel or {}).get("conviction_boosts", []) or []:
+        t = (b.get("ticker") or "").upper()
+        if t and t not in flagged:
+            try:
+                intel_boosts[t] = max(0.0, min(float(b.get("boost", 0)), 1.0))
+            except (TypeError, ValueError):
+                pass
     results = []
     for ticker, ins in insider_hits.items():
         info = market.ticker_info(ticker)
@@ -65,6 +76,11 @@ def score_candidates(cfg, insider_hits, sector_ranks, snapshot, research=None,
             parts["events"] = round(ev_sc * w.get("events_weight", 1.0), 2)
         if ticker in watchlist:
             parts["watchlist"] = 1.0
+        # hourly Claude intel can BOOST conviction on fresh verified catalysts
+        # (capped; vetoes still trump — a flagged ticker never gets here)
+        iboost = intel_boosts.get(ticker)
+        if iboost:
+            parts["intel"] = round(min(iboost, 1.0) * w.get("intel_weight", 1.0), 2)
         bias = risk.sector_bias_bonus(research, info.get("sector"))
         if bias:
             parts["sector_bias"] = bias
