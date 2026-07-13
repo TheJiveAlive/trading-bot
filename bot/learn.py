@@ -135,19 +135,45 @@ def auto_apply_tuning():
     # evidence — letting tune push TP to 40 starved signal_rewards of samples.
     best_tp = max(15.0, min(float(best_tp), 30.0)) if best_tp < 900 else 30.0
 
+    # weekly buy-frequency base: pick the median-best buys/wk from the sweep.
+    # Evidence (2026-07-13 sweep): 1/wk 7.2%, 2/wk 30.4%, 3/wk 28.6%, 4/wk
+    # 27.6% — frequency past ~2-3 decays returns (each extra buy dips into
+    # weaker candidates). Bounds [4, 8] during the demo rehearsal (floor 4
+    # keeps closed-trade evidence flowing to the learning loop); tighten the
+    # floor to 2 at go-live. The regime/stress dynamic caps (risk.dynamic_caps)
+    # still breathe ±2 around whatever base is set here.
+    bgroups = defaultdict(list)
+    for r in rows:
+        b = r.get("buys_wk")
+        if b is not None:
+            bgroups[int(b)].append(r["return_pct"])
+    best_buys = None
+    if bgroups:
+        best_buys = sorted(bgroups.items(),
+                           key=lambda kv: statistics.median(kv[1]),
+                           reverse=True)[0][0]
+        best_buys = max(4, min(best_buys * 2, 8))   # sweep tops at 4; base ~2x
+
     con = ledger.connect()
-    old = (cfg["selling"]["trailing_stop_pct"], cfg["selling"]["take_profit_pct"])
-    if (best_stop, best_tp) != old:
+    old = (cfg["selling"]["trailing_stop_pct"], cfg["selling"]["take_profit_pct"],
+           cfg["buying"].get("max_buys_per_week"))
+    new = (best_stop, best_tp, best_buys if best_buys else old[2])
+    if new != old:
         cfg["selling"]["trailing_stop_pct"] = best_stop
         cfg["selling"]["take_profit_pct"] = best_tp
+        if best_buys:
+            cfg["buying"]["max_buys_per_week"] = best_buys
+            cfg["buying"]["max_buys_per_week_hc"] = best_buys * 2
         with open(os.path.join(ROOT, "config.json"), "w") as f:
             json.dump(cfg, f, indent=2)
-        msg = "auto-tuned exits: stop {}->{}%, take-profit {}->{}% (robust median return {:+.1f}%)".format(
-            old[0], best_stop, old[1], best_tp, statistics.median(rets))
+        msg = ("auto-tuned: stop {}->{}%, tp {}->{}%, buys/wk {}->{} "
+               "(robust median return {:+.1f}%)").format(
+            old[0], best_stop, old[1], best_tp, old[2], new[2],
+            statistics.median(rets))
         ledger.log_decision(con, "auto_tune", msg)
         con.commit()
     else:
-        msg = "auto-tune: current exits already optimal (stop {}%, tp {}%)".format(*old)
+        msg = "auto-tune: current params already optimal (stop {}%, tp {}%, buys/wk {})".format(*old)
     con.close()
     print(msg)
     return msg
