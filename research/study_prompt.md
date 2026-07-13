@@ -31,8 +31,34 @@ This runs out of trading hours, so take the time to be thorough but concise.
    offering, etc.) precede winning vs losing trades? e.g. "entries tagged
    'analyst_upgrade' averaged -4%, 'contract_win' +8%". If a catalyst type is
    consistently bad, propose down-weighting or vetoing it. If thin data, say so.
-4. **One testable idea**: propose ONE concrete, bounded improvement worth
+5. **One testable idea**: propose ONE concrete, bounded improvement worth
    trying next — a new filter, a weight change, a signal. Explain the thesis.
+6. **Strategy-gap backlog** (researched 2026-07-13; work through ONE item per
+   session, rotating — investigate it with WebSearch, judge whether it fits a
+   $1–20 small-cap daily-bar bot on free data, and if yes sketch the concrete
+   signal in your proposal):
+   - **RVOL (relative volume)**: today's volume vs its own 20-day average.
+     Unusual volume precedes most small-cap breakouts. Volume is already in
+     the bar cache — cheap to build.
+   - **Short interest / float squeeze setups**: low float + high short
+     interest + a fresh catalyst. yfinance exposes `sharesShort`,
+     `shortPercentOfFloat`, `floatShares` for free. Score the *setup*, never
+     chase a squeeze already underway.
+   - **52-week-high proximity**: stocks within ~10% of their 52w high drift
+     higher (anchoring anomaly, strongest in low-coverage small caps).
+     Computable from the bar cache alone.
+   - **Cross-sectional momentum**: rank each candidate's 4–12 week return
+     AGAINST the whole scanned universe instead of absolute thresholds —
+     relative rank is the academically supported form.
+   - **PEAD (post-earnings drift)**: after a genuine earnings BEAT with raised
+     guidance, thin-coverage small caps drift up for 2–6 weeks. We already tag
+     earnings catalysts; the gap is an explicit drift-window hold rule (don't
+     stop out on day-2 chop).
+   - **Mean-reversion guard**: after a ±25% single-day move WITHOUT a
+     catalyst, next-day reversal odds are elevated — propose as a VETO (don't
+     buy day-1 spikes with no news), not as a new long signal.
+   When an item has been studied, record the verdict in learnings.md so later
+   sessions move to the NEXT item instead of repeating it.
 
 ## Write
 Append a dated section to `data/learnings.md` (create if missing):

@@ -1876,6 +1876,87 @@ def _research_panel(st):
     return panel("Daily research", research.get("date", "—"), inner)
 
 
+NEWS_FAMILY = ("news", "ai_news", "intel")  # headline sentiment, alphai, Claude intel
+
+
+def _news_influence_panel(st):
+    """How much NEWS is driving each stock's score right now: for every scan
+    candidate (and each holding at entry), the news-family share of the total
+    positive score, as a split bar + catalyst tag + freshest headline."""
+    latest_headline = {}
+    for n in (st.get("news") or []):
+        latest_headline.setdefault(n["ticker"], n)
+
+    entries = []  # (ticker, label, parts, catalyst)
+    for t, s, d in st.get("candidates") or []:
+        entries.append((t, "candidate", d.get("parts") or {}, (d.get("catalyst") or "")))
+    con = ledger.connect()
+    held_seen = {e[0] for e in entries}
+    for p in st["positions"]:
+        if p["ticker"] in held_seen:
+            continue
+        r = con.execute("SELECT parts, catalyst FROM trade_signals WHERE ticker=? "
+                        "ORDER BY id DESC LIMIT 1", (p["ticker"],)).fetchone()
+        if not r:
+            continue
+        try:
+            parts = json.loads(r[0] or "{}")
+        except Exception:
+            parts = {}
+        entries.append((p["ticker"], "held (at entry)", parts, r[1] or ""))
+    con.close()
+    if not entries:
+        return ""
+
+    rows = []
+    for t, label, parts, cat in entries:
+        pos = {k: v for k, v in parts.items() if v and v > 0}
+        total = sum(pos.values())
+        if total <= 0:
+            continue
+        news_pts = sum(pos.get(k, 0) for k in NEWS_FAMILY)
+        pct = 100.0 * news_pts / total
+        # split bar: amber = news-family, slate = everything else
+        bar = ('<div class="sigbar" style="width:150px">'
+               '<i style="width:{w:.0f}%;background:#FBBF24"></i>'
+               '<i style="width:{r:.0f}%;background:#2A3550"></i></div>').format(
+            w=pct, r=100 - pct)
+        detail = " + ".join("{} {:+.1f}".format(k, pos[k]) for k in NEWS_FAMILY if pos.get(k)) \
+            or "no news signal"
+        cattxt = (' <span class="chip" style="color:var(--warn);border-color:#4a3a14">'
+                  '&#9889; {}</span>'.format(cat)) if cat else ""
+        n = latest_headline.get(t)
+        headline = ""
+        if n:
+            headline = ('<div class="mut" style="font-size:10.5px;padding-top:2px">'
+                        '&#8250; {}</div>').format(
+                '<a href="{u}" target="_blank" rel="noopener">{h}</a>'.format(
+                    u=n["url"], h=n["title"][:110]) if n.get("url") else n["title"][:110])
+        rows.append((pct, (
+            '<tr><td class="mono"><b data-tkr="{t}">{t}</b>'
+            '<div class="mut" style="font-size:10px">{lab}</div></td>'
+            '<td style="padding-top:12px">{bar}</td>'
+            '<td class="mono r" style="color:#FBBF24;font-weight:700">{pct:.0f}%</td>'
+            '<td class="mut" style="font-size:11px">{detail}{cat}{hl}</td></tr>').format(
+            t=t, lab=label, bar=bar, pct=pct, detail=detail, cat=cattxt,
+            hl=headline)))
+    if not rows:
+        return ""
+    rows.sort(key=lambda r: r[0], reverse=True)
+    css = ('<style>.sigbar{display:flex;height:9px;border-radius:5px;overflow:hidden;'
+           'background:#121A2C}.sigbar i{display:block;height:9px}</style>')
+    inner = css + ('<table><tr><th>Ticker</th><th>News share of score</th>'
+                   '<th class="r">%</th><th>What the news adds</th></tr>{}</table>'
+                   '<div class="note" style="margin-top:8px">Amber = points from the news '
+                   'family (headline sentiment + AI news read + Claude intel) as a share of '
+                   'the stock\'s total positive score. A high % means the thesis is '
+                   'news-driven &mdash; it fades fast if the story does; a low % means '
+                   'technicals/insiders are carrying it.</div>').format(
+        "".join(h for _, h in rows))
+    return panel("&#128240; News influence on scoring",
+                 "scan " + (st.get("cand_ts") or st["now"]), inner)
+
+
 def _news_panel(st):
     if not st["news"]:
         inner = ('<div class="mut">warming up — headlines land here on the next fetch '
@@ -2041,6 +2122,7 @@ def _overview(st):
     body += _github_panel(st)
     body += "</div>"
     body += _token_panel(st)
+    body += _news_influence_panel(st)
     body += '<div class="grid2">'
     body += _news_panel(st)
     body += panel("Recent activity", "ledger " + st["now"],
