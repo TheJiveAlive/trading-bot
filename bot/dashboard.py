@@ -81,17 +81,19 @@ nav a.on { color:#051512;
 /* ---------- hero: total portfolio value + timeframes + big chart ---------- */
 .hero { background:linear-gradient(165deg,var(--panel2),var(--panel));
   border:1px solid var(--line); border-radius:14px; padding:20px 22px 12px; }
-.hero .hl { color:var(--dim); font-size:10px; font-weight:800; letter-spacing:2px;
-  text-transform:uppercase; }
-.hero .hv { font-size:38px; font-weight:800; letter-spacing:-.8px; margin-top:6px;
-  font-variant-numeric:tabular-nums; }
-.hero .hc { font-size:13px; font-weight:700; margin-top:4px; }
+.hero .hl { color:var(--dim); font-size:clamp(10px,2.6vw,11px); font-weight:800;
+  letter-spacing:2px; text-transform:uppercase; }
+.hero .hv { font-size:clamp(40px,11vw,54px); font-weight:850; letter-spacing:-1px;
+  margin-top:6px; font-variant-numeric:tabular-nums; line-height:1.05;
+  color:var(--ink); text-shadow:0 0 24px rgba(62,221,197,.12); }
+.hero .hc { font-size:clamp(13.5px,3.6vw,15px); font-weight:700; margin-top:6px;
+  line-height:1.5; }
 .hero .hrow { display:flex; align-items:flex-start; gap:12px; flex-wrap:wrap; }
 .hero .hrow .grow { flex:1; min-width:220px; }
-.tfs { display:flex; gap:6px; padding-top:6px; }
-.tf { width:38px; height:38px; border-radius:50%; border:1px solid var(--line);
-  background:transparent; color:var(--mut); font-size:10px; font-weight:800;
-  letter-spacing:.5px; cursor:pointer; }
+.tfs { display:flex; gap:6px; padding-top:6px; flex-wrap:wrap; }
+.tf { width:40px; height:40px; border-radius:50%; border:1px solid var(--line);
+  background:transparent; color:var(--mut); font-size:11px; font-weight:800;
+  letter-spacing:.4px; cursor:pointer; flex:none; }
 .tf:hover { color:var(--ink); border-color:#2A3752; }
 .tf.on { background:#EAF0FB; color:#0A0F1A; border-color:#EAF0FB; }
 .hchart { margin-top:10px; }
@@ -1212,20 +1214,21 @@ def _hero(st):
         src_note = "ledger equity, reconciled against Trading 212 below"
     cls = "gain" if net >= 0 else "loss"
     arrow = "&#9650;" if net >= 0 else "&#9660;"
-    frames = (("1W", 7), ("1M", 30), ("3M", 90), ("ALL", None))
+    frames = (("1D", 1), ("1W", 7), ("2W", 14), ("4W", 28), ("3M", 90))
+    default = "1D"
     curve_gbp = [(ts, _gbp(eq)) for ts, eq in st["curve"]]
     charts = "".join(
         '<div class="hchart" id="eqc-{k}" style="display:{d}">{svg}</div>'.format(
-            k=k, d="block" if k == "ALL" else "none",
+            k=k, d="block" if k == default else "none",
             svg=_hero_chart(curve_gbp, days))
         for k, days in frames)
     pills = "".join(
         '<button class="tf{on}" data-k="{k}" onclick="tfSel(this)">{k}</button>'.format(
-            on=" on" if k == "ALL" else "", k=k) for k, _ in frames)
+            on=" on" if k == default else "", k=k) for k, _ in frames)
     return """<div class="hero">
 <div class="hrow"><div class="grow">
   <div class="hl">Total portfolio value</div>
-  <div class="hv mono" title="{src}">{eq}</div>
+  <div class="hv" title="{src}">{eq}</div>
   <div class="hc {cls}">{sgn}£{net:,.2f} ({arrow} {pct:.1f}%) <span class="mut"
     style="font-weight:400">vs deposits &middot; {src} &middot; stocks trade in USD (£1 = ${fx})</span></div>
 </div><div class="tfs">{pills}</div></div>
@@ -1234,7 +1237,7 @@ def _hero(st):
 function tfSel(b){{
   document.querySelectorAll('.tf').forEach(function(x){{x.classList.remove('on')}});
   b.classList.add('on');
-  ['1W','1M','3M','ALL'].forEach(function(k){{
+  ['1D','1W','2W','4W','3M'].forEach(function(k){{
     var el=document.getElementById('eqc-'+k);
     if(el)el.style.display=(k===b.getAttribute('data-k'))?'block':'none';
   }});

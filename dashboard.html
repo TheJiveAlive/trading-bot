@@ -65,17 +65,19 @@ nav a.on { color:#051512;
 /* ---------- hero: total portfolio value + timeframes + big chart ---------- */
 .hero { background:linear-gradient(165deg,var(--panel2),var(--panel));
   border:1px solid var(--line); border-radius:14px; padding:20px 22px 12px; }
-.hero .hl { color:var(--dim); font-size:10px; font-weight:800; letter-spacing:2px;
-  text-transform:uppercase; }
-.hero .hv { font-size:38px; font-weight:800; letter-spacing:-.8px; margin-top:6px;
-  font-variant-numeric:tabular-nums; }
-.hero .hc { font-size:13px; font-weight:700; margin-top:4px; }
+.hero .hl { color:var(--dim); font-size:clamp(10px,2.6vw,11px); font-weight:800;
+  letter-spacing:2px; text-transform:uppercase; }
+.hero .hv { font-size:clamp(40px,11vw,54px); font-weight:850; letter-spacing:-1px;
+  margin-top:6px; font-variant-numeric:tabular-nums; line-height:1.05;
+  color:var(--ink); text-shadow:0 0 24px rgba(62,221,197,.12); }
+.hero .hc { font-size:clamp(13.5px,3.6vw,15px); font-weight:700; margin-top:6px;
+  line-height:1.5; }
 .hero .hrow { display:flex; align-items:flex-start; gap:12px; flex-wrap:wrap; }
 .hero .hrow .grow { flex:1; min-width:220px; }
-.tfs { display:flex; gap:6px; padding-top:6px; }
-.tf { width:38px; height:38px; border-radius:50%; border:1px solid var(--line);
-  background:transparent; color:var(--mut); font-size:10px; font-weight:800;
-  letter-spacing:.5px; cursor:pointer; }
+.tfs { display:flex; gap:6px; padding-top:6px; flex-wrap:wrap; }
+.tf { width:40px; height:40px; border-radius:50%; border:1px solid var(--line);
+  background:transparent; color:var(--mut); font-size:11px; font-weight:800;
+  letter-spacing:.4px; cursor:pointer; flex:none; }
 .tf:hover { color:var(--ink); border-color:#2A3752; }
 .tf.on { background:#EAF0FB; color:#0A0F1A; border-color:#EAF0FB; }
 .hchart { margin-top:10px; }
@@ -427,13 +429,13 @@ document.addEventListener('click',function(e){
 function tfSel(b){
   document.querySelectorAll('.tf').forEach(function(x){x.classList.remove('on')});
   b.classList.add('on');
-  ['1W','1M','3M','ALL'].forEach(function(k){
+  ['1D','1W','2W','4W','3M'].forEach(function(k){
     var el=document.getElementById('eqc-'+k);
     if(el)el.style.display=(k===b.getAttribute('data-k'))?'block':'none';
   });
 }
 </script></div><div class="kpis">
-<div class="kpi"><div class="l">Cash</div><div class="v mono" title="&#163;68.55">£68.55</div><div class="s">5 open position(s)</div></div>
+<div class="kpi"><div class="l">Cash</div><div class="v mono" title="&#163;68.57">£68.57</div><div class="s">5 open position(s)</div></div>
 <div class="kpi"><div class="l">Deposited</div><div class="v mono">&#163;100.00</div><div class="s">total paid in</div></div>
 <div class="kpi"><div class="l">Net P/L</div><div class="v mono loss">−&#163;0.10</div><div class="s">vs deposits</div></div>
 <div class="kpi"><div class="l">Unrealized</div><div class="v mono loss">−£0.04</div><div class="s">open positions</div></div>
