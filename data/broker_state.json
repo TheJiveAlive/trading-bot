@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-13T19:35:25Z",
+  "generated": "2026-07-13T19:36:36Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -22,16 +22,16 @@
       "t212_ticker": "UUUU_US_EQ",
       "shares": 0.64,
       "avg_price": 13.390625,
-      "current_price": 12.9,
-      "pnl": -0.23
+      "current_price": 12.91,
+      "pnl": -0.22
     },
     {
       "ticker": "DVLT",
       "t212_ticker": "WISA_US_EQ",
       "shares": 18.2776532,
       "avg_price": 0.3649265,
-      "current_price": 0.3554,
-      "pnl": -0.13
+      "current_price": 0.3557,
+      "pnl": -0.12
     },
     {
       "ticker": "CAI",
@@ -46,15 +46,15 @@
       "t212_ticker": "AVO_US_EQ",
       "shares": 0.62,
       "avg_price": 13.43548387,
-      "current_price": 13.46,
-      "pnl": 0.02
+      "current_price": 13.42,
+      "pnl": 0
     },
     {
       "ticker": "NTSK",
       "t212_ticker": "NTSK_US_EQ",
       "shares": 0.674,
       "avg_price": 12.44807122,
-      "current_price": 12.65,
+      "current_price": 12.64,
       "pnl": 0.11
     }
   ],
