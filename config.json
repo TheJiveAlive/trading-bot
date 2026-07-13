@@ -5,6 +5,8 @@
     "name": "trading212",
     "t212_environment": "demo",
     "account_currency": "GBP",
+    "quantity_decimals": 2,
+    "_quantity_decimals_note": "T212 rejects fractional order quantities with too many decimals (quantity-precision-mismatch). 4dp failed, 2dp is safe across instruments. Order quantities are rounded to this precision before sending.",
     "_currency_note": "The T212 account is denominated in GBP (£100 practice). API cash/P-L figures are GBP; per-share US stock prices are USD. Ledger bookkeeping stays USD, converted via bot/fx.py; broker cash is adopted into the ledger (cash_sync) when drifted >2%.",
     "live_orders_enabled": true,
     "max_order_value_usd": 100.0,

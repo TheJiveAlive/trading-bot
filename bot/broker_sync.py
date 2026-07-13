@@ -64,6 +64,18 @@ def _reconcile(broker_positions):
     con = ledger.connect()
     ledger_pos = {p["ticker"].upper(): p for p in ledger.open_positions(con)}
     broker_pos = {p["ticker"]: p for p in broker_positions}
+    # tickers whose buy order the broker REJECTED (phantom positions the ledger
+    # recorded optimistically but that never actually filled)
+    rejected = set()
+    try:
+        po = os.path.join(DATA_DIR, "pending_orders.json")
+        if os.path.exists(po):
+            with open(po) as f:
+                for o in json.load(f):
+                    if o.get("side") == "buy" and o.get("error"):
+                        rejected.add((o.get("ticker") or "").upper())
+    except Exception:
+        pass
     rows = []
     for tkr in sorted(set(ledger_pos) | set(broker_pos)):
         lp = ledger_pos.get(tkr)
@@ -72,6 +84,20 @@ def _reconcile(broker_positions):
         bsh = bp["shares"] if bp else None
         if lsh is None:
             status = "broker_only"          # broker holds it, ledger doesn't
+        elif bsh is None and tkr in rejected:
+            # broker rejected the buy — it never filled. Remove the phantom so
+            # the ledger matches reality (cash is already broker-synced).
+            con.execute("DELETE FROM positions WHERE ticker=? AND status='open'", (tkr,))
+            con.execute("DELETE FROM trades WHERE id IN "
+                        "(SELECT id FROM trades WHERE ticker=? AND side='buy' "
+                        "ORDER BY id DESC LIMIT 1)", (tkr,))
+            ledger.log_decision(con, "recon_remove",
+                                "{}: broker rejected the order (never filled) — "
+                                "phantom position removed to match Trading 212".format(tkr))
+            con.commit()
+            rows.append({"ticker": tkr, "ledger_shares": lsh,
+                         "broker_shares": None, "status": "removed_phantom"})
+            continue
         elif bsh is None:
             status = "ledger_only"          # ledger thinks we hold it, broker doesn't
         elif abs(float(lsh) - float(bsh)) > max(1e-4, abs(float(lsh)) * 0.01):

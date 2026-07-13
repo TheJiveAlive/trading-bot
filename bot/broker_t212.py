@@ -147,10 +147,11 @@ def place_market_order(cfg, ticker, signed_shares, price_hint=None, dry_run=True
     the intended order is returned with 'dry_run': True.
     """
     broker = cfg.get("broker", {})
-    # Trading 212 accepts fractional quantities (decimals). Honour the bot's
-    # fractional_shares setting: fractional → keep decimals; else whole only.
+    # Trading 212 accepts fractional quantities but enforces a max decimal
+    # precision (4dp gets rejected as quantity-precision-mismatch; 2dp is safe).
     if cfg.get("fractional_shares"):
-        qty = round(float(signed_shares), 4)
+        dp = int(broker.get("quantity_decimals", 2))
+        qty = round(float(signed_shares), dp)
     else:
         if int(signed_shares) != signed_shares:
             raise T212Error("fractional shares disabled — whole shares only")
@@ -200,7 +201,7 @@ def place_limit_order(cfg, ticker, signed_shares, limit_price,
     and the max_order_value_usd cap. Same dry-run gating as market orders."""
     broker = cfg.get("broker", {})
     if cfg.get("fractional_shares"):
-        qty = round(float(signed_shares), 4)
+        qty = round(float(signed_shares), int(broker.get("quantity_decimals", 2)))
     else:
         if int(signed_shares) != signed_shares:
             raise T212Error("fractional shares disabled — whole shares only")
