@@ -145,6 +145,20 @@ def _reconcile(broker_positions):
                          "broker_shares": None, "status": "removed_phantom"})
             continue
         elif bsh is None:
+            # if our own ledger says the LAST trade for this ticker was a SELL,
+            # an open row is a zombie (e.g. re-adopted during broker fill
+            # latency) — close it to match reality
+            last = con.execute("SELECT side FROM trades WHERE ticker=? "
+                               "ORDER BY id DESC LIMIT 1", (tkr,)).fetchone()
+            if last and last[0] == "sell":
+                con.execute("UPDATE positions SET status='closed' WHERE ticker=?", (tkr,))
+                ledger.log_decision(con, "recon_close",
+                                    "{}: sold (last trade) but row re-opened by a "
+                                    "fill-latency race — closed to match broker".format(tkr))
+                con.commit()
+                rows.append({"ticker": tkr, "ledger_shares": lsh,
+                             "broker_shares": None, "status": "closed_zombie"})
+                continue
             status = "ledger_only"          # ledger thinks we hold it, broker doesn't
         elif abs(float(lsh) - float(bsh)) > max(1e-4, abs(float(lsh)) * 0.01):
             status = "drift"                 # both hold it but sizes disagree >1%
