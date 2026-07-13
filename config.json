@@ -26,10 +26,14 @@
   "buying": {
     "max_buys_per_day": 3,
     "max_buys_per_week": 6,
+    "high_conviction_score": 8.0,
+    "max_buys_per_day_hc": 6,
+    "max_buys_per_week_hc": 12,
     "min_composite_score": 5.25,
     "max_positions": 20,
     "max_position_usd": 25.0,
-    "_sizing_note": "DEMO-REHEARSAL POSTURE (2026-07-12): buys 3/day 6/wk and min_score 5.25 to get real fills through the T212 pipeline this week \u2014 the point of the rehearsal is exercising the machinery, and hard vetoes + confluence still protect every entry. BEFORE REAL MONEY restore the learnings-backed posture: 2/day 4/wk, min_score 5.5 (tune showed higher frequency worse; 5.5 forces a 2nd corroborating signal beyond a single insider). max_position_usd 25 sized for the $100 demo account."
+    "_sizing_note": "DEMO-REHEARSAL POSTURE (2026-07-12): buys 3/day 6/wk and min_score 5.25 to get real fills through the T212 pipeline this week. BEFORE REAL MONEY restore the learnings-backed posture: 2/day 4/wk, min_score 5.5 (tune showed higher frequency worse). max_position_usd 25 sized for the $100 demo account.",
+    "_conviction_note": "CONVICTION OVERRIDE (2026-07-13): candidates scoring >= high_conviction_score (8.0 \u2014 well above the 5.25 gate, needs several corroborating signals) get the higher HC daily/weekly caps instead of the routine ones. Rationale: only trade MORE when the evidence is genuinely strong. UNTESTED vs the blanket-frequency finding \u2014 the nightly deep run should validate it; treat as a rehearsal experiment. Hard vetoes + confluence gate still protect every entry regardless of tier."
   },
   "confluence": {
     "min_checks_passed": 4,

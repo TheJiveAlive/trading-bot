@@ -104,28 +104,38 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
         notify.send_email("[bot] BUYING HALTED", halted +
                           "\nExits continue to run. Buying resumes when equity recovers.")
         return
-    # budgets: how many more buys allowed this scan
-    week_left = buy_cfg["max_buys_per_week"] - ledger.buys_this_week(con)
-    day_left = buy_cfg.get("max_buys_per_day", buy_cfg["max_buys_per_week"]) - ledger.buys_today(con)
-    slots_left = buy_cfg["max_positions"] - len(ledger.open_positions(con))
-    budget = min(week_left, day_left, slots_left)
-    if budget <= 0:
-        why = ("weekly cap" if week_left <= 0 else
-               "daily cap" if day_left <= 0 else "max positions")
-        ledger.log_decision(con, "skip_buy", "buy budget exhausted ({})".format(why))
-        report.append("  no buy: {} reached".format(why))
+    # CONVICTION-AWARE caps: strong signals (score >= high_conviction_score)
+    # earn the higher HC daily/weekly ceiling; routine ones use the base cap.
+    # Candidates are score-sorted desc, so HC names are considered first, and a
+    # cap hit means nothing lower will qualify either (safe to break).
+    hc_score = buy_cfg.get("high_conviction_score", 999.0)
+    if len(ledger.open_positions(con)) >= buy_cfg["max_positions"]:
+        ledger.log_decision(con, "skip_buy", "max positions ({}) held".format(buy_cfg["max_positions"]))
+        report.append("  no buy: max positions reached")
         return
 
     bought = 0
     for c in candidates:
-        if bought >= budget:
-            report.append("  buy budget for this scan filled ({} trades)".format(bought))
-            break
         if c["score"] < threshold:
             # candidates are score-sorted; nothing below will qualify either
             if bought == 0:
                 report.append("  no buy: top score {} < {} (regime {})".format(
                     c["score"], threshold, risk.regime(research)))
+            break
+        hc = c["score"] >= hc_score
+        cap_day = (buy_cfg.get("max_buys_per_day_hc") if hc else None) \
+            or buy_cfg.get("max_buys_per_day", buy_cfg["max_buys_per_week"])
+        cap_week = (buy_cfg.get("max_buys_per_week_hc") if hc else None) \
+            or buy_cfg["max_buys_per_week"]
+        if (ledger.buys_today(con) >= cap_day
+                or ledger.buys_this_week(con) >= cap_week
+                or len(ledger.open_positions(con)) >= buy_cfg["max_positions"]):
+            tier = "high-conviction" if hc else "normal"
+            why = ("daily cap {}".format(cap_day) if ledger.buys_today(con) >= cap_day
+                   else "weekly cap {}".format(cap_week) if ledger.buys_this_week(con) >= cap_week
+                   else "max positions")
+            ledger.log_decision(con, "skip_buy", "{} tier: {} reached".format(tier, why))
+            report.append("  buy cap reached ({} tier — {})".format(tier, why))
             break
         held = {p["ticker"] for p in ledger.open_positions(con)}
         if c["ticker"] in avoid or c["ticker"] in intel_flags:
