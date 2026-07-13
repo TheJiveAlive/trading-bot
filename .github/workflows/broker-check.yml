@@ -12,6 +12,10 @@ on:
         description: "Cancel this pending order id (cleanup)"
         type: string
         default: ""
+      dump_instruments:
+        description: "Dump T212 metadata for these tickers (comma-sep)"
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -47,6 +51,7 @@ jobs:
         env:
           PLACE_TEST_ORDER: ${{ inputs.place_test_order }}
           CANCEL_ORDER_ID: ${{ inputs.cancel_order_id }}
+          DUMP_INSTRUMENTS: ${{ inputs.dump_instruments }}
         run: python -m bot.broker_check
       - name: cleanup secrets
         if: always()

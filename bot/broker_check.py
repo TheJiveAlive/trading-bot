@@ -15,6 +15,7 @@ Hard guards:
 This module is run manually via the broker-check workflow; it is never part of
 the automated trading loop.
 """
+import json
 import os
 import sys
 import time
@@ -126,6 +127,17 @@ def main():
     if not broker_t212.configured():
         print("RESULT: NO KEY reachable — T212_API_KEY is not set in this environment.")
         sys.exit(1)
+
+    dump = (os.environ.get("DUMP_INSTRUMENTS") or "").strip()
+    if dump:
+        want = {t.strip().upper() for t in dump.split(",")}
+        data = broker_t212._get(cfg, "/api/v0/equity/metadata/instruments")
+        for inst in data or []:
+            short = (inst.get("shortName") or inst.get("ticker", "").split("_")[0]).upper()
+            if short in want:
+                print("INSTRUMENT {}: {}".format(short, json.dumps(inst)))
+        print("keys seen:", sorted({k for inst in (data or [])[:1] for k in inst}))
+        return
 
     # single cash read (was double-calling via health() → 429). Success == healthy.
     try:
