@@ -170,11 +170,31 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
                 c["ticker"], summarize(detail)))
             report.append("  skip {}: confluence {}".format(c["ticker"], summarize(detail)))
             continue
+        # PRE-BUY CRITIC: Claude reviews this specific trade (fail-open)
+        critic_note = ""
+        from bot import critic as _critic
+        if _critic.enabled(cfg):
+            cand_ctx = dict(c, notional=shares * c["price"])
+            try:
+                from bot.signals.news_feed import _load_rolling
+                heads = [h for h in _load_rolling() if h.get("ticker") == c["ticker"]]
+            except Exception:
+                heads = []
+            approved, critic_note = _critic.review_buy(cfg, cand_ctx,
+                                                       summarize(detail), heads)
+            if not approved:
+                ledger.log_decision(con, "critic_veto", "{}: {}".format(
+                    c["ticker"], critic_note))
+                report.append("  CRITIC VETO {}: {}".format(c["ticker"], critic_note))
+                continue
+            ledger.log_decision(con, "critic_ok", "{}: {}".format(
+                c["ticker"], critic_note))
         cat = c.get("catalyst")
         reason = ("score {} (parts {}); risk-sized {} sh at {:.0f}% stop; "
-                  "confluence: {}{}").format(
+                  "confluence: {}{}{}").format(
             c["score"], c["parts"], shares, stop_pct, summarize(detail),
-            "; catalyst: " + cat if cat else "")
+            "; catalyst: " + cat if cat else "",
+            "; " + critic_note if critic_note else "")
         executor.execute(con, cfg, "buy", c["ticker"], shares, c["price"], reason,
                          parts=c["parts"], catalyst=cat)
         report.append("  BUY {} x{} @ ${:.2f} — score {}{}".format(

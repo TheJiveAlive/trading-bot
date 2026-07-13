@@ -114,5 +114,10 @@
     "intel_weight": 1.0,
     "gtrends_weight": 0.5
   },
-  "edgar_user_agent": "Josh Ive personal research joshua.ive@gmail.com"
+  "edgar_user_agent": "Josh Ive personal research joshua.ive@gmail.com",
+  "critic": {
+    "enabled": true,
+    "timeout_s": 90,
+    "_note": "Pre-buy critic: local Claude CLI reviews each buy before execution (subscription auth from the vault). FAIL-OPEN: if Claude is unreachable the buy proceeds — advisory layer, hard vetoes already ran. Vetoes logged as critic_veto."
+  }
 }
