@@ -206,11 +206,13 @@ def _spread_fill(side, price):
     return price * (1 + est / 2) if side == "buy" else price * (1 - est / 2)
 
 
-def simulate(cfg, weekly_candidates, hist, trading_days, start):
+def simulate(cfg, weekly_candidates, hist, trading_days, start, progress=False):
     buy_cfg, sell_cfg = cfg["buying"], cfg["selling"]
     cash, positions, trades = 0.0, {}, []
     equity_curve = []
     last_deposit_month, last_buy_week = None, None
+    total_weeks = len({d.isocalendar()[:2] for d in trading_days}) or 1
+    seen_weeks, last_prog_week = set(), None
 
     for day in trading_days:
         d = day.strftime("%Y-%m-%d")
@@ -276,6 +278,15 @@ def simulate(cfg, weekly_candidates, hist, trading_days, start):
         pos_val = sum(p["shares"] * (asof(hist[t], d) or p["cost"])
                       for t, p in positions.items())
         equity_curve.append((d, round(cash + pos_val, 2)))
+
+        if progress:
+            wk = day.isocalendar()[:2]
+            if wk != last_prog_week:
+                last_prog_week = wk
+                seen_weeks.add(wk)
+                print("  wk {:>2}/{}  {}  equity ${:>10,.2f}  {} open  {} trades".format(
+                    len(seen_weeks), total_weeks, d, cash + pos_val,
+                    len(positions), len(trades)), flush=True)
 
     # value open positions at final close
     final_open = [{"ticker": t, "shares": p["shares"], "cost": p["cost"],
@@ -550,8 +561,9 @@ def main():
                       interval="1d", progress=False, auto_adjust=True)
     trading_days = list(spy.index.to_pydatetime())
 
-    print("phase 4: simulating...", flush=True)
-    cash, positions, trades, curve, final_open = simulate(cfg, weekly, hist, trading_days, start)
+    print("phase 4: simulating (week-by-week)...", flush=True)
+    cash, positions, trades, curve, final_open = simulate(
+        cfg, weekly, hist, trading_days, start, progress=True)
 
     open_val = sum((p["now"] or p["cost"]) * p["shares"] for p in final_open)
     deposited = cfg["monthly_deposit_usd"] * len({d[:7] for d, _ in curve})

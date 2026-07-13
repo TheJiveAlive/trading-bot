@@ -1,0 +1,51 @@
+name: watch-backtest
+# Runs a backtest on the OptiPlex and STREAMS every line live to the box's
+# login terminal (direct-to-pts, since Ubuntu 26.04 has no utmp/wall) so you can
+# watch it phase-by-phase and week-by-week. Manual only.
+on:
+  workflow_dispatch:
+    inputs:
+      months:
+        description: "backtest window in months (3 = quick watch, 12 = full)"
+        default: "3"
+
+permissions:
+  contents: read
+concurrency:
+  group: watch-backtest
+
+jobs:
+  bt:
+    runs-on: [self-hosted, optiplex]
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: install deps
+        run: pip install -r requirements.txt
+      - name: materialize secrets (Alpaca history fast-path)
+        env:
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+        run: |
+          mkdir -p data
+          python3 -c "import json,os; json.dump({'alpaca_key':os.environ.get('ALPACA_KEY',''),'alpaca_secret':os.environ.get('ALPACA_SECRET','')}, open('data/secrets.json','w'))"
+      - name: backtest — streamed live to your terminal
+        env:
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+        run: |
+          M="${{ github.event.inputs.months || '3' }}"
+          TERMS="$(ls /dev/pts/[0-9]* 2>/dev/null) $(ls /dev/tty1 2>/dev/null)"
+          bcast() { for t in $TERMS; do printf '%b\n' "$1" > "$t" 2>/dev/null || true; done; }
+          bcast "\n\033[36m===== BACKTEST starting on tradinghost ($M months) =====\033[0m"
+          bcast "watching live — phases first, then a week-by-week equity ticker\n"
+          # line-buffered stream: each line goes to the job log AND every terminal
+          stdbuf -oL -eL python backtest.py --months "$M" 2>&1 | while IFS= read -r line; do
+            printf '%s\n' "$line"
+            for t in $TERMS; do printf '%s\n' "$line" > "$t" 2>/dev/null || true; done
+          done
+          bcast "\n\033[32m===== BACKTEST complete — full report in data/backtest_report.json =====\033[0m\n"
+          rm -f data/secrets.json
