@@ -14,6 +14,13 @@ This runs out of trading hours, so take the time to be thorough but concise.
 2. The last ~30 lines of `data/research_journal.md`.
 3. `dashboard.html` / `history.html` — recent trades, decisions, current book.
 4. `config.json` — current parameters.
+5. `data/data_quality.json` (if present) — cross-source price disagreements
+   from the bar-cache aggregator (Alpaca/Yahoo vs the PWB parquet dump). Many
+   mismatches on a ticker = distrust its backtest rows.
+6. `walkforward.json` now carries `risk_metrics_top_combo` (Sharpe, Sortino,
+   profit factor, expectancy, and a 1000x Monte Carlo bootstrap of the trade
+   sequence). A negative Monte Carlo p5 means the edge may hinge on a few
+   lucky trades — weight your conclusions accordingly.
 
 ## Study (be genuinely analytical)
 1. **What worked / didn't** in recent decisions? Look at the decision log:

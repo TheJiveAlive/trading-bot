@@ -84,6 +84,65 @@ def stats():
         return {"tickers": 0, "rows": 0}
 
 
+def import_pwb(path, years=4):
+    """Bulk-import the paperswithbacktest Stocks-Daily-Price parquet dump
+    (7,693 US tickers, daily OHLCV, monthly refresh) into bars.db, making the
+    cache the single source of truth that aggregates Alpaca + Yahoo + PWB.
+
+    While importing, rows that OVERLAP existing cache data are cross-checked:
+    close-price disagreements >2% are written to data/data_quality.json for
+    the nightly Claude study session to review. NOTE: the free PWB set is NOT
+    survivorship-bias-free (delisted tickers absent; some tickers reused —
+    e.g. today's BBBY is Beyond Inc glued onto the old history)."""
+    import glob
+    import json
+    import pandas as pd
+    cutoff = (dt.date.today() - dt.timedelta(days=int(years * 365.25))).isoformat()
+    files = sorted(glob.glob(os.path.join(path, "data", "*.parquet")))
+    if not files:
+        print("no parquet files under", path)
+        return 0
+    c = _con()
+    existing = {}
+    for t, d, cl in c.execute("SELECT ticker, date, close FROM bars"):
+        existing[(t, d)] = cl
+    total, mismatches = 0, []
+    for f in files:
+        df = pd.read_parquet(f, columns=["symbol", "date", "close", "volume"])
+        df["date"] = df["date"].astype(str).str[:10]
+        df = df[df["date"] >= cutoff].dropna(subset=["close"])
+        rows = []
+        for t, d, cl, vol in df.itertuples(index=False):
+            old = existing.get((t, d))
+            if old and old > 0 and abs(cl - old) / old > 0.02:
+                if len(mismatches) < 200:
+                    mismatches.append({"ticker": t, "date": d,
+                                       "cache_close": round(old, 4),
+                                       "pwb_close": round(float(cl), 4)})
+                continue    # existing (Alpaca/Yahoo, adjusted) wins on conflict
+            rows.append((t, d, float(cl), float(vol) if pd.notna(vol) else 0.0))
+        c.executemany("INSERT OR REPLACE INTO bars (ticker, date, close, volume) "
+                      "VALUES (?,?,?,?)", rows)
+        c.commit()
+        total += len(rows)
+        print("  imported {} rows from {}".format(len(rows), os.path.basename(f)),
+              flush=True)
+    c.close()
+    try:
+        qpath = os.path.join(os.path.dirname(CACHE_DIR.rstrip("/")), "data_quality.json")
+        json.dump({"generated": dt.datetime.now(dt.timezone.utc).isoformat(),
+                   "source": "pwb_import", "mismatches_gt_2pct": len(mismatches),
+                   "sample": mismatches[:40],
+                   "note": "cache (Alpaca/Yahoo adjusted) kept on conflict; PWB "
+                           "filled the gaps. PWB is NOT survivorship-bias-free."},
+                  open(qpath, "w"), indent=1)
+        print("data quality report ->", qpath, "({} mismatches)".format(len(mismatches)))
+    except Exception:
+        pass
+    print("pwb import done:", stats(), flush=True)
+    return total
+
+
 def warm(tickers, years=3):
     """Bulk-download and cache daily bars for a ticker list (overnight job).
     Skips tickers already fresh in the cache."""
@@ -118,3 +177,12 @@ def warm(tickers, years=3):
         time.sleep(1.5)
     print("cache warm done:", stats(), flush=True)
     return added
+
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "import-pwb":
+        import_pwb(sys.argv[2] if len(sys.argv) > 2
+                   else os.path.expanduser("~/data/pwb/daily"))
+    else:
+        print(stats())

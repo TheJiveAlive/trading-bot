@@ -433,7 +433,7 @@ def walkforward(cfg):
         open_val = sum((p["now"] or p["cost"]) * p["shares"] for p in final_open)
         dep = (float(c.get("backtest_starting_capital", 134.0))
                + c["monthly_deposit_usd"] * len({d[:7] for d, _ in curve})) or 1
-        return round(((cash + open_val) / dep - 1) * 100, 2), len(trades)
+        return round(((cash + open_val) / dep - 1) * 100, 2), len(trades), trades, curve
 
     # train: group combos, rank by median return across min_score variants
     groups = defaultdict(list)
@@ -441,16 +441,20 @@ def walkforward(cfg):
         for tp in (15.0, 20.0, 25.0, 999.0):
             for buys in (1, 2, 3, 4):
                 for ms in (4.5, 5.0, 5.5, 6.0):
-                    ret, _ = run(train_days, train_w, stop, tp, buys, ms)
+                    ret, _, _, _ = run(train_days, train_w, stop, tp, buys, ms)
                     groups[(stop, tp, buys)].append((ms, ret))
     ranked = sorted(groups.items(),
                     key=lambda kv: statistics.median(r for _, r in kv[1]), reverse=True)
 
     results = []
+    top_trades, top_curve = [], []
     for (stop, tp, buys), variants in ranked[:5]:
         train_med = statistics.median(r for _, r in variants)
         best_ms = max(variants, key=lambda x: x[1])[0]
-        test_ret, test_trades = run(test_days, test_w, stop, tp, buys, best_ms)
+        test_ret, test_trades, tr_list, tr_curve = run(
+            test_days, test_w, stop, tp, buys, best_ms)
+        if not results:                      # keep the top combo's detail
+            top_trades, top_curve = tr_list, tr_curve
         results.append({"stop": stop, "tp": tp, "buys_wk": buys, "min_score": best_ms,
                         "train_median_pct": round(train_med, 2),
                         "test_pct": test_ret, "test_trades": test_trades})
@@ -462,12 +466,58 @@ def walkforward(cfg):
     top = results[0]
     holds = top["test_pct"] > 0
     beats_spy = spy_test_ret is not None and top["test_pct"] > spy_test_ret
+
+    # framework-grade risk metrics on the TOP combo's out-of-sample run
+    # (what vectorbt/backtesting.py report; ours were return/win-rate only)
+    metrics = {}
+    try:
+        import math
+        import random
+        eq = [e for _, e in top_curve]
+        if len(eq) > 10:
+            rets = [(eq[i] / eq[i - 1] - 1) for i in range(1, len(eq)) if eq[i - 1] > 0]
+            mu = sum(rets) / len(rets)
+            sd = math.sqrt(sum((r - mu) ** 2 for r in rets) / max(1, len(rets) - 1))
+            downs = [r for r in rets if r < 0]
+            dsd = math.sqrt(sum(r * r for r in downs) / max(1, len(downs))) if downs else 0.0
+            metrics["sharpe_annualized"] = round(mu / sd * math.sqrt(252), 2) if sd > 0 else None
+            metrics["sortino_annualized"] = round(mu / dsd * math.sqrt(252), 2) if dsd > 0 else None
+        if top_trades:
+            wins = [t["usd"] for t in top_trades if t["usd"] > 0]
+            losses = [-t["usd"] for t in top_trades if t["usd"] <= 0]
+            metrics["profit_factor"] = (round(sum(wins) / sum(losses), 2)
+                                        if sum(losses) > 0 else None)
+            metrics["expectancy_pct_per_trade"] = round(
+                sum(t["pct"] for t in top_trades) / len(top_trades), 2)
+            # Monte Carlo bootstrap: resample the trade sequence 1000x —
+            # if the 5th percentile is still positive, the edge doesn't
+            # depend on the lucky ordering of a few big winners
+            pcts = [t["pct"] / 100.0 for t in top_trades]
+            finals = []
+            for _ in range(1000):
+                eqv = 1.0
+                for p in random.choices(pcts, k=len(pcts)):
+                    eqv *= (1 + p * 0.5)     # ~half the book per trade, conservative
+                finals.append((eqv - 1) * 100)
+            finals.sort()
+            metrics["monte_carlo_1000x"] = {
+                "p5_pct": round(finals[50], 1),
+                "p50_pct": round(finals[500], 1),
+                "p95_pct": round(finals[950], 1),
+                "read": ("edge survives unlucky orderings" if finals[50] > 0 else
+                         "5th percentile NEGATIVE — result may hinge on a few "
+                         "lucky trades; treat the headline with suspicion"),
+            }
+    except Exception as e:
+        metrics["error"] = str(e)
+
     out = {
         "generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "train_period": "{} to {}".format(start, boundary),
         "test_period": "{} to {}".format(boundary, end),
         "top5_train_combos_tested_oos": results,
         "spy_test_return_pct": spy_test_ret,
+        "risk_metrics_top_combo": metrics,
         "verdict": {
             "edge_survives_out_of_sample": holds,
             "beats_spy_out_of_sample": bool(beats_spy),
