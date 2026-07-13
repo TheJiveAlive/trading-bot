@@ -1,37 +1,65 @@
 {
-  "generated": "2026-07-13T14:21:36Z",
+  "generated": "2026-07-13T14:24:26Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
   "mode": "live",
   "account_currency": "GBP",
   "ok": true,
-  "detail": "demo account reachable: 1 position(s), free \u00a393.72",
+  "detail": "demo account reachable: 3 position(s), free \u00a381.06",
   "cash": {
-    "free": 93.72,
-    "total": 99.85,
-    "ppl": -0.14,
+    "free": 81.06,
+    "total": 99.75,
+    "ppl": -0.22,
     "result": 0,
-    "invested": 6.27,
+    "invested": 18.91,
     "pieCash": 0,
     "blocked": 0
   },
   "positions": [
     {
+      "ticker": "UUUU",
+      "t212_ticker": "UUUU_US_EQ",
+      "shares": 0.64,
+      "avg_price": 13.390625,
+      "current_price": 13.2,
+      "pnl": -0.1
+    },
+    {
+      "ticker": "AVO",
+      "t212_ticker": "AVO_US_EQ",
+      "shares": 0.62,
+      "avg_price": 13.43548387,
+      "current_price": 13.44,
+      "pnl": 0
+    },
+    {
       "ticker": "NTSK",
       "t212_ticker": "NTSK_US_EQ",
       "shares": 0.674,
       "avg_price": 12.44807122,
-      "current_price": 12.16,
-      "pnl": -0.14
+      "current_price": 12.21,
+      "pnl": -0.12
     }
   ],
   "reconciliation": [
+    {
+      "ticker": "AVO",
+      "ledger_shares": 0.6218,
+      "broker_shares": 0.62,
+      "status": "match"
+    },
     {
       "ticker": "NTSK",
       "ledger_shares": 0.674,
       "broker_shares": 0.674,
       "status": "match"
+    },
+    {
+      "ticker": "UUUU",
+      "ledger_shares": 0.6358,
+      "broker_shares": 0.64,
+      "status": "fill_synced"
     }
   ]
 }
