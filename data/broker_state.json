@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-13T17:25:08Z",
+  "generated": "2026-07-13T17:25:56Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -30,7 +30,7 @@
       "t212_ticker": "CAI1_US_EQ",
       "shares": 0.49,
       "avg_price": 17.04081633,
-      "current_price": 16.92,
+      "current_price": 16.91,
       "pnl": -0.04
     },
     {
