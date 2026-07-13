@@ -115,12 +115,60 @@ def trading_halted(con, cfg):
     return None
 
 
-def sector_full(cfg, con, sector, market_module):
-    """True if we already hold max_sector_positions in this sector.
-    max_sector_positions <= 0 disables the cap (user call 2026-07-14: trust
-    the scoring — the per-trade stop, drawdown halt and risk officer remain
-    the concentration guards)."""
-    if not sector or int(cfg["risk"].get("max_sector_positions", 0)) <= 0:
+def dynamic_caps(cfg, con, research):
+    """DYNAMIC buy limits — the caps breathe with the data instead of being
+    hand-set constants (user call 2026-07-14). Three AI/data inputs:
+
+      1. regime (Claude's daily research):  risk_on / neutral / risk_off
+      2. book stress (risk officer):        any CRITICAL-graded holding
+      3. drawdown proximity:                equity within half the halt limit
+
+    Returns {"sector_cap": int (0 = unlimited), "day_delta": int,
+             "week_delta": int, "why": str}. Deltas are applied to the
+    configured day/week caps (routine and high-conviction alike) and floored
+    at 1. The nightly study session reviews whether this ladder helped and
+    proposes notch changes — bounded learning, not config drift."""
+    reg = regime(research or {})
+    ladder = {"risk_on":  {"sector_cap": 0, "day_delta": +1, "week_delta": +2},
+              "neutral":  {"sector_cap": 4, "day_delta": 0,  "week_delta": 0},
+              "risk_off": {"sector_cap": 2, "day_delta": -1, "week_delta": -2}}
+    out = dict(ladder[reg])
+    why = ["regime {}".format(reg)]
+
+    stressed = False
+    rk = load_risk()
+    crit = [t for t, v in (rk.get("holdings") or {}).items()
+            if (v.get("risk") or "").lower() == "critical"]
+    if crit:
+        stressed = True
+        why.append("risk officer: CRITICAL on {}".format(",".join(sorted(crit))))
+    try:
+        rows = con.execute("SELECT equity FROM equity_history "
+                           "ORDER BY ts DESC LIMIT 30").fetchall()
+        if rows:
+            eq = rows[0][0]
+            peak = max(r[0] for r in rows)
+            dd = (1 - eq / peak) * 100 if peak > 0 else 0
+            if dd >= cfg["risk"].get("drawdown_halt_pct", 12.0) / 2:
+                stressed = True
+                why.append("drawdown {:.1f}% (half of halt)".format(dd))
+    except Exception:
+        pass
+    if stressed:   # one notch tighter whatever the regime says
+        out["sector_cap"] = {0: 4, 4: 3, 2: 2}.get(out["sector_cap"], 2)
+        out["day_delta"] -= 1
+        out["week_delta"] -= 1
+    out["why"] = ", ".join(why)
+    return out
+
+
+def sector_full(cfg, con, sector, market_module, cap=None):
+    """True if we already hold `cap` positions in this sector. cap <= 0
+    disables the check. cap=None falls back to config max_sector_positions
+    (which dynamic_caps normally supplies at scan time)."""
+    if cap is None:
+        cap = int(cfg["risk"].get("max_sector_positions", 0))
+    if not sector or cap <= 0:
         return False
     from bot import ledger
     count = 0
@@ -128,7 +176,7 @@ def sector_full(cfg, con, sector, market_module):
         info = market_module.ticker_info(p["ticker"])
         if info.get("sector") == sector:
             count += 1
-    return count >= cfg["risk"]["max_sector_positions"]
+    return count >= cap
 
 
 def watchlist_tickers(research):

@@ -14,6 +14,11 @@ This runs out of trading hours, so take the time to be thorough but concise.
 2. The last ~30 lines of `data/research_journal.md`.
 3. `dashboard.html` / `history.html` — recent trades, decisions, current book.
 4. `config.json` — current parameters.
+5a. `data/screens.json` (if present) — the box's NIGHT-SHIFT screens over the
+   full 7,700-ticker universe: RVOL, 52-week-high proximity, 13-week
+   cross-sectional momentum rank. Use it to VALIDATE the strategy-gap backlog
+   items with real distributions (e.g. do our winners come from high-RVOL
+   names?) before proposing any of them as score inputs.
 5. `data/data_quality.json` (if present) — cross-source price disagreements
    from the bar-cache aggregator (Alpaca/Yahoo vs the PWB parquet dump). Many
    mismatches on a ticker = distrust its backtest rows.

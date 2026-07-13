@@ -114,6 +114,12 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
         report.append("  no buy: max positions reached")
         return
 
+    # DYNAMIC CAPS: regime + risk-officer stress + drawdown proximity move the
+    # sector/day/week limits each scan instead of hand-set constants
+    dyn = risk.dynamic_caps(cfg, con, research)
+    report.append("  dynamic caps: sector {} · day {:+d} · week {:+d} ({})".format(
+        dyn["sector_cap"] or "off", dyn["day_delta"], dyn["week_delta"], dyn["why"]))
+
     bought = 0
     for c in candidates:
         if c["score"] < threshold:
@@ -127,6 +133,8 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
             or buy_cfg.get("max_buys_per_day", buy_cfg["max_buys_per_week"])
         cap_week = (buy_cfg.get("max_buys_per_week_hc") if hc else None) \
             or buy_cfg["max_buys_per_week"]
+        cap_day = max(1, cap_day + dyn["day_delta"])
+        cap_week = max(1, cap_week + dyn["week_delta"])
         if (ledger.buys_today(con) >= cap_day
                 or ledger.buys_this_week(con) >= cap_week
                 or len(ledger.open_positions(con)) >= buy_cfg["max_positions"]):
@@ -143,9 +151,11 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
             continue
         if c["ticker"] in held or not c["price"]:
             continue
-        if risk.sector_full(cfg, con, c.get("sector"), market):
+        if risk.sector_full(cfg, con, c.get("sector"), market, cap=dyn["sector_cap"]):
             ledger.log_decision(con, "skip_buy",
-                                "{}: max positions in {}".format(c["ticker"], c.get("sector")))
+                                "{}: sector cap {} in {} ({})".format(
+                                    c["ticker"], dyn["sector_cap"], c.get("sector"),
+                                    risk.regime(research)))
             continue
         available = ledger.cash(con)
         equity = available + sum(
