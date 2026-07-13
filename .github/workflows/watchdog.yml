@@ -62,4 +62,15 @@ jobs:
               gh workflow run daily-research -R "$R" || true
             fi
           fi
+
+          # 4) INTEL (Claude hourly analysis): if intel.json is stale >75 min
+          # during market hours, GitHub dropped the cron — kick a session now
+          if [ "$OPEN" = "1" ]; then
+            IAGE=$(curl -s --max-time 10 "https://raw.githubusercontent.com/$R/main/data/intel.json?t=$(date +%s)" | python3 -c "import json,sys,datetime;d=json.load(sys.stdin);t=datetime.datetime.fromisoformat(d['generated'].replace('Z','+00:00'));print(int((datetime.datetime.now(datetime.timezone.utc)-t).total_seconds()))" 2>/dev/null || echo 99999)
+            echo "intel age: ${IAGE}s"
+            if [ "${IAGE:-99999}" -gt 4500 ]; then
+              echo "!! intel stale — kicking hourly-intel (Claude analysis)"
+              gh workflow run hourly-intel -R "$R" || true
+            fi
+          fi
           echo "watchdog done"
