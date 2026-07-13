@@ -116,8 +116,11 @@ def trading_halted(con, cfg):
 
 
 def sector_full(cfg, con, sector, market_module):
-    """True if we already hold max_sector_positions in this sector."""
-    if not sector:
+    """True if we already hold max_sector_positions in this sector.
+    max_sector_positions <= 0 disables the cap (user call 2026-07-14: trust
+    the scoring — the per-trade stop, drawdown halt and risk officer remain
+    the concentration guards)."""
+    if not sector or int(cfg["risk"].get("max_sector_positions", 0)) <= 0:
         return False
     from bot import ledger
     count = 0

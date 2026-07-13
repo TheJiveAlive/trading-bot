@@ -72,9 +72,10 @@
     "risk_per_trade_pct": 0.75,
     "risk_per_trade_pct_hc": 1.5,
     "_hc_note": "High-conviction sizing: candidates scoring >= buying.high_conviction_score risk 1.5% of equity instead of 0.75% \u2014 strong evidence earns roughly double the allocation. max_position_usd still caps every trade.",
-    "max_sector_positions": 2,
+    "max_sector_positions": 0,
     "drawdown_halt_pct": 12.0,
-    "daily_loss_halt_pct": 3.0
+    "daily_loss_halt_pct": 3.0,
+    "_sector_note": "0 = sector cap DISABLED (2026-07-14, user call: trust the data). Set back to 2 to restore diversification cap. Stops/drawdown-halt/risk-officer remain the guards."
   },
   "learning": {
     "enabled": true,

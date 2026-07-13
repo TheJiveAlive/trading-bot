@@ -1643,7 +1643,7 @@ def _sector_meter(st):
                      '{p:.0f}% ({n})</span>'.format(c=color, s=sec, p=pct, n=v["n"]))
         if pct > 40:
             warns.append("{} is {:.0f}% of the book".format(sec, pct))
-        if v["n"] >= max_n:
+        if max_n > 0 and v["n"] >= max_n:
             warns.append("{} at position cap ({}/{})".format(sec, v["n"], max_n))
     warn_html = ""
     if warns:
