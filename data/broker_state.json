@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-13T20:13:05Z",
+  "generated": "2026-07-13T20:27:48Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -30,7 +30,7 @@
       "t212_ticker": "WISA_US_EQ",
       "shares": 18.2776532,
       "avg_price": 0.3649265,
-      "current_price": 0.3563,
+      "current_price": 0.3562,
       "pnl": -0.11
     },
     {
