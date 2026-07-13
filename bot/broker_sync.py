@@ -25,9 +25,20 @@ def _now_z():
     return dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
-def _plain(t212_ticker):
-    """'AAPL_US_EQ' -> 'AAPL'. Trading 212 suffixes the exchange/type."""
-    return (t212_ticker or "").split("_")[0].upper()
+def _plain(t212_ticker, cfg=None):
+    """Map a T212 instrument id back to OUR symbol. T212's internal symbols can
+    differ from the market ticker (WRAP trades as WRTC_US_EQ, CAI as CAI1_US_EQ)
+    — the instrument metadata's shortName is the real symbol, so use the
+    reverse of instrument_map() and only fall back to prefix-stripping."""
+    t = (t212_ticker or "").upper()
+    if cfg is not None:
+        try:
+            rev = {v: k for k, v in broker_t212.instrument_map(cfg).items()}
+            if t in rev:
+                return rev[t]
+        except Exception:
+            pass
+    return t.split("_")[0]
 
 
 def _write(state):
@@ -64,16 +75,31 @@ def _reconcile(broker_positions):
     con = ledger.connect()
     ledger_pos = {p["ticker"].upper(): p for p in ledger.open_positions(con)}
     broker_pos = {p["ticker"]: p for p in broker_positions}
-    # tickers whose buy order the broker REJECTED (phantom positions the ledger
-    # recorded optimistically but that never actually filled)
+    # tickers whose buy order the broker REJECTED *recently* (phantom positions
+    # the ledger recorded optimistically but that never actually filled).
+    # ONLY fresh rejections count: a stale error entry must never kill a
+    # position that later re-bought and genuinely filled.
     rejected = set()
     try:
         po = os.path.join(DATA_DIR, "pending_orders.json")
         if os.path.exists(po):
             with open(po) as f:
-                for o in json.load(f):
-                    if o.get("side") == "buy" and o.get("error"):
-                        rejected.add((o.get("ticker") or "").upper())
+                orders = json.load(f)
+            now = dt.datetime.now(dt.timezone.utc)
+            fresh = []
+            for o in orders:
+                try:
+                    age = (now - dt.datetime.fromisoformat(
+                        str(o.get("ts", "")).replace("Z", "+00:00"))).total_seconds()
+                except Exception:
+                    age = 1e9
+                if age < 24 * 3600:
+                    fresh.append(o)              # keep <24h entries in the file
+                if o.get("side") == "buy" and o.get("error") and age < 1800:
+                    rejected.add((o.get("ticker") or "").upper())
+            if len(fresh) != len(orders):        # prune stale entries
+                with open(po, "w") as f:
+                    json.dump(fresh, f, indent=2)
     except Exception:
         pass
     rows = []
@@ -83,7 +109,27 @@ def _reconcile(broker_positions):
         lsh = lp["shares"] if lp else None
         bsh = bp["shares"] if bp else None
         if lsh is None:
-            status = "broker_only"          # broker holds it, ledger doesn't
+            # broker holds it, ledger doesn't — the broker is the source of
+            # truth, so ADOPT it (covers fills the ledger lost track of)
+            try:
+                con.execute(
+                    "INSERT INTO positions (ticker,shares,avg_cost,opened_at,"
+                    "high_water_mark,status) VALUES (?,?,?,?,?,'open') "
+                    "ON CONFLICT(ticker) DO UPDATE SET shares=excluded.shares, "
+                    "avg_cost=excluded.avg_cost, status='open'",
+                    (tkr, float(bsh), float(bp.get("avg_price") or 0),
+                     dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+                     float(bp.get("avg_price") or 0)))
+                ledger.log_decision(con, "recon_adopt",
+                                    "{}: held at Trading 212 ({} sh @ ${:.2f}) but missing "
+                                    "from the ledger — adopted (broker is truth)".format(
+                                        tkr, bsh, bp.get("avg_price") or 0))
+                con.commit()
+                rows.append({"ticker": tkr, "ledger_shares": bsh,
+                             "broker_shares": bsh, "status": "adopted"})
+                continue
+            except Exception:
+                status = "broker_only"
         elif bsh is None and tkr in rejected:
             # broker rejected the buy — it never filled. Remove the phantom so
             # the ledger matches reality (cash is already broker-synced).
@@ -187,7 +233,7 @@ def sync(cfg=None, force=False):
         positions = []
         for p in pf or []:
             positions.append({
-                "ticker": _plain(p.get("ticker", "")),
+                "ticker": _plain(p.get("ticker", ""), cfg),
                 "t212_ticker": p.get("ticker", ""),
                 "shares": p.get("quantity"),
                 "avg_price": p.get("averagePrice"),
