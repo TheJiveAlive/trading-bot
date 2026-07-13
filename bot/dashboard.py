@@ -401,10 +401,10 @@ def _page(active, body, cfg, research, gen, mood="flat", cost_basis=None):
     return """<!doctype html><html lang="en"><head><meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta http-equiv="refresh" content="300"/>
-<title>RobinHood Bot</title><style>{css}</style></head><body>
+<title>Trading Bot</title><style>{css}</style></head><body>
 <div class="shell">
 <aside class="side">
-  <span class="brand"><span class="zap">&#9889;</span> RobinHood Bot</span>
+  <span class="brand"><span class="zap">&#9889;</span> Trading Bot</span>
   {sidenav}
   <div class="sfoot">
     <span class="pill {mc}">{mode}</span>
@@ -413,7 +413,7 @@ def _page(active, body, cfg, research, gen, mood="flat", cost_basis=None):
 </aside>
 <div class="main">
 <div class="top"><div class="topin">
-  <span class="brand"><span class="zap">&#9889;</span> RobinHood Bot</span>
+  <span class="brand"><span class="zap">&#9889;</span> Trading Bot</span>
   {nav}
   <span class="modes">
     <span class="pill {mc}">{mode}</span>

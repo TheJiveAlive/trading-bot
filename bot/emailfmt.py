@@ -175,7 +175,7 @@ def trade_email(side, ticker, shares, price, mode, reasons, positions, cash,
 
   <tr><td style="background:{ink};border-radius:12px 12px 0 0;padding:16px 24px;">
     <table width="100%" cellpadding="0" cellspacing="0"><tr>
-      <td style="{f}font-size:16px;font-weight:800;color:#fff;">&#9889; RobinHood Bot</td>
+      <td style="{f}font-size:16px;font-weight:800;color:#fff;">&#9889; Trading Bot</td>
       <td align="right"><span style="background:{mode_bg};color:#fff;border-radius:10px;
         padding:3px 10px;{f}font-size:11px;font-weight:700;text-transform:uppercase;
         letter-spacing:1px;">{mode}</span></td>

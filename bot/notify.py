@@ -37,7 +37,7 @@ def _deliver(msg, subject):
                 dt.datetime.now().isoformat(timespec="seconds"), subject))
         return False
     msg["Subject"] = subject
-    msg["From"] = "RobinHood Bot <{}>".format(s["smtp_user"])
+    msg["From"] = "Trading Bot <{}>".format(s["smtp_user"])
     msg["To"] = s["email_to"]
     try:
         ctx = ssl.create_default_context()
@@ -111,7 +111,7 @@ def _deliver_report(subject, inner_html, text_body):
 <table width="640" cellpadding="0" cellspacing="0" style="max-width:640px;width:100%;">
   <tr><td style="background:#0f172a;border-radius:12px 12px 0 0;padding:14px 22px;
     font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;">
-    <span style="font-size:15px;font-weight:800;color:#fff;">&#9889; RobinHood Bot</span>
+    <span style="font-size:15px;font-weight:800;color:#fff;">&#9889; Trading Bot</span>
     <span style="float:right;color:#94a3b8;font-size:11px;padding-top:3px;">{subj}</span>
   </td></tr>
   <tr><td style="background:#ffffff;padding:18px 22px;border:1px solid #e2e8f0;border-top:none;">
