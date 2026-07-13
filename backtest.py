@@ -89,23 +89,29 @@ def collect_events(sess, cikmap, start, end):
 
 def download_history(tickers, start, end):
     """{ticker: DataFrame(Close, Volume)} covering [start-40d, end].
-    Uses Alpaca historical bars when configured (fast, no throttle); falls back
-    to Yahoo for any gaps."""
+    LOCAL BAR CACHE first (disk, instant), then Alpaca, then Yahoo for gaps.
+    Newly downloaded bars are written back to the cache for next time."""
+    from bot import barcache
     hist = {}
     t0 = (start - dt.timedelta(days=60)).isoformat()
     t1 = (end + dt.timedelta(days=2)).isoformat()
 
+    # 1) local cache — anything fresh here costs nothing
+    hist.update(barcache.load(tickers, t0, t1))
+    tickers = [t for t in tickers if t not in hist]
+    if not tickers:
+        print("  history: all {} tickers from local cache".format(len(hist)), flush=True)
+        return hist
+    print("  local cache: {} hit, {} to download".format(len(hist), len(tickers)), flush=True)
+
+    fetched = {}
     try:
         from bot import alpaca
         if alpaca.configured():
             print("  fetching history via Alpaca (fast path)...", flush=True)
-            hist = alpaca.historical_bars(tickers, t0, t1)
-            print("  Alpaca returned {}/{} tickers".format(len(hist), len(tickers)), flush=True)
-            missing = [t for t in tickers if t not in hist]
-            if not missing:
-                return hist
-            print("  filling {} gaps via Yahoo...".format(len(missing)), flush=True)
-            tickers = missing
+            fetched = alpaca.historical_bars(tickers, t0, t1)
+            print("  Alpaca returned {}/{} tickers".format(len(fetched), len(tickers)), flush=True)
+            tickers = [t for t in tickers if t not in fetched]
     except Exception as e:
         print("  Alpaca history unavailable ({}), using Yahoo".format(e), flush=True)
 
@@ -120,11 +126,14 @@ def download_history(tickers, start, end):
                 sub = df[t] if len(chunk) > 1 else df
                 sub = sub[["Close", "Volume"]].dropna()
                 if len(sub) >= 25:
-                    hist[t] = sub
+                    fetched[t] = sub
             except Exception:
                 continue
-        print("  history: {}/{} tickers".format(len(hist), len(tickers)), flush=True)
+        print("  history: {}/{} downloaded".format(len(fetched), len(tickers)), flush=True)
         time.sleep(1)
+
+    barcache.store(fetched)        # persist for next time
+    hist.update(fetched)
     return hist
 
 
