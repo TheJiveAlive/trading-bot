@@ -16,8 +16,8 @@ concurrency:
 
 jobs:
   session:
-    runs-on: ubuntu-latest
-    timeout-minutes: 350   # ~5h50m, under the 6h job limit; covers the session
+    runs-on: [self-hosted, optiplex]   # runs on the OptiPlex (no 6h cap, reliable)
+    timeout-minutes: 420   # covers the full ~6.5h US session
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -95,20 +95,34 @@ jobs:
                      'alpaca_secret':os.environ.get('ALPACA_SECRET','')},
                     open('data/secrets.json','w'))" 2>/dev/null || true; }
           reseed
+          # live status line to any terminal open on the OptiPlex (utmp is gone
+          # on Ubuntu 26.04, so write straight to the pts/tty devices)
+          bcast() { for t in /dev/pts/[0-9]* /dev/tty1; do printf '%b\n' "$1" > "$t" 2>/dev/null || true; done; }
+          bcast "\033[36m[session] starting on tradinghost — scanning the market live\033[0m"
           cycle=0
           while true; do
             H=$(TZ=America/New_York date +%H); M=$(TZ=America/New_York date +%M); D=$(TZ=America/New_York date +%u)
             if [ "$D" -gt 5 ] || [ "$H" -ge 16 ] || [ "$H" -lt 9 ] || { [ "$H" -eq 9 ] && [ "$M" -lt 30 ]; }; then
+              bcast "\033[33m[session] market closed — ending after $cycle cycles\033[0m"
               echo "market closed — ending session after $cycle cycles"; break
             fi
             python -m bot.prices >/dev/null 2>&1 || true   # ~30s live price refresh
-            SCANNED=0
-            if [ $((cycle % 30)) -eq 0 ]; then
-              echo "cycle $cycle: full scan (entries + exits)"; python run.py scan >/dev/null 2>&1 || true; SCANNED=1
+            SCANNED=0; ACT="prices"
+            if [ $((cycle % 10)) -eq 0 ]; then
+              ACT="FULL SCAN"; echo "cycle $cycle: full scan"; python run.py scan >/dev/null 2>&1 || true; SCANNED=1
             elif [ $((cycle % 2)) -eq 0 ]; then
-              # every ~60s: EXIT-ONLY check so stops fire promptly
-              python run.py exits >/dev/null 2>&1 || true
+              ACT="exit-check"; python run.py exits >/dev/null 2>&1 || true
             fi
+            # broadcast a live status line to the terminal every cycle (~30s)
+            STAT=$(python3 -c "
+          import sqlite3
+          c=sqlite3.connect('data/ledger.db')
+          cash=c.execute(\"SELECT value FROM meta WHERE key='cash'\").fetchone()
+          n=c.execute('SELECT COUNT(*) FROM positions').fetchone()[0]
+          r=c.execute('SELECT kind,detail FROM decisions ORDER BY id DESC LIMIT 1').fetchone()
+          print('\$'+str(cash[0] if cash else '?')+' | '+str(n)+' pos | last: '+((r[0]+' '+r[1][:44]) if r else 'none'))
+          " 2>/dev/null)
+            bcast "[session] c$cycle $(TZ=America/New_York date +%H:%M:%S)ET | $ACT | $STAT"
             rm -f data/secrets.json
             git add -A data dashboard.html radar.html history.html >/dev/null 2>&1 || true
             git commit -q -m "session c$cycle $(date -u '+%H:%M:%S')" >/dev/null 2>&1 || true
