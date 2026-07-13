@@ -98,6 +98,14 @@ def apply_monthly_deposit(con, cfg):
         return False
     set_cash(con, cash(con) + cfg["monthly_deposit_usd"])
     set_meta(con, "last_deposit_month", tag)
+    # deposits are tracked natively in GBP for the dashboard (deposited_gbp)
+    try:
+        from bot import fx
+        prev = float(get_meta(con, "deposited_gbp", "0") or 0)
+        set_meta(con, "deposited_gbp",
+                 round(prev + cfg["monthly_deposit_usd"] * fx.gbp_per_usd(), 2))
+    except Exception:
+        pass
     log_decision(con, "deposit", "Credited ${:.2f} monthly deposit for {}".format(
         cfg["monthly_deposit_usd"], tag))
     return True

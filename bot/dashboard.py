@@ -771,6 +771,10 @@ def _fetch_state():
     deposited = sum(float(m.group(1)) for (d,) in
                     con.execute("SELECT detail FROM decisions WHERE kind='deposit'")
                     if (m := re.search(r"\$([\d.]+)", d)))
+    # deposits are tracked NATIVELY in GBP (meta 'deposited_gbp') — never derived
+    # through today's FX rate, so a rate move can't manufacture fake P/L
+    dep_meta = ledger.get_meta(con, "deposited_gbp")
+    deposited_gbp = float(dep_meta) if dep_meta else deposited * _FX_RATE
     curve = con.execute("SELECT ts, equity FROM equity_history ORDER BY id").fetchall()
     trades_asc = con.execute("SELECT ts,side,ticker,shares,price,value,mode,reason "
                              "FROM trades ORDER BY id").fetchall()
@@ -816,7 +820,8 @@ def _fetch_state():
 
     return {
         "cfg": cfg, "now": now, "positions": positions, "cash": cash,
-        "equity": equity, "deposited": deposited, "curve": curve,
+        "equity": equity, "deposited": deposited, "deposited_gbp": deposited_gbp,
+        "curve": curve,
         "trades_asc": trades_asc, "closed": _realized_trades(trades_asc),
         "decisions": decisions, "candidates": candidates,
         "cand_ts": _short(cand_ts), "rewards": rewards,
@@ -1086,7 +1091,8 @@ def _extra_metrics(st):
     best_day = max(by_day.values()) if by_day else 0
     worst_day = min(by_day.values()) if by_day else 0
 
-    total_ret = (st["equity"] / st["deposited"] - 1) * 100 if st["deposited"] else 0
+    total_ret = ((_gbp(st["equity"]) / st["deposited_gbp"] - 1) * 100
+                 if st["deposited_gbp"] else 0)
     tot_cls = "gain" if total_ret >= 0 else "loss"
 
     tiles = [
@@ -1110,19 +1116,19 @@ def _extra_metrics(st):
 
 def _kpis(st):
     unreal = sum(p["pl_usd"] or 0 for p in st["positions"])
-    net = st["equity"] - st["deposited"] if st["deposited"] else 0.0
+    # £-to-£: equity converted vs deposits held natively in GBP
+    net_gbp = (_gbp(st["equity"]) - st["deposited_gbp"]) if st["deposited_gbp"] else 0.0
     realized = sum(t["pnl"] for t in st["closed"])
     def cls(v): return "gain" if v >= 0 else "loss"
-    def sgn(v): return "+" if v >= 0 else "−"
     return """<div class="kpis">
 <div class="kpi"><div class="l">Cash</div><div class="v mono" title="&#163;{cashf:,.2f}">{cash}</div><div class="s">{np} open position(s)</div></div>
-<div class="kpi"><div class="l">Deposited</div><div class="v mono">{dep}</div><div class="s">total paid in</div></div>
-<div class="kpi"><div class="l">Net P/L</div><div class="v mono {nc}">{net}</div><div class="s">vs deposits</div></div>
+<div class="kpi"><div class="l">Deposited</div><div class="v mono">&#163;{dep:,.2f}</div><div class="s">total paid in</div></div>
+<div class="kpi"><div class="l">Net P/L</div><div class="v mono {nc}">{ns}&#163;{net:,.2f}</div><div class="s">vs deposits</div></div>
 <div class="kpi"><div class="l">Unrealized</div><div class="v mono {uc}">{ur}</div><div class="s">open positions</div></div>
 <div class="kpi"><div class="l">Realized</div><div class="v mono {rc}">{rl}</div><div class="s">{nt} closed trade(s)</div></div>
-</div>""".format(dep=_money(st["deposited"]),
+</div>""".format(dep=st["deposited_gbp"],
                  cash=_money(st["cash"]), cashf=_gbp(st["cash"]), np=len(st["positions"]),
-                 nc=cls(net), net=_money(net, sign=True),
+                 nc=cls(net_gbp), ns="+" if net_gbp >= 0 else "−", net=abs(net_gbp),
                  uc=cls(unreal), ur=_money(unreal, sign=True),
                  rc=cls(realized), rl=_money(realized, sign=True),
                  nt=len(st["closed"]))
@@ -1193,7 +1199,7 @@ def _hero(st):
     estimate. Ledger history still draws the chart."""
     b = st.get("broker") or {}
     b_total = (b.get("cash") or {}).get("total") if b.get("ok") else None
-    dep_gbp = _gbp(st["deposited"])
+    dep_gbp = st["deposited_gbp"]      # native £, never via today's FX
     if b_total is not None:
         eq_disp = "£{:,.2f}".format(b_total)
         net = b_total - dep_gbp if dep_gbp else 0.0
@@ -1201,7 +1207,7 @@ def _hero(st):
         src_note = "Trading 212 {} account (GBP)".format(b.get("environment", "demo"))
     else:
         eq_disp = _money(st["equity"])
-        net = _gbp(st["equity"] - st["deposited"]) if st["deposited"] else 0.0
+        net = (_gbp(st["equity"]) - dep_gbp) if dep_gbp else 0.0
         pct = (net / dep_gbp * 100) if dep_gbp else 0.0
         src_note = "ledger equity, reconciled against Trading 212 below"
     cls = "gain" if net >= 0 else "loss"
@@ -1911,39 +1917,33 @@ def _token_panel(st):
 
 
 def _github_panel(st):
+    """Traffic lights only: dot (hover for the run detail), task, next run."""
     health = _load_health()
     runs = health.get("workflows", {})
     rows = []
     for key, label in WORKFLOW_LABELS:
         info = runs.get(key)
         if not info:
-            dot, cls, txt, bar = "grey", "", "not run yet", ""
+            dot, tip = "grey", "not run yet"
         else:
             concl = info.get("conclusion")
             when = info.get("when", "")[5:16].replace("T", " ")
+            dur = _fmt_dur(info.get("duration_s"))
             if concl == "success":
-                dot, cls = "green", "gain"
-                txt = "OK · {} · ran in {}".format(when, _fmt_dur(info.get("duration_s")))
-                bar = ""
+                dot, tip = "green", "OK · {} · ran in {}".format(when, dur)
             elif concl in ("skipped", None):
-                dot, cls, txt, bar = "grey", "mut", "{} · {}".format(concl or "idle", when), ""
+                dot, tip = "grey", "{} · {}".format(concl or "idle", when)
             else:
-                dot, cls = "red", "loss"
-                txt = "{} · {} · {}".format(concl, when, _fmt_dur(info.get("duration_s")))
-                bar = ""
-        rows.append('<tr><td style="width:14px"><span class="sdot {d}"></span></td>'
+                dot, tip = "red", "{} · {} · {}".format(concl, when, dur)
+        rows.append('<tr><td style="width:14px"><span class="sdot {d}" title="{tip}">'
+                    '</span></td>'
                     '<td class="mono" style="white-space:nowrap">{lb}</td>'
-                    '<td class="note {c}">{t}{bar}</td>'
                     '<td class="mono mut" style="white-space:nowrap;text-align:right" '
-                    'id="nr-{k}">—</td></tr>'.format(
-                        d=dot, lb=label, c=cls, t=txt, bar=bar, k=key))
+                    'id="nr-{k}">—</td></tr>'.format(d=dot, tip=tip, lb=label, k=key))
     updated = health.get("generated", "")[:16].replace("T", " ")
-    note = ('<div class="note" style="margin-top:8px">🟢 last completed run OK · '
-            '🔴 failed · grey = idle. Right column = next scheduled run '
-            '(live countdown).</div>')
     return panel("Running on GitHub", "status " + (updated or "—"),
-                 '<table><tr><th></th><th>Task</th><th>Last run</th>'
-                 '<th class="r">Next</th></tr>{}</table>{}'.format("".join(rows), note))
+                 '<table><tr><th></th><th>Task</th>'
+                 '<th class="r">Next</th></tr>{}</table>'.format("".join(rows)))
 
 
 def _overview(st):
@@ -2140,9 +2140,9 @@ def generate():
     st = _fetch_state()
     cfg, research, gen = st["cfg"], st["research"], st["now"]
     _LIVE_WORKER = (cfg.get("live_quote_url") or "")
-    # mood drives the ambient effect: net P/L vs deposits, with a small deadband
-    net = st["equity"] - st["deposited"] if st["deposited"] else 0.0
-    pct = (net / st["deposited"] * 100) if st["deposited"] else 0.0
+    # mood drives the ambient effect: net P/L vs deposits (£-to-£), small deadband
+    net = (_gbp(st["equity"]) - st["deposited_gbp"]) if st["deposited_gbp"] else 0.0
+    pct = (net / st["deposited_gbp"] * 100) if st["deposited_gbp"] else 0.0
     mood = "up" if pct > 0.5 else ("down" if pct < -0.5 else "flat")
     cost_basis = {p["ticker"]: round(p["avg_cost"], 4) for p in st["positions"]}
     pages = {

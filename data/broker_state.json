@@ -1,21 +1,13 @@
 {
-  "generated": "2026-07-12T21:35:50Z",
+  "generated": "2026-07-13T08:11:06Z",
   "environment": "demo",
-  "configured": true,
+  "configured": false,
   "live_orders_enabled": true,
   "mode": "live",
   "account_currency": "GBP",
-  "ok": true,
-  "detail": "demo account reachable: 0 position(s), free \u00a3100.0",
-  "cash": {
-    "free": 100.0,
-    "total": 100.0,
-    "ppl": 0,
-    "result": 0,
-    "invested": 0,
-    "pieCash": 0,
-    "blocked": 0
-  },
+  "ok": false,
+  "detail": "no T212 API key set \u2014 broker sync idle (dashboard is showing the paper ledger)",
+  "cash": null,
   "positions": [],
   "reconciliation": []
 }
