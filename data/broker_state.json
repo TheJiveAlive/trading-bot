@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-13T19:10:27Z",
+  "generated": "2026-07-13T19:11:48Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 5 position(s), free \u00a369.51",
   "cash": {
     "free": 69.51,
-    "total": 99.35,
-    "ppl": -0.3,
+    "total": 99.37,
+    "ppl": -0.28,
     "result": -0.28,
     "invested": 30.14,
     "pieCash": 0,
@@ -38,7 +38,7 @@
       "t212_ticker": "CAI1_US_EQ",
       "shares": 0.49,
       "avg_price": 17.04081633,
-      "current_price": 16.72,
+      "current_price": 16.71,
       "pnl": -0.11
     },
     {
@@ -54,8 +54,8 @@
       "t212_ticker": "NTSK_US_EQ",
       "shares": 0.674,
       "avg_price": 12.44807122,
-      "current_price": 12.75,
-      "pnl": 0.16
+      "current_price": 12.77,
+      "pnl": 0.18
     }
   ],
   "reconciliation": [
