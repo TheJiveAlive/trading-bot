@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-13T19:03:50Z",
+  "generated": "2026-07-13T19:05:11Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -54,7 +54,7 @@
       "t212_ticker": "NTSK_US_EQ",
       "shares": 0.674,
       "avg_price": 12.44807122,
-      "current_price": 12.74,
+      "current_price": 12.75,
       "pnl": 0.16
     }
   ],
