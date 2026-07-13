@@ -1,0 +1,26 @@
+name: runner-smoke
+# One-off proof that the self-hosted OptiPlex runner can execute the bot's
+# workflow stack (checkout + Python 3.12 + deps + import). Manual only.
+on:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: [self-hosted, optiplex]
+    timeout-minutes: 15
+    steps:
+      - name: box identity
+        run: |
+          echo "running on host : $(hostname)"
+          echo "as user         : $(whoami)"
+          echo "cores / ram     : $(nproc) cores, $(free -h | awk '/Mem:/{print $2}')"
+          echo "os              : $(. /etc/os-release && echo $PRETTY_NAME)"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: python + deps + import
+        run: |
+          python3 --version
+          pip install -r requirements.txt
+          python3 -c "import bot.config, bot.scan, bot.dashboard; print('bot modules import OK on the OptiPlex')"
