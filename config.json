@@ -12,6 +12,8 @@
   },
   "monthly_deposit_usd": 0.0,
   "_deposit_note": "0 during the T212 demo rehearsal \u2014 the practice account gets no real deposits, so auto-crediting the ledger would drift it away from the broker. Restore (~127) at real go-live.",
+  "backtest_starting_capital": 134.0,
+  "_backtest_capital_note": "Seed balance for backtest/sweep/walk-forward simulations (\u2248 the \u00a3100 practice account in USD). Decoupled from monthly_deposit_usd (which is 0 in the rehearsal, and would otherwise leave the sim with no buying power). Raise this alongside max_position_usd at real go-live so the sim reflects the funded account.",
   "deposit_day_of_month": 1,
   "universe": {
     "price_min": 1.0,

@@ -208,7 +208,10 @@ def _spread_fill(side, price):
 
 def simulate(cfg, weekly_candidates, hist, trading_days, start, progress=False):
     buy_cfg, sell_cfg = cfg["buying"], cfg["selling"]
-    cash, positions, trades = 0.0, {}, []
+    # seed the simulated account (monthly_deposit is 0 during the demo rehearsal,
+    # so without this the sim has no buying power and never trades)
+    cash = float(cfg.get("backtest_starting_capital", 134.0))
+    positions, trades = {}, []
     equity_curve = []
     last_deposit_month, last_buy_week = None, None
     total_weeks = len({d.isocalendar()[:2] for d in trading_days}) or 1
@@ -265,8 +268,10 @@ def simulate(cfg, weekly_candidates, hist, trading_days, start, progress=False):
                     continue
                 fill = _spread_fill("buy", price)   # buy at the ask
                 budget = min(cash, buy_cfg["max_position_usd"])
-                shares = int(budget // fill)
-                if shares < 1:
+                # match the live bot: fractional shares when enabled, else whole
+                shares = round(budget / fill, 4) if cfg.get("fractional_shares") \
+                    else float(int(budget // fill))
+                if shares * fill < 1:   # skip sub-$1 dust
                     continue
                 cash -= shares * fill
                 positions[c["ticker"]] = {"shares": shares, "cost": fill,
@@ -334,7 +339,8 @@ def tune(cfg, start, end):
                         c, wk, hist, trading_days, start)
                     open_val = sum((p["now"] or p["cost"]) * p["shares"] for p in final_open)
                     eq = cash + open_val
-                    deposited = c["monthly_deposit_usd"] * len({d[:7] for d, _ in curve})
+                    deposited = float(c.get("backtest_starting_capital", 134.0)) \
+                        + c["monthly_deposit_usd"] * len({d[:7] for d, _ in curve})
                     peak, maxdd = 0.0, 0.0
                     for _, e in curve:
                         peak = max(peak, e)
@@ -416,7 +422,8 @@ def walkforward(cfg):
         w2 = {k: [x for x in v if x["score"] >= min_score] for k, v in wk.items()}
         cash, positions, trades, curve, final_open = simulate(c, w2, hist, days, start)
         open_val = sum((p["now"] or p["cost"]) * p["shares"] for p in final_open)
-        dep = c["monthly_deposit_usd"] * len({d[:7] for d, _ in curve}) or 1
+        dep = (float(c.get("backtest_starting_capital", 134.0))
+               + c["monthly_deposit_usd"] * len({d[:7] for d, _ in curve})) or 1
         return round(((cash + open_val) / dep - 1) * 100, 2), len(trades)
 
     # train: group combos, rank by median return across min_score variants
@@ -566,7 +573,8 @@ def main():
         cfg, weekly, hist, trading_days, start, progress=True)
 
     open_val = sum((p["now"] or p["cost"]) * p["shares"] for p in final_open)
-    deposited = cfg["monthly_deposit_usd"] * len({d[:7] for d, _ in curve})
+    start_cap = float(cfg.get("backtest_starting_capital", 134.0))
+    deposited = start_cap + cfg["monthly_deposit_usd"] * len({d[:7] for d, _ in curve})
     final_equity = cash + open_val
     wins = [t for t in trades if t["usd"] > 0]
     losses = [t for t in trades if t["usd"] <= 0]
