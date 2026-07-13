@@ -75,10 +75,16 @@ def qty(cfg, raw):
     return float(int(max(0.0, raw)))
 
 
-def position_size(cfg, equity, price, stop_pct):
+def position_size(cfg, equity, price, stop_pct, conviction=False):
     """Shares sized so hitting the stop loses ~risk_per_trade_pct of equity
-    (volatility-aware), capped by max_position_usd. Fractional when enabled."""
-    risk_budget = equity * cfg["risk"]["risk_per_trade_pct"] / 100.0
+    (volatility-aware), capped by max_position_usd. Fractional when enabled.
+    conviction=True (score >= buying.high_conviction_score) risks
+    risk_per_trade_pct_hc instead — strong evidence earns more capital; the
+    max_position_usd cap still applies to every trade."""
+    r = cfg["risk"]
+    risk_pct = (r.get("risk_per_trade_pct_hc", r["risk_per_trade_pct"])
+                if conviction else r["risk_per_trade_pct"])
+    risk_budget = equity * risk_pct / 100.0
     per_share_risk = price * stop_pct / 100.0
     if per_share_risk <= 0:
         return 0

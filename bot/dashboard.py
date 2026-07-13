@@ -400,7 +400,7 @@ def _page(active, body, cfg, research, gen, mood="flat", cost_basis=None):
                          ("history.html", "History", "hist")))
     return """<!doctype html><html lang="en"><head><meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<meta http-equiv="refresh" content="300"/>
+<meta http-equiv="refresh" content="60"/>
 <title>Trading Bot</title><style>{css}</style></head><body>
 <div class="shell">
 <aside class="side">

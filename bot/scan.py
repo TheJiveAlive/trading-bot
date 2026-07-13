@@ -153,7 +153,8 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
             for p in ledger.open_positions(con))
         stop_pct = risk.dynamic_stop_pct(cfg, c["parts"].get("news", 0), research)
         affordable = risk.qty(cfg, available / c["price"])
-        shares = min(risk.position_size(cfg, equity, c["price"], stop_pct), affordable)
+        shares = min(risk.position_size(cfg, equity, c["price"], stop_pct,
+                                        conviction=hc), affordable)
         min_qty = 0.0001 if cfg.get("fractional_shares") else 1
         if shares < min_qty:
             ledger.log_decision(con, "skip_buy",
