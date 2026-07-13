@@ -207,12 +207,19 @@ def parse_txt_form4(sess, path):
 
 # ---------- phase 4: simulation ----------
 
+FX_FEE = 0.0015   # T212 currency-conversion fee: GBP account buying USD stock
+                  # pays 0.15% each way (~0.3% round trip) — real, so modeled
+
+
 def _spread_fill(side, price):
-    """Realistic fill: pay the estimated spread (thinner/cheaper = wider). This
-    is the single biggest reason paper/backtest results overstate live P/L on
-    small-caps. Estimates: <$1 = 4%, <$5 = 2%, else 0.8%."""
+    """Realistic fill: pay the estimated spread (thinner/cheaper = wider) PLUS
+    the T212 FX fee. Spread is the single biggest reason paper/backtest
+    results overstate live P/L on small-caps. Estimates: <$1 = 4%, <$5 = 2%,
+    else 0.8%."""
     est = 0.04 if price < 1 else (0.02 if price < 5 else 0.008)
-    return price * (1 + est / 2) if side == "buy" else price * (1 - est / 2)
+    if side == "buy":
+        return price * (1 + est / 2) * (1 + FX_FEE)
+    return price * (1 - est / 2) * (1 - FX_FEE)
 
 
 def simulate(cfg, weekly_candidates, hist, trading_days, start, progress=False):
@@ -266,12 +273,25 @@ def simulate(cfg, weekly_candidates, hist, trading_days, start, progress=False):
         if week != last_buy_week:
             buys_this_week = 0
             last_buy_week = week
-        if buys_this_week < buy_cfg["max_buys_per_week"] and len(positions) < buy_cfg["max_positions"]:
+        # DRAWDOWN HALT (match live): risk.halted() blocks all new buys while
+        # equity sits >= drawdown_halt_pct below its recent peak. Without this
+        # the sim rode a 40% drawdown the live bot would have halted at 12% —
+        # the "psychological tolerance" mismatch from the QuantStart audit.
+        if equity_curve:
+            recent = [e for _, e in equity_curve[-90:]]
+            dd_pct = (1 - equity_curve[-1][1] / max(recent)) * 100 if max(recent) > 0 else 0
+            halted = dd_pct >= cfg.get("risk", {}).get("drawdown_halt_pct", 12.0)
+        else:
+            halted = False
+        if (not halted and buys_this_week < buy_cfg["max_buys_per_week"]
+                and len(positions) < buy_cfg["max_positions"]):
             cands = weekly_candidates.get(week, [])
             cands = sorted(cands, key=lambda c: c["score"], reverse=True)
             for c in cands:
                 if c["ticker"] in positions or c["ticker"] not in hist:
                     continue
+                if c.get("from") and d < c["from"]:
+                    continue   # filing not public yet — no look-ahead
                 price = asof(hist[c["ticker"]], d)
                 if price is None or price < 0.5:
                     continue
@@ -602,9 +622,13 @@ def main():
         key = (week, ticker)
         agg = by_week_ticker.setdefault(key, {"total_usd": 0, "owners": set(),
                                               "mom": (ret5d > 0 and above_ma20),
-                                              "ext": ext})
+                                              "ext": ext, "first": date_iso})
         agg["total_usd"] += usd
         agg["owners"].add(owner)
+        # LOOK-AHEAD GUARD: a candidate is only tradeable AFTER its first
+        # filing was public — weekly bucketing alone let the sim buy a
+        # Friday filing on that week's Monday (QuantStart audit 2026-07-13)
+        agg["first"] = min(agg["first"], date_iso)
     print("  filings parsed: {}, qualifying purchases: {}".format(checked, kept), flush=True)
 
     w = cfg["signals"]
@@ -616,7 +640,12 @@ def main():
         score = insider_score(ins) * w["insider_weight"] + (0.5 if agg["mom"] else 0.0)
         if score < 2.5:  # core-signal threshold (no sector/fundamentals/news here)
             continue
-        weekly.setdefault(week, []).append({"ticker": ticker, "score": round(score, 2)})
+        # eligible the day AFTER the first filing hit EDGAR (matches the live
+        # bot, which reacts to filings only once they exist)
+        eligible = (dt.date.fromisoformat(agg["first"])
+                    + dt.timedelta(days=1)).isoformat()
+        weekly.setdefault(week, []).append(
+            {"ticker": ticker, "score": round(score, 2), "from": eligible})
     print("  weeks with candidates: {}".format(len(weekly)), flush=True)
     save_purchase_cache(pcache)
     cand_cache = os.path.join(CACHE_DIR, "bt_candidates_{}_{}.json".format(start, end))
@@ -661,9 +690,10 @@ def main():
         "open_at_end": final_open,
         "trades": trades,
         "caveats": [
-            "fills at daily close, zero spread/slippage — optimistic",
-            "no news/VWAP/spread/IV/research signals — core engine only",
-            "current CIK->ticker map: delisted names excluded (survivorship bias)",
+            "fills at daily close + tiered spread + 0.15% FX each way; no intraday slippage/market impact",
+            "look-ahead guarded: candidates tradeable only after first filing date; drawdown halt modeled as live",
+            "no news/VWAP/IV/research signals — core engine only",
+            "current CIK->ticker map: delisted names excluded (SURVIVORSHIP BIAS — the remaining big one)",
         ],
     }
     with open(os.path.join(DATA_DIR, "backtest_report.json"), "w") as f:
