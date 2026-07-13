@@ -19,9 +19,13 @@ This runs out of trading hours, so take the time to be thorough but concise.
    cross-sectional momentum rank. Use it to VALIDATE the strategy-gap backlog
    items with real distributions (e.g. do our winners come from high-RVOL
    names?) before proposing any of them as score inputs.
-5. `data/data_quality.json` (if present) — cross-source price disagreements
-   from the bar-cache aggregator (Alpaca/Yahoo vs the PWB parquet dump). Many
-   mismatches on a ticker = distrust its backtest rows.
+5. `data/data_quality.json` (if present) — the NIGHTLY DATA-TRUST AUDIT:
+   bars.db vs fresh Yahoo closes, staleness, flat-lined series, and T212's
+   live price vs our cache (broker = account of record, it wins disputes).
+   YOU are the judge this audit reports to: for each flagged ticker decide
+   whether its data can be trusted, say so in learnings.md, and if a HELD
+   ticker's sources disagree, say it LOUDLY. Many mismatches on a ticker =
+   distrust its backtest rows too.
 6. `walkforward.json` now carries `risk_metrics_top_combo` (Sharpe, Sortino,
    profit factor, expectancy, and a 1000x Monte Carlo bootstrap of the trade
    sequence). A negative Monte Carlo p5 means the edge may hinge on a few
