@@ -71,15 +71,10 @@ jobs:
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
         run: |
           python3 -c "
-          import json, os, smtplib, ssl
-          from email.mime.text import MIMEText
-          try:
-              body = json.dumps(json.load(open('data/research.json')), indent=2)
-              subj = '[bot research] cloud run OK'
-          except Exception as e:
-              body, subj = str(e), '[bot research] FAILED to produce research.json'
-          msg = MIMEText(body); msg['Subject'] = subj
-          msg['From'] = os.environ['SMTP_USER']; msg['To'] = os.environ['EMAIL_TO']
-          with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as s:
-              s.login(os.environ['SMTP_USER'], os.environ['SMTP_APP_PASSWORD'])
-              s.send_message(msg)"
+          import json, os
+          json.dump({'smtp_host':'smtp.gmail.com','smtp_port':465,
+                     'smtp_user':os.environ.get('SMTP_USER',''),
+                     'smtp_app_password':os.environ.get('SMTP_APP_PASSWORD',''),
+                     'email_to':os.environ.get('EMAIL_TO','')}, open('data/secrets.json','w'))"
+          python -m bot.email_research || echo "research email skipped"
+          rm -f data/secrets.json

@@ -3,7 +3,8 @@ name: overnight-learnings
 # that writes proposed improvements to data/learnings.md. Runs nightly.
 on:
   schedule:
-    - cron: '17 2 * * 2-6'   # 1x/day overnight (was 2x) — token thrift; heavy compute is Python-only anyway
+    - cron: '17 2 * * 2-6'    # post-close reflection (Tue–Sat, after each US close)
+    - cron: '30 11 * * 1-5'   # pre-open prep (Mon–Fri 07:30 ET) — fresh weights + study before the bell
   workflow_dispatch:
 
 permissions:
