@@ -1,18 +1,18 @@
 {
-  "generated": "2026-07-13T16:16:55Z",
+  "generated": "2026-07-13T16:17:52Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
   "mode": "live",
   "account_currency": "GBP",
   "ok": true,
-  "detail": "demo account reachable: 5 position(s), free \u00a368.53",
+  "detail": "demo account reachable: 4 position(s), free \u00a374.51",
   "cash": {
-    "free": 68.53,
-    "total": 99.53,
-    "ppl": -0.42,
-    "result": 0,
-    "invested": 31.42,
+    "free": 74.51,
+    "total": 99.5,
+    "ppl": -0.16,
+    "result": -0.28,
+    "invested": 25.15,
     "pieCash": 0,
     "blocked": 0
   },
@@ -22,7 +22,7 @@
       "t212_ticker": "UUUU_US_EQ",
       "shares": 0.64,
       "avg_price": 13.390625,
-      "current_price": 13.16,
+      "current_price": 13.15,
       "pnl": -0.12
     },
     {
@@ -30,16 +30,8 @@
       "t212_ticker": "CAI1_US_EQ",
       "shares": 0.49,
       "avg_price": 17.04081633,
-      "current_price": 17.0,
-      "pnl": -0.02
-    },
-    {
-      "ticker": "WRAP",
-      "t212_ticker": "WRTC_US_EQ",
-      "shares": 3.78,
-      "avg_price": 2.21957672,
-      "current_price": 2.12,
-      "pnl": -0.28
+      "current_price": 16.96,
+      "pnl": -0.03
     },
     {
       "ticker": "AVO",
@@ -54,8 +46,8 @@
       "t212_ticker": "NTSK_US_EQ",
       "shares": 0.674,
       "avg_price": 12.44807122,
-      "current_price": 12.43,
-      "pnl": -0.01
+      "current_price": 12.41,
+      "pnl": -0.02
     }
   ],
   "reconciliation": [
@@ -86,8 +78,8 @@
     {
       "ticker": "WRAP",
       "ledger_shares": 3.78,
-      "broker_shares": 3.78,
-      "status": "adopted"
+      "broker_shares": null,
+      "status": "ledger_only"
     }
   ]
 }
