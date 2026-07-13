@@ -111,7 +111,8 @@
     "earnings_weight": 1.0,
     "breakout_weight": 1.0,
     "events_weight": 1.0,
-    "intel_weight": 1.0
+    "intel_weight": 1.0,
+    "gtrends_weight": 0.5
   },
   "edgar_user_agent": "Josh Ive personal research joshua.ive@gmail.com"
 }

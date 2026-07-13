@@ -27,6 +27,7 @@ DEFAULTS = {
     "trending_weight": 0.5,
     "alphai_weight": 1.0,
     "intel_weight": 1.0,
+    "gtrends_weight": 0.5,
 }
 PART_TO_WEIGHT = {
     "insider": "insider_weight",
@@ -37,6 +38,7 @@ PART_TO_WEIGHT = {
     "trending": "trending_weight",
     "ai_news": "alphai_weight",
     "intel": "intel_weight",
+    "gtrends": "gtrends_weight",
 }
 
 

@@ -43,6 +43,10 @@ def score_candidates(cfg, insider_hits, sector_ranks, snapshot, research=None,
         r_sc = reddit_score((reddit_data or {}).get(ticker))
         if r_sc:
             parts["reddit"] = round(r_sc * w.get("reddit_weight", 0.75), 2)
+        from bot.signals.gtrends import trends_score
+        g_sc = trends_score(ticker)
+        if g_sc:
+            parts["gtrends"] = round(g_sc * w.get("gtrends_weight", 0.5), 2)
         from bot.signals.trending import trending_score
         tr_sc = trending_score(ticker)
         if tr_sc:
