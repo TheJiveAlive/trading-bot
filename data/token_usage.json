@@ -43,32 +43,5 @@
     "cache_read": 839608,
     "cost_usd": 1.0333,
     "duration_ms": 158346
-  },
-  {
-    "ts": "2026-07-13T18:23:44+00:00",
-    "label": "research",
-    "input_tokens": 0,
-    "output_tokens": 0,
-    "cache_read": 0,
-    "cost_usd": 0.0,
-    "duration_ms": 553
-  },
-  {
-    "ts": "2026-07-13T18:52:22+00:00",
-    "label": "intel",
-    "input_tokens": 0,
-    "output_tokens": 0,
-    "cache_read": 0,
-    "cost_usd": 0.0,
-    "duration_ms": 675
-  },
-  {
-    "ts": "2026-07-13T19:41:40+00:00",
-    "label": "intel",
-    "input_tokens": 3351,
-    "output_tokens": 9440,
-    "cache_read": 981456,
-    "cost_usd": 1.0772,
-    "duration_ms": 156159
   }
 ]
