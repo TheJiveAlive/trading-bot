@@ -1531,6 +1531,53 @@ SIGNAL_COLORS = {
 }
 
 
+def _holdings_rationale(st):
+    """WHY each open position was bought: the signal parts that drove its score,
+    the catalyst, and how it's doing since. Answers 'why do we hold X?'."""
+    positions = st["positions"]
+    if not positions:
+        return ""
+    con = ledger.connect()
+    rows = []
+    for p in sorted(positions, key=lambda x: x.get("pl_pct") or 0):
+        r = con.execute("SELECT parts, catalyst FROM trade_signals WHERE ticker=? "
+                        "ORDER BY id DESC LIMIT 1", (p["ticker"],)).fetchone()
+        parts = {}
+        cat = ""
+        if r:
+            try:
+                parts = json.loads(r[0] or "{}")
+            except Exception:
+                parts = {}
+            cat = r[1] or ""
+        top = sorted(((k, v) for k, v in parts.items() if v and v > 0),
+                     key=lambda kv: kv[1], reverse=True)[:4]
+        chips = "".join(
+            '<span class="chip" style="border-color:{c}55;color:{c}">{k} {v:+.1f}</span>'.format(
+                c=SIGNAL_COLORS.get(k, "#8B99B5"), k=k, v=v) for k, v in top) \
+            or '<span class="mut" style="font-size:11px">signals not recorded</span>'
+        pl = p.get("pl_pct")
+        pcls = "mut" if pl is None else ("gain" if pl >= 0 else "loss")
+        pl_txt = "—" if pl is None else "{:+.1f}%".format(pl)
+        cattxt = (' <span class="chip" style="color:var(--warn);border-color:#4a3a14">'
+                  '&#9889; {}</span>'.format(cat)) if cat else ""
+        rows.append(
+            '<div style="padding:9px 0;border-bottom:1px solid #121A2C">'
+            '<div style="display:flex;align-items:baseline;gap:8px">'
+            '<b class="mono" data-tkr="{t}" style="font-size:14px">{t}</b>'
+            '<span class="{pc} mono" style="font-weight:700">{pl}</span>{cat}</div>'
+            '<div class="chips" style="margin-top:5px">{chips}</div></div>'.format(
+                t=p["ticker"], pc=pcls, pl=pl_txt, cat=cattxt, chips=chips))
+    con.close()
+    inner = ("".join(rows) +
+             '<div class="note" style="margin-top:8px">The bars show each holding\'s '
+             'strongest entry signals (higher = more it drove the buy). An insider-led '
+             'buy on weak momentum can drift early — the thesis plays out over days, '
+             'not ticks; the {}% stop caps the downside.</div>'.format(
+                 st["cfg"]["selling"]["trailing_stop_pct"]))
+    return panel("&#129504; Why we hold each position", "at entry", inner)
+
+
 def _catalyst_calendar(st):
     """Upcoming earnings for holdings + top candidates, urgency-coloured."""
     from bot.signals.technicals import days_to_earnings
@@ -1978,6 +2025,7 @@ def _overview(st):
     if hm:
         body += panel("&#129513; Position heatmap", "live", hm)
     body += _positions_panel(st)
+    body += _holdings_rationale(st)
     # month planner: everything held / stalked laid out on a real calendar
     body += _month_calendar(st)
     body += '<div class="grid2">'
