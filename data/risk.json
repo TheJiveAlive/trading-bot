@@ -1,0 +1,30 @@
+{
+  "generated": "2026-07-13T20:40:00Z",
+  "summary": "DVLT is a held position that the bot's own research journal already lists as 'avoid' for serial dilution, yet exposure continues: a fresh Maxim ATM was signed June 2026 on top of a $1B shelf, and a non-binding $2B structured-financing term sheet could hand board control to a counterparty and dilute >50% of voting stock.",
+  "holdings": {
+    "UUUU": {"risk": "elevated", "note": "$300M shelf + active ATM; issued 3.04M shares for $54.4M in Q1 2026 (244.4M shares out, ~+20% YoY) — real ongoing dilution, though funded by solid uranium fundamentals and the Vacuumschmelze deal, not distress."},
+    "DVLT": {"risk": "critical", "note": "Serial diluter (855M shares out, +1518% YoY per prior research); $1B S-3 effective 3/25/26, $60M offering closed, NEW Maxim ATM signed June 2026, plus a non-binding term sheet for up to $2B in tranches priced $1.55-2.00/share that would cede board control and dilute >50% of voting stock if fully drawn. Already on the bot's own avoid list; entry catalyst (meme-coin/tokenization hype) has no fundamental support."},
+    "CAI": {"risk": "low", "note": "IPO lockup (expired ~Dec 2025) already passed without incident; company just authorized a $100M buyback (anti-dilutive), no new secondary or shelf activity found."},
+    "AVO": {"risk": "elevated", "note": "Pending Calavo Growers acquisition is REAL and progressing (S-4 filed 3/9/26, HSR cleared 4/17/26) — AVO will issue ~0.979 new shares per Calavo share plus cash, mechanical dilution for existing holders, plus deal-completion risk. Contradicts intel.json's dismissal of this as search-engine noise."},
+    "NTSK": {"risk": "low", "note": "Ticker ambiguity resolved: broker price ($12.44-12.80 avg/current) matches Netskope Inc (NASDAQ:NTSK) almost exactly, not NetSol (NTWK). Netskope is a $5B cybersecurity company with a director/backer buying $7.2M on 7/8 — fundamentally sound, but off the small-cap thesis this bot is built around."}
+  },
+  "flags": [
+    {"ticker":"BOLD","risk":"critical","why":"Serapha Bio reverse merger confirmed: pro forma existing BOLD holders retain only ~3.69% of the combined company (Serapha gets ~96.31%), plus a reverse split and authorized-share increase are conditions of closing. The +61.7% premarket pop is the classic 'sell the news' distressed reverse-merger dynamic, not a buyable catalyst.","source":"https://www.stocktitan.net/sec-filings/BOLD/425-boundless-bio-inc-business-combination-communication-d270bde9a66d.html"},
+    {"ticker":"LRMR","risk":"elevated","why":"Top radar candidate (5.93) but carries an active $100M ATM sales agreement since 2024 plus a Feb-2026 $100M underwritten offering (20M shares at $5) that is now underwater (stock $3.75) — dilution is live, not hypothetical.","source":"https://www.stocktitan.net/sec-filings/LRMR/424b5-larimar-therapeutics-inc-prospectus-supplement-debt-securities-c03eaa7b111c.html"},
+    {"ticker":"HNRG","risk":"elevated","why":"Automatic S-3ASR shelf effective 1/13/26 already used twice via 424B5, plus an active $50M ATM program — ongoing drip-dilution setup. Currently below buy threshold (3.33) so moot for now, but flag if score rises.","source":"https://www.stocktitan.net/overview/HNRG/"}
+  ],
+  "dilution_watch": [
+    {"ticker":"DVLT","filing":"8-K","date":"2026-06-01","note":"Signed non-binding term sheet for up to $2.0B structured financing in four $500M tranches at $1.55-2.00/share; full draw implies >50% dilution and board-control shift to counterparty."},
+    {"ticker":"DVLT","filing":"ATM","date":"2026-06-22","note":"New Maxim Group co-sales-agent ATM agreement signed; Maxim also received 2.73M warrants at $0.6325 strike — fresh drip-dilution mechanism on top of the $1B shelf."},
+    {"ticker":"LRMR","filing":"424B5","date":"2026-02-27","note":"$100M underwritten offering, 20M shares at $5.00; stock now trades below that price at $3.75. $100M ATM sales agreement (since 2024) remains active."},
+    {"ticker":"BOLD","filing":"8-K","date":"2026-06-22","note":"Merger agreement with Serapha Bio; S-4 pending, reverse split + authorized-share increase required to close; existing holders diluted to ~3.69% pro forma."},
+    {"ticker":"HNRG","filing":"S-3ASR","date":"2026-01-13","note":"Automatic shelf effective, used twice via 424B5; $50M ATM program active to fund natural-gas expansion."},
+    {"ticker":"UUUU","filing":"ATM","date":"2026-Q1","note":"3.04M shares issued for $54.4M under existing $300M shelf; share count 244.4M, up ~20% YoY."},
+    {"ticker":"AVO","filing":"S-3/S-4","date":"2026-03-09","note":"S-4 for Calavo Growers acquisition (announced 1/14/26, HSR cleared 4/17/26); new AVO shares (0.979/Calavo share) to be issued to Calavo holders at closing."}
+  ],
+  "disagreements": [
+    "intel.json dismissed the Mission Produce/Calavo Growers acquisition as a 'recurring search-engine mixup' with no primary-source confirmation — SEC filings confirm it is a real, progressing deal (S-4 filed 3/9/26, HSR cleared 4/17/26, announced 1/14/26). Treat the pending share issuance and deal-completion risk as real, not noise.",
+    "intel.json carries no alert on DVLT this snapshot despite it being a held position with an active new ATM (signed June 2026) and a pending $2B financing that could cede board control — this deserves an active warning every cycle it remains held, not silence.",
+    "intel.json flags NTSK as an unresolved 'ticker ambiguity' — the broker's quoted price matches Netskope (NASDAQ:NTSK) almost exactly, resolving the identity. Worth noting the held position is a $5B cybersecurity company, not a small-cap, which is off-thesis even though fundamentally it looks fine."
+  ]
+}
