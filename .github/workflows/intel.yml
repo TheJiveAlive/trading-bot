@@ -1,7 +1,8 @@
 name: hourly-intel
+# Trigger is DISPATCH-ONLY: the always-on OptiPlex fires this every 30 min via
+# its bot-intel.timer (GitHub cron dropped the schedule too often). Claude still
+# runs here in the ephemeral GitHub runner — reliable clock, sandboxed agent.
 on:
-  schedule:
-    - cron: '8,38 14-20 * * 1-5'   # every 30 MIN through the US session (subscription-confirmed 2026-07-13)
   workflow_dispatch:
 
 permissions:
