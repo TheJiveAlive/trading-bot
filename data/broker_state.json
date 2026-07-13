@@ -1,18 +1,18 @@
 {
-  "generated": "2026-07-13T22:34:16Z",
+  "generated": "2026-07-13T22:40:33Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
   "mode": "live",
   "account_currency": "GBP",
   "ok": true,
-  "detail": "demo account reachable: 5 position(s), free \u00a369.51",
+  "detail": "demo account reachable: 4 position(s), free \u00a374.38",
   "cash": {
-    "free": 69.51,
-    "total": 99.51,
-    "ppl": -0.14,
-    "result": -0.28,
-    "invested": 30.14,
+    "free": 74.38,
+    "total": 99.44,
+    "ppl": -0.09,
+    "result": -0.39,
+    "invested": 25.15,
     "pieCash": 0,
     "blocked": 0
   },
@@ -22,16 +22,8 @@
       "t212_ticker": "UUUU_US_EQ",
       "shares": 0.64,
       "avg_price": 13.390625,
-      "current_price": 13.04,
-      "pnl": -0.16
-    },
-    {
-      "ticker": "DVLT",
-      "t212_ticker": "WISA_US_EQ",
-      "shares": 18.2776532,
-      "avg_price": 0.3649265,
-      "current_price": 0.3599,
-      "pnl": -0.06
+      "current_price": 13.02,
+      "pnl": -0.17
     },
     {
       "ticker": "CAI",
@@ -74,8 +66,8 @@
     {
       "ticker": "DVLT",
       "ledger_shares": 18.2776532,
-      "broker_shares": 18.2776532,
-      "status": "match"
+      "broker_shares": null,
+      "status": "ledger_only"
     },
     {
       "ticker": "NTSK",
