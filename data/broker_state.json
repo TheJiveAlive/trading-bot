@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-13T19:34:13Z",
+  "generated": "2026-07-13T19:35:25Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 5 position(s), free \u00a369.51",
   "cash": {
     "free": 69.51,
-    "total": 99.34,
-    "ppl": -0.31,
+    "total": 99.32,
+    "ppl": -0.33,
     "result": -0.28,
     "invested": 30.14,
     "pieCash": 0,
@@ -22,8 +22,8 @@
       "t212_ticker": "UUUU_US_EQ",
       "shares": 0.64,
       "avg_price": 13.390625,
-      "current_price": 12.96,
-      "pnl": -0.2
+      "current_price": 12.9,
+      "pnl": -0.23
     },
     {
       "ticker": "DVLT",
