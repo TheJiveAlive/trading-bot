@@ -1,0 +1,68 @@
+name: healthcheck
+# Full system healthcheck on the OptiPlex — exercises EVERY connected data feed
+# and API (read-only, no trading), emails a report, and prints the result to any
+# open terminal on the box (direct-to-pts, since Ubuntu 26.04 dropped utmp/wall).
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 12 * * 1-5'   # weekday pre-market — verify all systems before open
+
+permissions:
+  contents: read
+concurrency:
+  group: healthcheck
+
+jobs:
+  health:
+    runs-on: [self-hosted, optiplex]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: install deps
+        run: pip install -r requirements.txt
+      - name: materialize secrets
+        env:
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
+          T212_API_KEY: ${{ secrets.T212_API_KEY }}
+          T212_API_SECRET: ${{ secrets.T212_API_SECRET }}
+          ALPHAI_KEY: ${{ secrets.ALPHAI_KEY }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
+          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
+        run: |
+          mkdir -p data logs publish
+          python3 -c "
+          import json, os
+          json.dump({'smtp_host':'smtp.gmail.com','smtp_port':465,
+                     'smtp_user':os.environ.get('SMTP_USER',''),
+                     'smtp_app_password':os.environ.get('SMTP_APP_PASSWORD',''),
+                     'email_to':os.environ.get('EMAIL_TO',''),
+                     'finnhub_key':os.environ.get('FINNHUB_KEY',''),
+                     't212_api_key':os.environ.get('T212_API_KEY',''),
+                     't212_api_secret':os.environ.get('T212_API_SECRET',''),
+                     'alphai_key':os.environ.get('ALPHAI_KEY',''),
+                     'fred_api_key':os.environ.get('FRED_API_KEY',''),
+                     'alpaca_key':os.environ.get('ALPACA_KEY',''),
+                     'alpaca_secret':os.environ.get('ALPACA_SECRET','')},
+                    open('data/secrets.json','w'))"
+      - name: run healthcheck + print to terminal
+        run: |
+          term() { for d in /dev/pts/[0-9]* /dev/tty1; do printf '%b\n' "$1" > "$d" 2>/dev/null || true; done; }
+          term "\n>>> Full API healthcheck starting on tradinghost ...\n"
+          set +e
+          python3 -c "
+          from bot import config, healthcheck
+          config.load()
+          n_pass, n, body = healthcheck.run(send=True)
+          open('/tmp/hc_body.txt','w').write(body)
+          print('RESULT', n_pass, n)
+          "
+          BODY=$(cat /tmp/hc_body.txt 2>/dev/null)
+          term "\n===== BOT HEALTHCHECK (from the OptiPlex) =====\n$BODY\n===============================================\n"
+          rm -f data/secrets.json /tmp/hc_body.txt
