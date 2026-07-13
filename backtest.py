@@ -588,6 +588,11 @@ def main():
     tickers = sorted({e[1] for e in events})
     print("phase 2: downloading history for {} tickers...".format(len(tickers)), flush=True)
     hist = download_history(tickers, start, end)
+    # SURVIVORSHIP EXPOSURE: insider-active tickers we cannot price anymore are
+    # mostly delisted/OTC-moved names — i.e. the disasters. They vanish from
+    # the sim, so their losses never count. Quantify the hole in every report.
+    unpriceable = [t for t in tickers if t not in hist]
+    surv_pct = round(100 * len(unpriceable) / len(tickers), 1) if tickers else 0
 
     print("phase 3: price-filter + parse filings...", flush=True)
     u = cfg["universe"]
@@ -687,6 +692,16 @@ def main():
         "avg_loss_pct": round(sum(t["pct"] for t in losses) / len(losses), 1) if losses else None,
         "max_drawdown_pct": round(maxdd, 1),
         "spy_buy_hold_return_pct": round(spy_ret, 1),
+        "survivorship_exposure": {
+            "insider_active_tickers": len(tickers),
+            "unpriceable_now": len(unpriceable),
+            "pct": surv_pct,
+            "read": ("{}% of insider-active tickers can no longer be priced "
+                     "(likely delisted/OTC) and are ABSENT from this sim — "
+                     "these skew toward failures, so treat return_pct as an "
+                     "upper bound until survivorship-free data lands"
+                     .format(surv_pct)),
+        },
         "open_at_end": final_open,
         "trades": trades,
         "caveats": [

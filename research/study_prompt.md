@@ -26,6 +26,10 @@ This runs out of trading hours, so take the time to be thorough but concise.
    whether its data can be trusted, say so in learnings.md, and if a HELD
    ticker's sources disagree, say it LOUDLY. Many mismatches on a ticker =
    distrust its backtest rows too.
+6b. `backtest_report.json` now carries `survivorship_exposure` — the % of
+   insider-active tickers that can no longer be priced (likely delisted).
+   Treat every backtest return as an UPPER BOUND by roughly that order of
+   magnitude until survivorship-free data is bought.
 6. `walkforward.json` now carries `risk_metrics_top_combo` (Sharpe, Sortino,
    profit factor, expectancy, and a 1000x Monte Carlo bootstrap of the trade
    sequence). A negative Monte Carlo p5 means the edge may hinge on a few
