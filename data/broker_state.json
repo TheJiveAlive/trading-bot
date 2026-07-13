@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-13T14:27:03Z",
+  "generated": "2026-07-13T14:28:22Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 3 position(s), free \u00a381.06",
   "cash": {
     "free": 81.06,
-    "total": 99.82,
-    "ppl": -0.15,
+    "total": 99.8,
+    "ppl": -0.17,
     "result": 0,
     "invested": 18.91,
     "pieCash": 0,
@@ -30,16 +30,16 @@
       "t212_ticker": "AVO_US_EQ",
       "shares": 0.62,
       "avg_price": 13.43548387,
-      "current_price": 13.43,
-      "pnl": -0.01
+      "current_price": 13.41,
+      "pnl": -0.02
     },
     {
       "ticker": "NTSK",
       "t212_ticker": "NTSK_US_EQ",
       "shares": 0.674,
       "avg_price": 12.44807122,
-      "current_price": 12.31,
-      "pnl": -0.07
+      "current_price": 12.29,
+      "pnl": -0.08
     }
   ],
   "reconciliation": [
