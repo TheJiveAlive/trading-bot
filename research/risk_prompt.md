@@ -29,6 +29,10 @@ Work from the project root.
 3. **Position-specific**: for HELD tickers, has the entry catalyst FADED or
    been contradicted? (e.g. we bought on an insider cluster; insider has now
    filed to sell.)
+4. **Corporate actions**: any held ticker with a pending/just-executed stock
+   split, reverse split, dividend, ticker change or delisting-to-OTC move?
+   These silently desync the ledger from the broker — flag them so the human
+   and the reconciler know BEFORE the numbers stop matching.
 
 ## Write `data/risk.json` (overwrite), EXACTLY this schema
 ```json

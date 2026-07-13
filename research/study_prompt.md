@@ -73,6 +73,19 @@ This runs out of trading hours, so take the time to be thorough but concise.
      (serial diluter fingerprint), warrant overhang. Free via yfinance +
      EDGAR filing counts. The risk officer agent checks live filings; this
      item is the SCREENING version (score it before we ever buy).
+   - **Vol-target sizing**: scale position size inversely to the name's
+     20-day realized volatility (vol from the bar cache) instead of a flat
+     risk %. Keeps risk-per-trade constant across calm and wild names.
+   - **Congress-trades copycat**: free public periodic transaction reports
+     (Senate/House disclosure feeds, e.g. Senate Stock Watcher JSON). Same
+     DNA as our Form-4 engine; caveat the 45-day disclosure lag — test
+     whether any drift survives it for small caps.
+   - **Factor ranks (Carhart-lite)**: rank candidates on size/value/momentum
+     percentiles from yfinance fundamentals + the bar cache, as a tilt not a
+     strategy. Validate against outcomes before it earns weight.
+   - **10-K/10-Q risk-factor mining**: EDGAR full text is free — candidate's
+     latest filing's risk-factors/going-concern language as a Claude read
+     during research. Complements the risk officer's filing checks.
    When an item has been studied, record the verdict in learnings.md so later
    sessions move to the NEXT item instead of repeating it.
 7. **Forum mining** (each session, ~5 min): search practitioner sources for
