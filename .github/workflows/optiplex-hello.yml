@@ -1,0 +1,15 @@
+name: optiplex-hello
+# Waves at the OptiPlex login terminal FROM a job running on the box, so you can
+# see a GitHub Actions job talking to your screen. Manual only.
+on:
+  workflow_dispatch:
+
+jobs:
+  hello:
+    runs-on: [self-hosted, optiplex]
+    steps:
+      - name: wave at the terminal
+        run: |
+          MSG="This message is coming from a GitHub Actions JOB running on your OptiPlex right now ($(date -u '+%H:%M:%S') UTC). The box is doing real work for you. -- Claude"
+          echo "$MSG"
+          echo "$MSG" | wall 2>/dev/null || echo "(wall blocked from service context — check the job log instead)"

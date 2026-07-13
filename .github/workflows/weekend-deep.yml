@@ -1,13 +1,14 @@
 name: weekend-deep
-# Heavy compute while the market is closed. PYTHON-ONLY — zero Claude tokens.
-# Runs long backtests, the full parameter sweep, and walk-forward validation
-# over a longer window than the nightly job affords. Results feed the nightly
-# Claude study (which reads the JSON, cheaply). Designed to be portable: the
-# same steps run on the Linux host next week (self-hosted runner) unchanged.
+# Heavy compute — PYTHON-ONLY, zero Claude tokens. Long backtests, full
+# parameter sweep, walk-forward validation, bounded auto-tuning. Runs on the
+# OptiPlex self-hosted runner (12 cores, free minutes, no 6h cap), so it can
+# run NIGHTLY after the US close instead of weekend-only — fresher walk-forward
+# validation as each day of data lands.
 on:
   schedule:
-    - cron: '23 6 * * 6'    # Saturday early — long window, nothing else competing
-    - cron: '23 6 * * 0'    # Sunday early
+    - cron: '30 21 * * 1-5'  # ~1h after US close (weeknights) — the box is idle
+    - cron: '23 6 * * 6'     # Saturday early — longest window
+    - cron: '23 6 * * 0'     # Sunday early
   workflow_dispatch:
     inputs:
       months:
@@ -21,7 +22,7 @@ concurrency:
 
 jobs:
   deep:
-    runs-on: ubuntu-latest    # swap to [self-hosted, linux] on the OptiPlex
+    runs-on: [self-hosted, optiplex]
     timeout-minutes: 330
     steps:
       - uses: actions/checkout@v4
