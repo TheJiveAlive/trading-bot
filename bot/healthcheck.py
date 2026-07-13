@@ -132,7 +132,7 @@ def check_fda():
 def check_macro():
     from bot.signals.macro import macro_signal, _key
     if not _key():
-        return (True, "no FRED key (optional) — using Yahoo quant regime")
+        return (True, "keyless mode — Treasury curve + HYG/LQD proxy")
     tilt, detail = macro_signal()
     return (bool(detail), "FRED macro {} tilt {:+.2f}".format(detail, tilt) if detail
             else "FRED key set but no data")

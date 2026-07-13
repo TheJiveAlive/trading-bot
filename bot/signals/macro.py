@@ -1,12 +1,12 @@
-"""Macro regime hardening via FRED (Federal Reserve). Optional — activates when
-a free FRED_API_KEY is present (data/secrets.json or env). Without it, returns
-neutral and the bot falls back to the Yahoo-based quant regime.
+"""Macro regime hardening. Works KEYLESS by default:
+- Yield curve: US Treasury's own daily par-yield CSV (no key) → 10y-2y spread.
+- Credit stress: HYG/LQD ratio via Yahoo (high-yield vs investment-grade).
+If a FRED_API_KEY is present it upgrades to the official FRED series
+(T10Y2Y + BAMLH0A0HYM2), but nothing depends on it.
 
-Free key: https://fredaccount.stlouisfed.org/apikeys (instant, no cost).
-
-Signals used (all daily-updated series, so we read once per day, not per scan):
-- T10Y2Y : 10y-2y yield curve. Inverted (<0) = recession signal → risk-off tilt.
-- BAMLH0A0HYM2 : high-yield credit spread. Widening fast = stress → risk-off.
+Signals (daily series — read once per ~12h, never per scan):
+- 10y-2y curve inverted (<0) = recession signal → risk-off tilt.
+- Credit stress (HY spread widening / HYG:LQD falling) → risk-off tilt.
 """
 import datetime as dt
 import json
@@ -44,12 +44,42 @@ def _series_latest(key, series_id, n=60):
     return vals
 
 
+def _treasury_curve_keyless():
+    """10y-2y spread from the Treasury's public daily par-yield CSV (no key)."""
+    url = ("https://home.treasury.gov/resource-center/data-chart-center/"
+           "interest-rates/daily-treasury-rates.csv/{}/all"
+           "?type=daily_treasury_yield_curve&field_tdr_date_value={}&_format=csv"
+           ).format(dt.date.today().year, dt.date.today().year)
+    r = requests.get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+    if r.status_code != 200:
+        return None
+    lines = [l for l in r.text.strip().splitlines() if l.strip()]
+    head = [h.strip().strip('"') for h in lines[0].split(",")]
+    row = [v.strip().strip('"') for v in lines[1].split(",")]   # newest first
+    try:
+        y10 = float(row[head.index("10 Yr")])
+        y2 = float(row[head.index("2 Yr")])
+        return round(y10 - y2, 2)
+    except (ValueError, IndexError):
+        return None
+
+
+def _credit_proxy_keyless():
+    """True if credit is STRESSING: HYG/LQD ratio down >1.5% vs ~a month ago."""
+    import yfinance as yf
+    h = yf.download("HYG LQD", period="2mo", interval="1d",
+                    progress=False, auto_adjust=True)["Close"]
+    ratio = (h["HYG"] / h["LQD"]).dropna()
+    if len(ratio) < 21:
+        return None
+    return float(ratio.iloc[-1]) < float(ratio.iloc[-20]) * 0.985
+
+
 def macro_signal():
-    """(tilt, detail) where tilt is -1..+1 (negative = risk-off pressure), or
-    (0, {}) with no key. Cached 12h since FRED series update daily."""
+    """(tilt, detail) where tilt is -1..+1 (negative = risk-off pressure).
+    Keyless by default (Treasury CSV + HYG/LQD); FRED upgrade when keyed.
+    Cached 12h since these series update daily."""
     key = _key()
-    if not key:
-        return 0.0, {}
     if os.path.exists(CACHE):
         try:
             with open(CACHE) as f:
@@ -61,16 +91,26 @@ def macro_signal():
             pass
     tilt, detail = 0.0, {}
     try:
-        curve = _series_latest(key, "T10Y2Y")
-        hy = _series_latest(key, "BAMLH0A0HYM2")
-        if curve:
-            inverted = curve[-1] < 0
-            detail["yield_curve_10y2y"] = round(curve[-1], 2)
-            tilt += -0.5 if inverted else 0.25
-        if len(hy) >= 20:
-            widening = hy[-1] > hy[-20] * 1.1  # spread up >10% in ~month
-            detail["hy_credit_spread"] = round(hy[-1], 2)
-            tilt += -0.5 if widening else 0.25
+        if key:
+            # FRED (official series) when a key is present
+            curve_series = _series_latest(key, "T10Y2Y")
+            spread = curve_series[-1] if curve_series else None
+            hy = _series_latest(key, "BAMLH0A0HYM2")
+            stressing = (hy[-1] > hy[-20] * 1.1) if len(hy) >= 20 else None
+            detail["source"] = "FRED"
+            if stressing is not None:
+                detail["hy_credit_spread"] = round(hy[-1], 2)
+        else:
+            # keyless: Treasury daily par yields + HYG/LQD credit proxy
+            spread = _treasury_curve_keyless()
+            stressing = _credit_proxy_keyless()
+            detail["source"] = "Treasury+HYG/LQD (keyless)"
+        if spread is not None:
+            detail["yield_curve_10y2y"] = round(spread, 2)
+            tilt += -0.5 if spread < 0 else 0.25
+        if stressing is not None:
+            detail["credit_stressing"] = bool(stressing)
+            tilt += -0.5 if stressing else 0.25
         tilt = max(-1.0, min(tilt, 1.0))
     except Exception:
         return 0.0, {}
