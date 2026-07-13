@@ -1,0 +1,87 @@
+name: medic
+# Dispatched by the box's boxwatch (bot/boxwatch.py) when local self-healing
+# can't fix a detected failure. Claude runs HERE in the ephemeral sandboxed
+# runner — the box never runs an agent itself, it only sends the report.
+on:
+  workflow_dispatch:
+    inputs:
+      report:
+        description: "JSON failure report from boxwatch"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+concurrency:
+  group: medic
+  cancel-in-progress: false
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: check token
+        env:
+          TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          APIKEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$TOKEN" ] && [ -z "$APIKEY" ]; then
+            echo "no token — medic cannot run"
+            echo "SKIP=1" >> "$GITHUB_ENV"
+          fi
+
+      - uses: actions/checkout@v4
+        if: env.SKIP != '1'
+
+      - name: stage failure report + email creds
+        if: env.SKIP != '1'
+        env:
+          REPORT: ${{ inputs.report }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: |
+          printf '%s' "$REPORT" > FAILURE_REPORT.json
+          python3 -m json.tool FAILURE_REPORT.json || { echo "invalid report JSON"; exit 1; }
+          python3 -c "
+          import json, os
+          json.dump({'smtp_host':'smtp.gmail.com','smtp_port':465,
+                     'smtp_user':os.environ.get('SMTP_USER',''),
+                     'smtp_app_password':os.environ.get('SMTP_APP_PASSWORD',''),
+                     'email_to':os.environ.get('EMAIL_TO','')}, open('data/secrets.json','w'))"
+
+      - uses: actions/setup-node@v4
+        if: env.SKIP != '1'
+        with:
+          node-version: '22'
+
+      - name: install claude code
+        if: env.SKIP != '1'
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: run medic session
+        if: env.SKIP != '1'
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -n "$ANTHROPIC_API_KEY" ]; then unset CLAUDE_CODE_OAUTH_TOKEN; fi
+          claude -p "$(cat research/medic_prompt.md)" \
+            --allowedTools "Read,Write,Edit,Bash(python3:*),Bash(git log:*),Bash(git diff:*),WebSearch,WebFetch" \
+            --permission-mode acceptEdits --output-format json > /tmp/claude_medic.json \
+            || echo "::warning::medic session failed (usage limit or transient) — continuing"
+          python -m bot.token_log /tmp/claude_medic.json medic || true
+
+      - name: commit any fix
+        if: env.SKIP != '1'
+        run: |
+          git config user.name "trading-bot-medic"
+          git config user.email "trading-bot@users.noreply.github.com"
+          rm -f data/secrets.json FAILURE_REPORT.json
+          git add -A
+          git commit -m "medic: automated triage $(date -u '+%Y-%m-%d %H:%M') UTC" || echo "no changes"
+          for i in 1 2 3; do
+            git pull --rebase -X ours origin main && git push && break
+            sleep 3
+          done
