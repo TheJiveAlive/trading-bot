@@ -1,16 +1,22 @@
 {
-  "generated": "2026-07-09T19:35:00Z",
-  "tape": "Thursday's AI-led rally holds into the close - S&P +0.8%, Nasdaq +1.1%, VIX eased to ~16 as US-Iran risk-off fades; no fresh shock, next catalyst is Monday's hot June CPI print (7/14).",
+  "generated": "2026-07-13T14:34:12Z",
+  "tape": "Risk-off undercurrent: US-Iran strikes over the Strait of Hormuz escalated over the weekend and into Monday, Brent crude jumped ~4% to ~$78.82, yet S&P 500 is only -0.3% and Nasdaq -0.7% with VIX still low near 15 - equities largely shrugging off the geopolitical shock so far, but oil-supply risk is live ahead of Tuesday's CPI print.",
   "alerts": [
-    {"ticker":"AVO","level":"info","headline":"Fresh insider-buying roundup (Quiver Quantitative) again lists AVO for 7/9, consistent with GlobalHarvest's ongoing buying streak - no new negative news.","source":"https://finance.yahoo.com/quote/AVO/news/","time":"today ~18:45 UTC"},
-    {"ticker":"RIG","level":"info","headline":"Susquehanna trimmed its RIG price target to $7 from $8 but kept a Positive rating, following this week's $1B+ Equinor backlog news.","source":"https://finance.yahoo.com/quote/RIG/news/","time":"recent, exact time unconfirmed"},
-    {"ticker":"LRMR","level":"info","headline":"Baird cut its LRMR price target to $5 from $7; stock still holding gains from Wednesday's director buy after Monday's anaphylaxis safety-signal selloff - not a new sell trigger, but a incremental negative revision to watch.","source":"https://finance.yahoo.com/quote/LRMR/news/","time":"recent, exact time unconfirmed"},
-    {"ticker":"ABSI","level":"info","headline":"No fresh catalyst since this week's Guggenheim ($15 PT) and JonesResearch ($11 PT) hikes; stock continuing to grind higher (+~2% today) on that momentum.","source":"https://finance.yahoo.com/quote/ABSI/news/","time":"today"}
+    {"ticker":"MACRO","level":"warn","headline":"US CENTCOM struck Iran targets degrading its ability to hit Strait of Hormuz shipping; Iran retaliated with missile/drone strikes on UAE, Qatar, Kuwait, Oman, Bahrain. Hormuz crossings down sharply, Brent +~4%. Equities so far resilient but this is a live tail risk.","source":"https://www.cnbc.com/2026/07/13/us-iran-war-hormuz-oil-trump.html","time":"2026-07-13, ongoing"},
+    {"ticker":"AVO","level":"info","headline":"Q2 EPS $0.01 missed the $0.05 estimate (vs $0.12 a year ago), but company advanced a new $100M share buyback (7/9) and insider buying (director Jay Pack) continues; no fresh negative catalyst today.","source":"https://finance.yahoo.com/quote/AVO/news/","time":"recent, exact time unconfirmed"},
+    {"ticker":"LRMR","level":"info","headline":"Stock +14.4% today; no new negative news found - continues to ride H.C. Wainwright's 7/2 Buy initiation and the 6/29 BLA filing/open-label data.","source":"https://finance.yahoo.com/quote/LRMR/news/","time":"today"},
+    {"ticker":"EVMN","level":"warn","headline":"Top radar candidate (score 6.49) still carrying unresolved clinical overhang: Morgan Stanley cut PT to $26 from $55 and H.C. Wainwright downgraded to Neutral from Buy (6/29-6/30) on EVO756 trial data, even though shares are +~4.9% today on no fresh catalyst - stale but material risk the score model may not price in.","source":"https://finance.yahoo.com/quote/EVMN/news/","time":"downgrades 6/29-6/30, price move today"},
+    {"ticker":"RIG","level":"info","headline":"Benefiting from the Hormuz-driven oil price surge; Susquehanna's PT cut to $7 (kept Positive) is the only incremental analyst note, otherwise still riding the $1B+ Equinor backlog news.","source":"https://finance.yahoo.com/quote/RIG/news/","time":"recent, exact time unconfirmed"},
+    {"ticker":"UUUU","level":"info","headline":"No fresh news today; background context - the $1.9B Vacuumschmelze cash-and-stock acquisition (announced 6/23, ~65.9M new shares) is already priced in, deal expected to close early 2027.","source":"https://finance.yahoo.com/quote/UUUU/news/","time":"deal dated 6/23, no update today"},
+    {"ticker":"ABSI","level":"info","headline":"Steady +~1.9% grind higher, no new catalyst since late-June Guggenheim/H.C. Wainwright PT hikes.","source":"https://finance.yahoo.com/quote/ABSI/news/","time":"today"},
+    {"ticker":"HDSN","level":"info","headline":"Quiet, +0.6%; earnings scheduled 7/29, no fresh news.","source":"https://finance.yahoo.com/quote/HDSN/news/","time":"today"},
+    {"ticker":"NTSK","level":"info","headline":"Stable, no fresh news today; continues to hold gains from ICONIQ's insider buying reported earlier in the week.","source":"https://finance.yahoo.com/quote/NTSK/news/","time":"today"}
   ],
   "movers": [
-    {"ticker":"RIG","note":"+~3% today, extending the Equinor $1B backlog contract reaction from 7/8."},
-    {"ticker":"ABSI","note":"+~2% today, continued drift on last week's analyst PT hikes."},
-    {"ticker":"LRMR","note":"Mixed signals: Baird PT cut to $5 vs. ongoing director-buy support; range-bound."}
+    {"ticker":"LRMR","note":"+14.4% today, no fresh catalyst identified beyond existing BLA/coverage momentum."},
+    {"ticker":"RIG","note":"Lifted by the Hormuz-conflict oil price spike (Brent +~4%)."},
+    {"ticker":"EVMN","note":"+~4.9% today despite unresolved late-June clinical downgrades - momentum without a new fundamental driver."},
+    {"ticker":"AVO","note":"Q2 EPS miss offset by new $100M buyback; roughly flat to slightly down on the session."}
   ],
   "flags_for_bot": []
 }
