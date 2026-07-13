@@ -17,11 +17,16 @@ from bot.config import DATA_DIR
 
 
 def _token():
-    try:
-        with open(os.path.join(DATA_DIR, "secrets.json")) as f:
-            return (json.load(f).get("claude_code_oauth_token") or "").strip() or None
-    except Exception:
-        return None
+    for path in (os.path.join(DATA_DIR, "secrets.json"),
+                 os.path.expanduser("~/.bot/secrets.json")):
+        try:
+            with open(path) as f:
+                t = (json.load(f).get("claude_code_oauth_token") or "").strip()
+            if t:
+                return t
+        except Exception:
+            continue
+    return None
 
 
 def enabled(cfg):
