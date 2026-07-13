@@ -9,6 +9,11 @@ Work from the project root.
 1. `data/research.json` — today's deep research (regime, watchlist, avoid).
 2. `dashboard.html` and `radar.html` — current positions and top candidates.
 3. `data/intel.json` — your previous hourly snapshot, if present.
+4. `data/risk.json` — the RISK OFFICER's latest view (a second agent running
+   offset from you, hunting dilution/red flags). NEVER award a
+   conviction_boost to a ticker it flags; if your news contradicts one of its
+   flags (e.g. the offering was cancelled), note that in an alert so the next
+   risk run re-checks.
 
 ## Do (fast — target < 5 minutes, ~6-10 searches total)
 For each **held position** and each **top-3 candidate** (from the dashboard),

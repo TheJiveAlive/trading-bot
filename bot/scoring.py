@@ -30,6 +30,8 @@ def score_candidates(cfg, insider_hits, sector_ranks, snapshot, research=None,
                 intel_boosts[t] = max(0.0, min(float(b.get("boost", 0)), 1.0))
             except (TypeError, ValueError):
                 pass
+    # risk officer flags ({TICKER: elevated|critical}) — the bear's view
+    rflags = risk.risk_flags(risk.load_risk())
     results = []
     for ticker, ins in insider_hits.items():
         info = market.ticker_info(ticker)
@@ -85,6 +87,11 @@ def score_candidates(cfg, insider_hits, sector_ranks, snapshot, research=None,
         iboost = intel_boosts.get(ticker)
         if iboost:
             parts["intel"] = round(min(iboost, 1.0) * w.get("intel_weight", 1.0), 2)
+        # risk officer (offset 30-min agent): elevated risk drags the score;
+        # critical additionally hard-vetoes the buy in scan.maybe_buy
+        rlvl = rflags.get(ticker)
+        if rlvl:
+            parts["risk"] = -1.5 if rlvl == "elevated" else -3.0
         bias = risk.sector_bias_bonus(research, info.get("sector"))
         if bias:
             parts["sector_bias"] = bias

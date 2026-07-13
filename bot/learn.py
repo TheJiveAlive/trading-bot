@@ -131,7 +131,9 @@ def auto_apply_tuning():
     (best_stop, best_tp), rets = ranked[0]
     # clamp to safe bounds
     best_stop = max(8.0, min(float(best_stop), 15.0))
-    best_tp = max(15.0, min(float(best_tp), 40.0)) if best_tp < 900 else 40.0
+    # TP ceiling 30 (was 40): a small live book needs closed trades as learning
+    # evidence — letting tune push TP to 40 starved signal_rewards of samples.
+    best_tp = max(15.0, min(float(best_tp), 30.0)) if best_tp < 900 else 30.0
 
     con = ledger.connect()
     old = (cfg["selling"]["trailing_stop_pct"], cfg["selling"]["take_profit_pct"])

@@ -57,8 +57,20 @@ This runs out of trading hours, so take the time to be thorough but concise.
    - **Mean-reversion guard**: after a ±25% single-day move WITHOUT a
      catalyst, next-day reversal odds are elevated — propose as a VETO (don't
      buy day-1 spikes with no news), not as a new long signal.
+   - **Share-structure screen**: float size, shares outstanding growth
+     (serial diluter fingerprint), warrant overhang. Free via yfinance +
+     EDGAR filing counts. The risk officer agent checks live filings; this
+     item is the SCREENING version (score it before we ever buy).
    When an item has been studied, record the verdict in learnings.md so later
    sessions move to the NEXT item instead of repeating it.
+7. **Forum mining** (each session, ~5 min): search practitioner sources for
+   tactics relevant to a $1–20 catalyst/insider small-cap bot — r/algotrading,
+   r/pennystocks lessons threads, EliteTrader, QuantConnect forum, Quantpedia
+   blog. You are looking for CONCRETE, testable rules (entry filters, exit
+   structures, sizing tricks, red flags), not vibes. If you find one we don't
+   have, add it to the strategy-gap backlog verdicts in learnings.md with the
+   source. If a forum insight CONTRADICTS something we do (e.g. our TP/stop
+   structure), surface the disagreement honestly.
 
 ## Write
 Append a dated section to `data/learnings.md` (create if missing):

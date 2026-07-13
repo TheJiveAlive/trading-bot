@@ -170,6 +170,15 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
                 c["ticker"], summarize(detail)))
             report.append("  skip {}: confluence {}".format(c["ticker"], summarize(detail)))
             continue
+        # RISK OFFICER VETO: critical flags (active offering/ATM, halt, fraud,
+        # delisting, insider dumping) are absolute — no buy, whatever the score
+        _rlvl = risk.risk_flags(risk.load_risk()).get(c["ticker"])
+        if _rlvl == "critical":
+            ledger.log_decision(con, "risk_veto", "{}: risk officer critical flag".format(
+                c["ticker"]))
+            report.append("  RISK VETO {}: critical flag from risk officer".format(
+                c["ticker"]))
+            continue
         # PRE-BUY CRITIC: Claude reviews this specific trade (fail-open)
         critic_note = ""
         from bot import critic as _critic

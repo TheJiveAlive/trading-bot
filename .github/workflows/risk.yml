@@ -1,0 +1,74 @@
+name: risk-officer
+# Trigger is DISPATCH-ONLY: the OptiPlex fires this at :15/:45 (offset from
+# intel's :00/:30) via bot-risk.timer. Claude runs here in the ephemeral
+# GitHub runner — same pattern as intel.yml. The risk officer is the bear to
+# intel's bull: dilution forensics (EDGAR), red flags, fading catalysts.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+concurrency:
+  group: risk
+  cancel-in-progress: true
+
+jobs:
+  risk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: check token
+        env:
+          TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          APIKEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$TOKEN" ] && [ -z "$APIKEY" ]; then
+            echo "no token — skipping risk officer"
+            echo "SKIP=1" >> "$GITHUB_ENV"
+          fi
+
+      - name: extended hours guard (8:00-20:00 ET weekdays)
+        if: env.SKIP != '1'
+        run: |
+          H=$(TZ=America/New_York date +%H); DOW=$(TZ=America/New_York date +%u)
+          if [ "$DOW" -gt 5 ] || [ "$H" -lt 8 ] || [ "$H" -ge 20 ]; then
+            echo "outside extended hours — skipping"; echo "SKIP=1" >> "$GITHUB_ENV"
+          fi
+
+      - uses: actions/checkout@v4
+        if: env.SKIP != '1'
+
+      - uses: actions/setup-node@v4
+        if: env.SKIP != '1'
+        with:
+          node-version: '22'
+
+      - name: install claude code
+        if: env.SKIP != '1'
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: run risk officer session
+        if: env.SKIP != '1'
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -n "$ANTHROPIC_API_KEY" ]; then unset CLAUDE_CODE_OAUTH_TOKEN; fi
+          claude -p "$(cat research/risk_prompt.md)" \
+            --allowedTools "WebSearch,WebFetch,Read,Write" \
+            --permission-mode acceptEdits --output-format json > /tmp/claude_risk.json \
+            || echo "::warning::claude session skipped (usage limit or transient error) — continuing"
+          python -m bot.token_log /tmp/claude_risk.json risk || true
+
+      - name: commit risk snapshot
+        if: env.SKIP != '1'
+        run: |
+          git config user.name "trading-bot"
+          git config user.email "trading-bot@users.noreply.github.com"
+          rm -f data/secrets.json
+          git add -A
+          git commit -m "risk officer $(date -u '+%H:%M') UTC" || echo "no changes"
+          for i in 1 2 3; do
+            git pull --rebase -X ours origin main && git push && break
+            sleep 3
+          done

@@ -163,3 +163,36 @@ def intel_flagged(intel):
     """Tickers the hourly intel says to avoid buying this session."""
     return {t.upper() for t in (intel or {}).get("flags_for_bot", [])
             if isinstance(t, str)}
+
+
+RISK_PATH = os.path.join(DATA_DIR, "risk.json")
+RISK_STALE_HOURS = 6
+
+
+def load_risk():
+    """Latest risk-officer dict, or {} if missing/stale (mirror of load_intel)."""
+    if not os.path.exists(RISK_PATH):
+        return {}
+    try:
+        with open(RISK_PATH) as f:
+            rk = json.load(f)
+        gen = rk.get("generated", "")
+        if gen:
+            when = dt.datetime.fromisoformat(gen.replace("Z", "+00:00"))
+            age_h = (dt.datetime.now(dt.timezone.utc) - when).total_seconds() / 3600
+            if age_h > RISK_STALE_HOURS:
+                return {"_stale": True, "generated": gen}
+        return rk
+    except Exception:
+        return {}
+
+
+def risk_flags(rk):
+    """{TICKER: "elevated"|"critical"} from the risk officer's flags list."""
+    out = {}
+    for f in (rk or {}).get("flags", []) or []:
+        t = (f.get("ticker") or "").upper()
+        lvl = (f.get("risk") or "").lower()
+        if t and lvl in ("elevated", "critical"):
+            out[t] = lvl
+    return out

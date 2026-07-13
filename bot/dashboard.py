@@ -797,6 +797,7 @@ def _fetch_state():
     con.close()
 
     intel = risk.load_intel()
+    riskoff = risk.load_risk()
     from bot.signals.reddit import fetch_mentions
     reddit = fetch_mentions()
 
@@ -829,6 +830,7 @@ def _fetch_state():
         "cand_ts": _short(cand_ts), "rewards": rewards,
         "buys_wk": buys_wk, "research": research,
         "reddit": reddit, "news": news, "intel": intel, "broker": broker,
+        "riskoff": riskoff,
     }
 
 
@@ -1528,6 +1530,7 @@ SIGNAL_COLORS = {
     "earnings": "#F472B6", "events": "#F87171", "watchlist": "#94A3B8",
     "sector_bias": "#64748B", "insider_sentiment": "#22D3EE", "wildcard": "#E879F9",
     "trending": "#38BDF8", "analyst_trend": "#A3E635", "ai_news": "#F0ABFC", "intel": "#FDE047", "gtrends": "#5EEAD4",
+    "risk": "#F87171",
 }
 
 
@@ -1974,13 +1977,32 @@ def _news_panel(st):
     return panel("Headlines the bot is reading", "fetched " + st["now"], inner)
 
 
+def _agent_countdown():
+    """Live JS countdown to the next Claude agent runs. Intel fires :00/:30
+    (market hours), risk officer :15/:45 (extended hours) — box timers."""
+    return ('<div class="note" id="agentcd" style="margin-bottom:10px"></div>'
+            '<script>(function(){function nxt(offs){var n=new Date(),best=null;'
+            'for(var i=0;i<offs.length;i++){var d=new Date(n);d.setMinutes(offs[i],0,0);'
+            'if(d<=n)d.setTime(d.getTime()+36e5);if(!best||d<best)best=d}return best}'
+            'function fmt(ms){var m=Math.floor(ms/6e4),s=Math.floor(ms%6e4/1e3);'
+            'return m+"m "+(s<10?"0":"")+s+"s"}'
+            'function tick(){var n=new Date(),i=nxt([0,30]),r=nxt([15,45]);'
+            'var el=document.getElementById("agentcd");if(!el)return;'
+            'el.innerHTML="&#9200; next <b>intel</b> in <b style=\'color:var(--teal)\'>"'
+            '+fmt(i-n)+"</b> &nbsp;&middot;&nbsp; next <b>risk officer</b> in '
+            '<b style=\'color:var(--warn)\'>"+fmt(r-n)+"</b>'
+            ' <span class=\'mut\'>(box timers; skipped outside US trading hours)</span>";}'
+            'tick();setInterval(tick,1000)})()</script>')
+
+
 def _intel_panel(st):
     intel = st.get("intel") or {}
     if not intel or intel.get("_stale"):
-        note = ("last intel {} — stale, awaiting next hourly run".format(
+        note = ("last intel {} — stale".format(
             intel.get("generated", "")[:16].replace("T", " ")) if intel.get("_stale")
-            else "no hourly intel yet — runs every hour during US market hours")
-        return panel("Live intel feed", "hourly", '<div class="mut">{}</div>'.format(note))
+            else "no intel yet this session")
+        return panel("Live intel feed", "every 30 min",
+                     _agent_countdown() + '<div class="mut">{}</div>'.format(note))
     tape = intel.get("tape", "")
     alerts = intel.get("alerts", [])[:12]
     if alerts:
@@ -1999,7 +2021,68 @@ def _intel_panel(st):
     gen = intel.get("generated", "")[:16].replace("T", " ")
     tape_html = ('<div class="note" style="margin-bottom:10px;color:var(--ink)">'
                  '<b style="color:var(--dim)">TAPE:</b> {}</div>'.format(tape)) if tape else ""
-    return panel("Live intel feed", "intel " + gen + " UTC", tape_html + items)
+    return panel("Live intel feed", "intel " + gen + " UTC",
+                 _agent_countdown() + tape_html + items)
+
+
+def _risk_panel(st):
+    """The risk officer's view: per-holding risk grades, buy-blocking flags,
+    and the dilution watch. Rendered even when empty so the user can see the
+    agent is on duty."""
+    rk = st.get("riskoff") or {}
+    if not rk or rk.get("_stale"):
+        note = ("last risk check {} — stale".format(
+            rk.get("generated", "")[:16].replace("T", " ")) if rk.get("_stale")
+            else "no risk snapshot yet — the risk officer runs at :15/:45 during "
+                 "extended US hours (8:00–20:00 ET)")
+        return panel("&#128737;&#65039; Risk officer", "every 30 min",
+                     '<div class="mut">{}</div>'.format(note))
+    gen = rk.get("generated", "")[:16].replace("T", " ")
+    out = []
+    if rk.get("summary"):
+        out.append('<div class="note" style="margin-bottom:10px;color:var(--ink)">'
+                   '<b style="color:var(--dim)">BOOK RISK:</b> {}</div>'.format(rk["summary"]))
+    RISK_C = {"low": "var(--green)", "elevated": "var(--warn)", "critical": "var(--red)"}
+    hold = rk.get("holdings") or {}
+    if hold:
+        rows = "".join(
+            '<tr><td class="mono"><b data-tkr="{t}">{t}</b></td>'
+            '<td><span class="chip" style="color:{c};border-color:{c}55;'
+            'font-weight:700;text-transform:uppercase">{lv}</span></td>'
+            '<td class="mut" style="font-size:11.5px">{n}</td></tr>'.format(
+                t=t.upper(), c=RISK_C.get((v.get("risk") or "low").lower(), "var(--dim)"),
+                lv=v.get("risk", "?"), n=v.get("note", ""))
+            for t, v in sorted(hold.items(),
+                               key=lambda kv: {"critical": 0, "elevated": 1}.get(
+                                   (kv[1].get("risk") or "low").lower(), 2)))
+        out.append('<table><tr><th>Held</th><th>Risk</th><th>Why</th></tr>{}</table>'.format(rows))
+    flags = rk.get("flags") or []
+    if flags:
+        out.append('<div style="margin-top:10px"><b style="font-size:11px;color:var(--dim);'
+                   'text-transform:uppercase;letter-spacing:1px">Buy-blocking flags</b>{}</div>'.format(
+            "".join('<div class="alert"><span class="lv {lv}">{lv}</span>'
+                    '<div class="body"><span class="tk">{t}</span> {w}{s}</div></div>'.format(
+                        lv=("urgent" if (f.get("risk") == "critical") else "warn"),
+                        t=f.get("ticker", ""), w=f.get("why", ""),
+                        s=' &middot; <a href="{u}" target="_blank" rel="noopener">source &#8599;</a>'.format(
+                            u=f["source"]) if f.get("source", "").startswith("http") else "")
+                    for f in flags[:8])))
+    dil = rk.get("dilution_watch") or []
+    if dil:
+        out.append('<div style="margin-top:10px"><b style="font-size:11px;color:var(--dim);'
+                   'text-transform:uppercase;letter-spacing:1px">Dilution watch (EDGAR)</b>{}</div>'.format(
+            "".join('<div class="mut" style="font-size:11.5px;padding:3px 0">'
+                    '<b class="mono" style="color:var(--ink)">{t}</b> &middot; {f} {d} &middot; {n}</div>'.format(
+                        t=d_.get("ticker", ""), f=d_.get("filing", ""),
+                        d=d_.get("date", ""), n=d_.get("note", ""))
+                    for d_ in dil[:6])))
+    dis = rk.get("disagreements") or []
+    if dis:
+        out.append('<div class="note" style="margin-top:10px"><b>vs intel:</b> {}</div>'.format(
+            " &middot; ".join(dis[:3])))
+    if len(out) <= 1:
+        out.append('<div class="mut">book checks out clean this run</div>')
+    return panel("&#128737;&#65039; Risk officer", "risk " + gen + " UTC", "".join(out))
 
 
 WORKFLOW_LABELS = [
@@ -2117,6 +2200,7 @@ def _overview(st):
     body += _decision_feed(st)
     body += _intel_panel(st)
     body += "</div>"
+    body += _risk_panel(st)
     body += '<div class="grid2">'
     body += _research_panel(st)
     body += _github_panel(st)
