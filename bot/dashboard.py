@@ -454,7 +454,7 @@ def _sched_script():
   // UTC schedules (min past hour, UTC hours, allowed weekdays 0=Sun..6=Sat)
   var WD=[1,2,3,4,5];
   var SCANS={min:33,hours:[13,14,15,16,17,18,19,20,21],days:WD};
-  var INTEL={min:8,hours:[14,17,20],days:WD};
+  var INTEL={min:8,hours:[14,15,16,17,18,19,20],days:WD};
   var RESEARCH={min:37,hours:[12],days:WD};
   var REVIEW={min:3,hours:[16],days:[0]};
   // maps the "Running on GitHub" rows (nr-<key>) to their schedule

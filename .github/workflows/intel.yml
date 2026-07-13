@@ -1,7 +1,7 @@
 name: hourly-intel
 on:
   schedule:
-    - cron: '8 15 * * 1-5'   # 1x/day midday (was 3x) — token thrift
+    - cron: '8 14-20 * * 1-5'   # HOURLY through the US session (sub upgraded 2026-07-13) — Claude vets movers + flags risks every hour while the bot trades
   workflow_dispatch:
 
 permissions:
