@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-13T14:16:32Z",
+  "generated": "2026-07-13T14:17:50Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 1 position(s), free \u00a393.72",
   "cash": {
     "free": 93.72,
-    "total": 99.86,
-    "ppl": -0.13,
+    "total": 99.85,
+    "ppl": -0.14,
     "result": 0,
     "invested": 6.27,
     "pieCash": 0,
@@ -22,8 +22,8 @@
       "t212_ticker": "NTSK_US_EQ",
       "shares": 0.674,
       "avg_price": 12.44807122,
-      "current_price": 12.2,
-      "pnl": -0.13
+      "current_price": 12.16,
+      "pnl": -0.14
     }
   ],
   "reconciliation": [
@@ -32,18 +32,6 @@
       "ledger_shares": 0.674,
       "broker_shares": 0.674,
       "status": "match"
-    },
-    {
-      "ticker": "UUUU",
-      "ledger_shares": 0.6341,
-      "broker_shares": null,
-      "status": "removed_phantom"
-    },
-    {
-      "ticker": "WRAP",
-      "ledger_shares": 3.6705,
-      "broker_shares": null,
-      "status": "removed_phantom"
     }
   ]
 }
