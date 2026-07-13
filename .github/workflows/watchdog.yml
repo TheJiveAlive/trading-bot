@@ -29,15 +29,29 @@ jobs:
           fi
           echo "market open: $OPEN"
 
-          # 1) SESSION: if market is open and no session loop is running, start one
+          # 1) SESSION: the NATIVE loop on the OptiPlex is primary — its
+          # heartbeat (committed every ~30s) proves it's alive. Only if the
+          # heartbeat is stale AND no cloud session is running do we fall back
+          # to the GitHub-hosted session loop.
           if [ "$OPEN" = "1" ]; then
-            RUNNING=$(gh run list -R "$R" --workflow session.yml --status in_progress --json databaseId -q 'length')
-            QUEUED=$(gh run list -R "$R" --workflow session.yml --status queued --json databaseId -q 'length')
-            if [ "${RUNNING:-0}" = "0" ] && [ "${QUEUED:-0}" = "0" ]; then
-              echo "!! session not running — kicking market-session"
-              gh workflow run market-session -R "$R" || true
+            HB=$(curl -s --max-time 10 "https://raw.githubusercontent.com/$R/main/data/session_heartbeat.txt?t=$(date +%s)" | head -1)
+            HBAGE=$(python3 -c "import datetime,sys
+          try:
+              t=datetime.datetime.fromisoformat('$HB'.replace('Z','+00:00'))
+              print(int((datetime.datetime.now(datetime.timezone.utc)-t).total_seconds()))
+          except Exception: print(99999)")
+            echo "native heartbeat age: ${HBAGE}s"
+            if [ "${HBAGE:-99999}" -lt 300 ]; then
+              echo "native loop alive on the OptiPlex — no action"
             else
-              echo "session ok (running=$RUNNING queued=$QUEUED)"
+              RUNNING=$(gh run list -R "$R" --workflow session.yml --status in_progress --json databaseId -q 'length')
+              QUEUED=$(gh run list -R "$R" --workflow session.yml --status queued --json databaseId -q 'length')
+              if [ "${RUNNING:-0}" = "0" ] && [ "${QUEUED:-0}" = "0" ]; then
+                echo "!! native loop DEAD and no cloud session — kicking market-session fallback"
+                gh workflow run market-session -R "$R" || true
+              else
+                echo "cloud fallback session already up (running=$RUNNING queued=$QUEUED)"
+              fi
             fi
           fi
 

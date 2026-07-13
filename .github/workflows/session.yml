@@ -3,10 +3,11 @@ name: market-session
 # prices every ~60s and scanning every ~15 min INTERNALLY. This removes the
 # dependence on GitHub's unreliable per-interval cron: only the session START
 # needs to fire (daily cron OR one manual click), then it self-loops for hours.
+# FALLBACK ONLY since 2026-07-13: the native systemd loop on the OptiPlex
+# (~/bot/session.sh) is the primary session. The watchdog dispatches this
+# cloud copy only when the native heartbeat goes stale.
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '31 13 * * 1-5'   # ~1 min after US open; start of session
 
 permissions:
   contents: write
