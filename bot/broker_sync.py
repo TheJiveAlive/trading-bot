@@ -159,7 +159,30 @@ def _reconcile(broker_positions):
                 rows.append({"ticker": tkr, "ledger_shares": lsh,
                              "broker_shares": None, "status": "closed_zombie"})
                 continue
-            status = "ledger_only"          # ledger thinks we hold it, broker doesn't
+            # broker is the source of truth: a row the broker doesn't hold and
+            # that isn't a fresh fill race (>30 min old) was closed OUTSIDE the
+            # bot — e.g. the user manually selling in the T212 app (DVLT,
+            # 2026-07-14). Adopted rows have no trades, so the sell-check above
+            # can never catch them.
+            opened = con.execute("SELECT opened_at FROM positions WHERE ticker=? "
+                                 "AND status='open'", (tkr,)).fetchone()
+            aged = True
+            try:
+                aged = (dt.datetime.now(dt.timezone.utc) - dt.datetime.fromisoformat(
+                    opened[0].replace("Z", "+00:00"))).total_seconds() > 1800
+            except Exception:
+                pass
+            if aged:
+                con.execute("UPDATE positions SET status='closed' WHERE ticker=?", (tkr,))
+                ledger.log_decision(con, "recon_close",
+                                    "{}: absent at Trading 212 (closed outside the bot, "
+                                    "e.g. manually in the app) — ledger row closed, "
+                                    "broker is truth".format(tkr))
+                con.commit()
+                rows.append({"ticker": tkr, "ledger_shares": lsh,
+                             "broker_shares": None, "status": "closed_external"})
+                continue
+            status = "ledger_only"          # fresh row — possible fill latency, wait
         elif abs(float(lsh) - float(bsh)) > max(1e-4, abs(float(lsh)) * 0.01):
             status = "drift"                 # both hold it but sizes disagree >1%
         else:
