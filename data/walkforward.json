@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-14T08:20:51+00:00",
+  "generated": "2026-07-14T11:36:35+00:00",
   "train_period": "2026-01-10 to 2026-05-18",
   "test_period": "2026-05-18 to 2026-07-09",
   "top5_train_combos_tested_oos": [
@@ -8,8 +8,17 @@
       "tp": 15.0,
       "buys_wk": 2,
       "min_score": 4.5,
-      "train_median_pct": 6.76,
-      "test_pct": 4.89,
+      "train_median_pct": 7.64,
+      "test_pct": 6.0,
+      "test_trades": 12
+    },
+    {
+      "stop": 8.0,
+      "tp": 18.0,
+      "buys_wk": 2,
+      "min_score": 4.5,
+      "train_median_pct": 6.71,
+      "test_pct": 7.06,
       "test_trades": 12
     },
     {
@@ -17,54 +26,45 @@
       "tp": 22.0,
       "buys_wk": 2,
       "min_score": 4.5,
-      "train_median_pct": 5.88,
-      "test_pct": 0.88,
+      "train_median_pct": 6.41,
+      "test_pct": 8.36,
       "test_trades": 10
-    },
-    {
-      "stop": 8.0,
-      "tp": 18.0,
-      "buys_wk": 2,
-      "min_score": 4.5,
-      "train_median_pct": 4.55,
-      "test_pct": 5.96,
-      "test_trades": 12
     },
     {
       "stop": 8.0,
       "tp": 20.0,
       "buys_wk": 2,
       "min_score": 4.5,
-      "train_median_pct": 4.25,
-      "test_pct": 4.72,
+      "train_median_pct": 5.46,
+      "test_pct": 8.63,
       "test_trades": 11
     },
     {
-      "stop": 10.0,
-      "tp": 25.0,
+      "stop": 9.0,
+      "tp": 15.0,
       "buys_wk": 2,
-      "min_score": 5.5,
-      "train_median_pct": 3.41,
-      "test_pct": 7.54,
-      "test_trades": 8
+      "min_score": 4.5,
+      "train_median_pct": 5.01,
+      "test_pct": 8.35,
+      "test_trades": 12
     }
   ],
   "spy_test_return_pct": 2.03,
   "risk_metrics_top_combo": {
-    "sharpe_annualized": 1.78,
-    "sortino_annualized": 1.79,
-    "profit_factor": 1.72,
+    "sharpe_annualized": 2.32,
+    "sortino_annualized": 2.47,
+    "profit_factor": 2.02,
     "expectancy_pct_per_trade": 3.88,
     "monte_carlo_1000x": {
-      "p5_pct": -12.8,
-      "p50_pct": 21.6,
-      "p95_pct": 72.5,
+      "p5_pct": -11.9,
+      "p50_pct": 21.3,
+      "p95_pct": 71.3,
       "read": "5th percentile NEGATIVE \u2014 result may hinge on a few lucky trades; treat the headline with suspicion"
     }
   },
   "verdict": {
     "edge_survives_out_of_sample": true,
     "beats_spy_out_of_sample": true,
-    "read": "PASS: params picked on train also made 4.89% on unseen data"
+    "read": "PASS: params picked on train also made 6.0% on unseen data"
   }
 }
