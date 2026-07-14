@@ -1,248 +1,152 @@
 {
- "generated": "2026-07-13T20:35:47.137352+00:00",
- "source": "pwb_import",
- "mismatches_gt_2pct": 200,
- "sample": [
+ "generated": "2026-07-13T23:45:15+00:00",
+ "source": "nightly_audit",
+ "tickers_checked": 38,
+ "issues": 20,
+ "held_ticker_issues": 0,
+ "detail": [
   {
-   "ticker": "AAT",
-   "date": "2023-07-14",
-   "cache_close": 17.27,
-   "pwb_close": 20.79
+   "ticker": "WRAP",
+   "kind": "source_mismatch",
+   "date": "2026-07-08",
+   "cache": 1.555,
+   "yahoo": 1.59,
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-07-17",
-   "cache_close": 17.3198,
-   "pwb_close": 20.85
+   "ticker": "WRAP",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-08",
+   "yahoo_last": "2026-07-13",
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-07-18",
-   "cache_close": 17.9678,
-   "pwb_close": 21.63
+   "ticker": "TDIC",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-08",
+   "yahoo_last": "2026-07-13",
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-07-19",
-   "cache_close": 18.4662,
-   "pwb_close": 22.23
+   "ticker": "EVMN",
+   "kind": "source_mismatch",
+   "date": "2026-07-13",
+   "cache": 12.54,
+   "yahoo": 12.1,
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-07-20",
-   "cache_close": 18.3748,
-   "pwb_close": 22.12
+   "ticker": "LRMR",
+   "kind": "source_mismatch",
+   "date": "2026-07-13",
+   "cache": 3.825,
+   "yahoo": 3.725,
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-07-21",
-   "cache_close": 18.2668,
-   "pwb_close": 21.99
+   "ticker": "MGLD",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-07-24",
-   "cache_close": 18.6157,
-   "pwb_close": 22.41
+   "ticker": "HUMAW",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-07-25",
-   "cache_close": 18.516,
-   "pwb_close": 22.29
+   "ticker": "SSACU",
+   "kind": "flatline",
+   "close": 10.210000038146973,
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-07-26",
-   "cache_close": 18.6905,
-   "pwb_close": 22.5
+   "ticker": "SFM",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-07-27",
-   "cache_close": 18.4413,
-   "pwb_close": 22.2
+   "ticker": "SHLS",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-07-28",
-   "cache_close": 18.6074,
-   "pwb_close": 22.4
+   "ticker": "IMRA",
+   "kind": "source_mismatch",
+   "date": "2026-07-07",
+   "cache": 16.28,
+   "yahoo": 15.682,
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-07-31",
-   "cache_close": 18.6905,
-   "pwb_close": 22.5
+   "ticker": "IMRA",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-08-01",
-   "cache_close": 18.4413,
-   "pwb_close": 22.2
+   "ticker": "AIJTY",
+   "kind": "flatline",
+   "close": 0.8109999895095825,
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-08-02",
-   "cache_close": 18.4994,
-   "pwb_close": 22.27
+   "ticker": "ILMN",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-08-03",
-   "cache_close": 18.5326,
-   "pwb_close": 22.31
+   "ticker": "KEP",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-08-04",
-   "cache_close": 18.6905,
-   "pwb_close": 22.5
+   "ticker": "HRTG",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-08-07",
-   "cache_close": 19.0726,
-   "pwb_close": 22.96
+   "ticker": "PTON",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-08-08",
-   "cache_close": 18.7071,
-   "pwb_close": 22.52
+   "ticker": "NKTR",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-08-09",
-   "cache_close": 18.5908,
-   "pwb_close": 22.38
+   "ticker": "LII",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
   },
   {
-   "ticker": "AAT",
-   "date": "2023-08-10",
-   "cache_close": 18.433,
-   "pwb_close": 22.19
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-08-11",
-   "cache_close": 18.5077,
-   "pwb_close": 22.28
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-08-14",
-   "cache_close": 18.217,
-   "pwb_close": 21.93
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-08-15",
-   "cache_close": 17.6604,
-   "pwb_close": 21.26
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-08-16",
-   "cache_close": 17.4195,
-   "pwb_close": 20.97
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-08-17",
-   "cache_close": 17.3198,
-   "pwb_close": 20.85
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-08-18",
-   "cache_close": 17.3614,
-   "pwb_close": 20.9
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-08-21",
-   "cache_close": 17.1288,
-   "pwb_close": 20.62
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-08-22",
-   "cache_close": 16.9959,
-   "pwb_close": 20.46
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-08-23",
-   "cache_close": 17.3863,
-   "pwb_close": 20.93
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-08-24",
-   "cache_close": 17.378,
-   "pwb_close": 20.92
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-08-25",
-   "cache_close": 17.27,
-   "pwb_close": 20.79
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-08-28",
-   "cache_close": 17.6936,
-   "pwb_close": 21.3
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-08-29",
-   "cache_close": 17.8847,
-   "pwb_close": 21.53
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-08-30",
-   "cache_close": 17.9179,
-   "pwb_close": 21.57
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-08-31",
-   "cache_close": 17.785,
-   "pwb_close": 21.41
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-09-01",
-   "cache_close": 17.893,
-   "pwb_close": 21.54
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-09-05",
-   "cache_close": 17.27,
-   "pwb_close": 20.79
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-09-06",
-   "cache_close": 17.557,
-   "pwb_close": 20.8
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-09-07",
-   "cache_close": 17.4388,
-   "pwb_close": 20.66
-  },
-  {
-   "ticker": "AAT",
-   "date": "2023-09-08",
-   "cache_close": 17.2869,
-   "pwb_close": 20.48
+   "ticker": "ZM",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-08",
+   "yahoo_last": "2026-07-13",
+   "held": false
   }
  ],
- "note": "cache (Alpaca/Yahoo adjusted) kept on conflict; PWB filled the gaps. PWB is NOT survivorship-bias-free."
+ "verdict": "20 discrepancies (0 on HELD tickers) \u2014 study session must judge whether these tickers' data can be trusted"
 }
