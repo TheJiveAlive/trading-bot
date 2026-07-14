@@ -1,7 +1,10 @@
 {
- "generated": "2026-07-14T08:08:46+00:00",
+ "generated": "2026-07-14T08:11:08+00:00",
  "method": "KMeans k=3 on SPY (vol20, trend20, drawdown), 2y daily",
+ "hmm_state": "trending",
+ "hmm_persistence": 0.954,
  "state": "calm_drift",
+ "hmm_agrees_with_kmeans": false,
  "last_10_days": [
   "trending",
   "trending",
@@ -16,7 +19,7 @@
  ],
  "spy_vol20_ann": 14.1,
  "spy_trend20_pct": 1.81,
- "breadth_pct_above_20dma": 50.2,
+ "breadth_pct_above_20dma": 50.5,
  "cluster_profiles": {
   "calm_drift": {
    "vol": 12.3,
