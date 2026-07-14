@@ -1,8 +1,41 @@
 {
- "generated": "2026-07-14T08:46:28+00:00",
+ "generated": "2026-07-14T09:06:26+00:00",
  "model": "ProsusAI/finbert (local CPU)",
- "headlines_scored": 27,
+ "headlines_scored": 28,
  "tickers": {
+  "LRMR": {
+   "mean": -0.19,
+   "n": 3,
+   "best": [
+    0.932,
+    "LRMR Stock Edges Up After Hours After Director Purchases Shares Worth About $167,000 - Stocktwits"
+   ],
+   "worst": [
+    -0.9,
+    "There are notable gap-ups and gap-downs in today's session."
+   ]
+  },
+  "BOLD": {
+   "mean": 0.0,
+   "n": 2,
+   "best": null,
+   "worst": null
+  },
+  "HNRG": {
+   "mean": 0.0,
+   "n": 2,
+   "best": null,
+   "worst": null
+  },
+  "BJDX": {
+   "mean": -0.288,
+   "n": 3,
+   "best": null,
+   "worst": [
+    -0.864,
+    "BJDX Stock Pulls Back As Traders Eye Cash Runway - StocksToTrade"
+   ]
+  },
   "NTSK": {
    "mean": 0.158,
    "n": 4,
@@ -33,36 +66,6 @@
   "CAI": {
    "mean": 0.0,
    "n": 3,
-   "best": null,
-   "worst": null
-  },
-  "LRMR": {
-   "mean": -0.19,
-   "n": 3,
-   "best": [
-    0.932,
-    "LRMR Stock Edges Up After Hours After Director Purchases Shares Worth About $167,000 - Stocktwits"
-   ],
-   "worst": [
-    -0.9,
-    "There are notable gap-ups and gap-downs in today's session."
-   ]
-  },
-  "BOLD": {
-   "mean": 0.0,
-   "n": 2,
-   "best": null,
-   "worst": null
-  },
-  "HNRG": {
-   "mean": 0.0,
-   "n": 2,
-   "best": null,
-   "worst": null
-  },
-  "BJDX": {
-   "mean": 0.0,
-   "n": 2,
    "best": null,
    "worst": null
   },
