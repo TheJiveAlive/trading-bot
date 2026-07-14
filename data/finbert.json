@@ -1,7 +1,7 @@
 {
- "generated": "2026-07-14T14:06:15+00:00",
+ "generated": "2026-07-14T14:26:19+00:00",
  "model": "ProsusAI/finbert (local CPU)",
- "headlines_scored": 45,
+ "headlines_scored": 47,
  "tickers": {
   "NTSK": {
    "mean": 0.158,
@@ -42,21 +42,15 @@
    "best": null,
    "worst": null
   },
-  "PALI": {
-   "mean": 0.0,
-   "n": 2,
-   "best": null,
-   "worst": null
-  },
-  "SHPH": {
-   "mean": 0.0,
-   "n": 3,
-   "best": null,
-   "worst": null
-  },
   "RIG": {
    "mean": 0.0,
    "n": 3,
+   "best": null,
+   "worst": null
+  },
+  "PALI": {
+   "mean": 0.0,
+   "n": 2,
    "best": null,
    "worst": null
   },
@@ -68,6 +62,18 @@
     -0.941,
     "$ABSI stock is down 9% today. Here's what we see in our data. - Quiver Quantitative"
    ]
+  },
+  "HDSN": {
+   "mean": 0.0,
+   "n": 2,
+   "best": null,
+   "worst": null
+  },
+  "SHPH": {
+   "mean": 0.0,
+   "n": 3,
+   "best": null,
+   "worst": null
   },
   "TDIC": {
    "mean": 0.0,
