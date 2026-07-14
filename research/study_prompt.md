@@ -121,6 +121,13 @@ This runs out of trading hours, so take the time to be thorough but concise.
    source. If a forum insight CONTRADICTS something we do (e.g. our TP/stop
    structure), surface the disagreement honestly.
 
+8. **URGENT — exit-window conflict (2026-07-14)**: the 6-month sweep and the
+   8-week OOS test favour stop 8/TP 15, but the full 12-month sim LOSES 11.5%
+   with those exits vs +23.5% at stop 15/TP 25. Exits are held at 12/25 and
+   auto-tune is PAUSED pending your adjudication: which window reflects the
+   regime we trade in NOW, and should tune rank across both windows (e.g.
+   worst-case-of-windows) before it may touch live exits again?
+
 ## Write
 Append a dated section to `data/learnings.md` (create if missing):
 - **Date & headline** (one line)
