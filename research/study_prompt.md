@@ -40,6 +40,12 @@ This runs out of trading hours, so take the time to be thorough but concise.
    against research.json's regime call: when they DISAGREE, investigate which
    was right in hindsight and log the verdict — this decides whether the
    quant state should join the dynamic-caps blend.
+5e. `data/lorentzian.json` (if present) — nightly Lorentzian k-NN
+   classification over the full pond (the TradingView-famous method: k
+   nearest historical days by Lorentzian distance vote on the 4-session
+   forward direction). VALIDATE: do high-score names actually drift up over
+   the next week? Track a paper cohort in learnings.md before proposing it
+   as a score input or confluence check.
 6. `walkforward.json` now carries `risk_metrics_top_combo` (Sharpe, Sortino,
    profit factor, expectancy, and a 1000x Monte Carlo bootstrap of the trade
    sequence). A negative Monte Carlo p5 means the edge may hinge on a few

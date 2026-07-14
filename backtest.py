@@ -354,8 +354,10 @@ def tune(cfg, start, end):
 
     import copy
     rows = []
-    for stop in (8.0, 10.0, 12.0, 15.0):
-        for tp in (15.0, 20.0, 25.0, 30.0, 999.0):  # 999 = never take profit, ride the stop
+    # grid widened 2026-07-14: the OptiPlex runs this natively next to the bar
+    # cache — finer map of the robust region costs only idle CPU
+    for stop in (8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0):
+        for tp in (15.0, 18.0, 20.0, 22.0, 25.0, 28.0, 999.0):  # 999 = ride the stop
             for buys in (1, 2, 3, 4):  # extended per learnings — validate the live 4/wk cap
                 for min_score in (4.5, 5.0, 5.5, 6.0):  # finer steps where the threshold actually cuts
                     c = copy.deepcopy(cfg)
@@ -457,8 +459,8 @@ def walkforward(cfg):
 
     # train: group combos, rank by median return across min_score variants
     groups = defaultdict(list)
-    for stop in (8.0, 10.0, 12.0, 15.0):
-        for tp in (15.0, 20.0, 25.0, 999.0):
+    for stop in (8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 15.0):
+        for tp in (15.0, 18.0, 20.0, 22.0, 25.0, 999.0):
             for buys in (1, 2, 3, 4):
                 for ms in (4.5, 5.0, 5.5, 6.0):
                     ret, _, _, _ = run(train_days, train_w, stop, tp, buys, ms)

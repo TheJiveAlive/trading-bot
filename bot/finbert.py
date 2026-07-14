@@ -43,6 +43,26 @@ def _headlines():
                 out.append((t, title))
     except Exception:
         pass
+    # broaden the diet: fresh yfinance news for holdings + latest candidates
+    try:
+        import sqlite3
+        from bot import market
+        con = sqlite3.connect(os.path.join(DATA_DIR, "ledger.db"))
+        held = [r[0] for r in con.execute(
+            "SELECT ticker FROM positions WHERE status='open'")]
+        last_ts = con.execute("SELECT MAX(ts) FROM scan_candidates").fetchone()[0]
+        cands = [r[0] for r in con.execute(
+            "SELECT DISTINCT ticker FROM scan_candidates WHERE ts=?",
+            (last_ts,))] if last_ts else []
+        con.close()
+        for t in dict.fromkeys(held + cands):
+            for n in (market.ticker_news(t) or [])[:6]:
+                title = (n.get("title") or "").strip()
+                if title and (t, title) not in seen:
+                    seen.add((t, title))
+                    out.append((t, title))
+    except Exception:
+        pass
     return out[:300]           # bound the batch; CPU does ~20/sec
 
 
