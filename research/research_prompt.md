@@ -32,8 +32,20 @@ in `notes`.
    catalysts (insider cluster buying, earnings beats with raised guidance,
    FDA approvals, major contract wins). NASDAQ/NYSE only, no OTC. Max 5
    tickers, each with a one-line note naming the catalyst and date.
-4. **Avoid list**: any tickers under $20 in the news for fraud probes,
-   delisting notices, dilutive offerings, or bankruptcy risk.
+4. **Avoid list — EVIDENCE-FIRST rebuild (not a carry-forward)**:
+   a. Start from scratch each day; do NOT blindly inherit yesterday's list.
+   b. Add tickers under $20 in the news for fraud probes, delisting notices,
+      dilutive offerings, or bankruptcy risk — WebSearch-verified today.
+   c. MERGE `data/risk.json` (the risk officer's EDGAR forensics): every
+      `critical` flag goes on the list; `elevated` flags go on unless you
+      find the filing was withdrawn/resolved.
+   d. Carry a previous entry forward ONLY if its evidence is still live
+      (re-verify anything older than ~7 days; a resolved offering or
+      completed reverse split comes OFF the list).
+   e. Write an `avoid_evidence` object alongside `avoid`: one line of WHY
+      per ticker with a date. No ticker goes on the list without a reason.
+   f. Held positions may appear (it only blocks ADDING, never forces a
+      sell) — but say so in the note.
 5. **Held positions**: for each ticker currently held (from the scan logs),
    search for fresh news; mention anything materially negative in `notes`.
 
