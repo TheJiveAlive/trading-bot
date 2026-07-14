@@ -92,10 +92,33 @@ def run(years=2):
     except Exception:
         pass
 
+    # Gaussian HMM (hmmlearn): temporal regime model — unlike K-means it
+    # knows states PERSIST (transition matrix), the field-standard approach
+    hmm_state, hmm_stick = None, None
+    try:
+        from hmmlearn.hmm import GaussianHMM
+        Xh = np.column_stack([ret.loc[feats.index].fillna(0).values,
+                              feats["vol20"].values])
+        hm = GaussianHMM(n_components=3, covariance_type="diag",
+                         n_iter=200, random_state=7).fit(Xh)
+        hs = hm.predict(Xh)
+        hvol = {s: Xh[hs == s, 1].mean() for s in set(hs)}
+        hnames = {max(hvol, key=hvol.get): "stress",
+                  min(hvol, key=hvol.get): "calm_drift"}
+        for s in set(hs):
+            hnames.setdefault(s, "trending")
+        hmm_state = hnames[int(hs[-1])]
+        hmm_stick = round(float(hm.transmat_[hs[-1], hs[-1]]), 3)
+    except Exception:
+        pass
+
     out = {
         "generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "method": "KMeans k=3 on SPY (vol20, trend20, drawdown), 2y daily",
+        "hmm_state": hmm_state,
+        "hmm_persistence": hmm_stick,
         "state": state,
+        "hmm_agrees_with_kmeans": (hmm_state == state) if hmm_state else None,
         "last_10_days": hist,
         "spy_vol20_ann": round(float(today["vol20"]) * 100, 1),
         "spy_trend20_pct": round(float(today["trend20"]) * 100, 2),

@@ -98,6 +98,25 @@ def run():
                    "NOT a score input yet — the study session must validate "
                    "mean-sentiment vs trade outcomes first.")
     json.dump(out, open(OUT, "w"), indent=1)
+    # RAG SEED: append scored headlines to the permanent archive. Today this
+    # is just rows in SQLite; once the corpus is large enough (50k+), it
+    # becomes the retrieval base for "what happened the last N times a
+    # headline like this hit?" precedent lookups.
+    try:
+        import sqlite3
+        arc = sqlite3.connect(os.path.join(DATA_DIR, "news_archive.db"))
+        arc.execute("CREATE TABLE IF NOT EXISTS headlines ("
+                    "ts TEXT, ticker TEXT, title TEXT, sentiment REAL, "
+                    "PRIMARY KEY(ticker, title))")
+        now = out["generated"]
+        for (tkr, title), r in zip(heads, results):
+            s = SIGN.get(r["label"], 0.0) * float(r["score"])
+            arc.execute("INSERT OR IGNORE INTO headlines VALUES (?,?,?,?)",
+                        (now, tkr, title, round(s, 3)))
+        arc.commit()
+        arc.close()
+    except Exception:
+        pass
     return out
 
 
