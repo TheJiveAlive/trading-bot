@@ -1842,8 +1842,29 @@ def _candidates_panel(st, threshold):
         return panel("Scan candidates", st["cand_ts"],
                      '<div class="mut">no candidates in the last scan</div>')
     top = max(c[1] for c in st["candidates"]) or 1
+    held = {p["ticker"] for p in st["positions"]}
+    # NEW names (not held) above the buy line = what it wants to add next
+    fresh_above = [(t, s) for t, s, d in st["candidates"]
+                   if t not in held and s >= threshold]
+    banner = ""
+    if fresh_above:
+        chips = " ".join(
+            '<span class="chip" style="border-color:#3EDDC555;color:#3EDDC5">'
+            '{t} {s:.1f}</span>'.format(t=t, s=s) for t, s in fresh_above[:6])
+        banner = ('<div class="note" style="margin-bottom:10px">'
+                  '&#127919; <b>{} new target{} above the {} buy line:</b> {}'
+                  '<div class="mut" style="margin-top:4px">bought when a daily/weekly '
+                  'buy slot is free and they clear confluence + critic</div></div>').format(
+            len(fresh_above), "s" if len(fresh_above) != 1 else "", threshold, chips)
+    else:
+        n_new = sum(1 for t, s, d in st["candidates"] if t not in held)
+        banner = ('<div class="note" style="margin-bottom:10px">&#128269; scanning '
+                  '{} non-held names this cycle — none above the {} buy line yet'
+                  '</div>').format(n_new, threshold)
     rows = []
     for t, s, d in st["candidates"]:
+        hchip = (' <span class="chip" style="border-color:#60A5FA55;color:#60A5FA;'
+                 'font-size:9px">HELD</span>' if t in held else '')
         verdict = ('<span class="ok">&#10003; above threshold</span>' if s >= threshold
                    else '<span class="mut">below {}</span>'.format(threshold))
         parts = ", ".join("{} {}".format(k, v) for k, v in (d.get("parts") or {}).items())
@@ -1857,18 +1878,18 @@ def _candidates_panel(st, threshold):
         parts += (' &middot; <a href="https://www.reddit.com/search/?q=%24{t}&sort=new" '
                   'target="_blank" rel="noopener">posts &#8599;</a>').format(t=t)
         rows.append(
-            '<tr><td class="mono"><b>{t}</b><div class="mut" style="font-size:10.5px">{name}</div></td>'
+            '<tr><td class="mono"><b>{t}</b>{hchip}<div class="mut" style="font-size:10.5px">{name}</div></td>'
             '<td class="mono r">{price}</td>'
             '<td style="width:150px;padding-top:12px">{sig}</td>'
             '<td class="mono r">{s}</td><td>{v}</td></tr>'
             '<tr><td colspan="5" class="mut" style="font-size:10.5px;padding-top:0">{parts}</td></tr>'.format(
-                t=t, name=(d.get("name") or "")[:32],
+                t=t, hchip=hchip, name=(d.get("name") or "")[:32],
                 price="${:.2f}".format(d["price"]) if d.get("price") else "—",
                 sig=_signal_bar(d.get("parts") or {}), s=s, v=verdict, parts=parts))
     css = ('<style>.sigbar{display:flex;height:9px;border-radius:5px;overflow:hidden;'
            'background:#121A2C}.sigbar i{display:block;height:9px}</style>')
-    return panel("Scan candidates &middot; what drove each score", "scan " + st["cand_ts"],
-                 css + '<table><tr><th>Ticker</th><th class="r">Price</th>'
+    return panel("Scan candidates &middot; held vs new targets", "scan " + st["cand_ts"],
+                 css + banner + '<table><tr><th>Ticker</th><th class="r">Price</th>'
                  '<th>Signal mix</th><th class="r">Score</th><th></th></tr>{}</table>{}'.format(
                      "".join(rows), _signal_legend()))
 
