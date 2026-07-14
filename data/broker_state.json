@@ -30,8 +30,8 @@
       "t212_ticker": "UUUU_US_EQ",
       "shares": 6.18,
       "avg_price": 13.55987055,
-      "current_price": 13.28,
-      "pnl": -1.18
+      "current_price": 13.27,
+      "pnl": -1.23
     },
     {
       "ticker": "CAI",
@@ -39,7 +39,7 @@
       "shares": 4.94,
       "avg_price": 17.1902834,
       "current_price": 17.18,
-      "pnl": 0.08
+      "pnl": 0.07
     },
     {
       "ticker": "NTSK",
