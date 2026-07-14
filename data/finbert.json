@@ -1,8 +1,77 @@
 {
- "generated": "2026-07-14T13:26:09+00:00",
+ "generated": "2026-07-14T13:46:10+00:00",
  "model": "ProsusAI/finbert (local CPU)",
- "headlines_scored": 28,
+ "headlines_scored": 41,
  "tickers": {
+  "NTSK": {
+   "mean": 0.158,
+   "n": 4,
+   "best": [
+    0.631,
+    "$NTSK stock is up 3% today. Here's what we see in our data. - Quiver Quantitative"
+   ],
+   "worst": null
+  },
+  "UUUU": {
+   "mean": 0.0,
+   "n": 3,
+   "best": null,
+   "worst": null
+  },
+  "CAI": {
+   "mean": 0.0,
+   "n": 3,
+   "best": null,
+   "worst": null
+  },
+  "YEXT": {
+   "mean": 0.0,
+   "n": 2,
+   "best": null,
+   "worst": null
+  },
+  "PALI": {
+   "mean": 0.0,
+   "n": 2,
+   "best": null,
+   "worst": null
+  },
+  "SHPH": {
+   "mean": 0.0,
+   "n": 2,
+   "best": null,
+   "worst": null
+  },
+  "RIG": {
+   "mean": 0.0,
+   "n": 2,
+   "best": null,
+   "worst": null
+  },
+  "ABSI": {
+   "mean": -0.47,
+   "n": 2,
+   "best": null,
+   "worst": [
+    -0.941,
+    "$ABSI stock is down 9% today. Here's what we see in our data. - Quiver Quantitative"
+   ]
+  },
+  "TDIC": {
+   "mean": 0.0,
+   "n": 1,
+   "best": null,
+   "worst": null
+  },
+  "JEM": {
+   "mean": 0.919,
+   "n": 2,
+   "best": [
+    0.934,
+    "US Stocks Edge Higher; Delta Air Lines Posts Upbeat Q2 Earnings"
+   ],
+   "worst": null
+  },
   "LRMR": {
    "mean": -0.19,
    "n": 3,
@@ -36,21 +105,6 @@
     "BJDX Stock Pulls Back As Traders Eye Cash Runway - StocksToTrade"
    ]
   },
-  "NTSK": {
-   "mean": 0.158,
-   "n": 4,
-   "best": [
-    0.631,
-    "$NTSK stock is up 3% today. Here's what we see in our data. - Quiver Quantitative"
-   ],
-   "worst": null
-  },
-  "UUUU": {
-   "mean": 0.0,
-   "n": 3,
-   "best": null,
-   "worst": null
-  },
   "AVO": {
    "mean": -0.02,
    "n": 2,
@@ -62,12 +116,6 @@
     -0.904,
     "Q1 Earnings Highs And Lows: Mission Produce (NASDAQ:AVO) Vs The Rest Of The Perishable Food Stocks"
    ]
-  },
-  "CAI": {
-   "mean": 0.0,
-   "n": 3,
-   "best": null,
-   "worst": null
   },
   "DVLT": {
    "mean": 0.455,
