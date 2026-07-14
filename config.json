@@ -14,7 +14,7 @@
   },
   "monthly_deposit_usd": 0.0,
   "_deposit_note": "0 during the T212 demo rehearsal \u2014 the practice account gets no real deposits, so auto-crediting the ledger would drift it away from the broker. Restore (~127) at real go-live.",
-  "backtest_starting_capital": 134.0,
+  "backtest_starting_capital": 670.0,
   "_backtest_capital_note": "Seed balance for backtest/sweep/walk-forward simulations (\u2248 the \u00a3100 practice account in USD). Decoupled from monthly_deposit_usd (which is 0 in the rehearsal, and would otherwise leave the sim with no buying power). Raise this alongside max_position_usd at real go-live so the sim reflects the funded account.",
   "deposit_day_of_month": 1,
   "universe": {
@@ -31,9 +31,10 @@
     "max_buys_per_week_hc": 8,
     "min_composite_score": 5.25,
     "max_positions": 20,
-    "max_position_usd": 25.0,
+    "max_position_usd": 100.0,
     "_sizing_note": "DEMO-REHEARSAL POSTURE (2026-07-12): buys 3/day 6/wk and min_score 5.25 to get real fills through the T212 pipeline this week. BEFORE REAL MONEY restore the learnings-backed posture: 2/day 4/wk, min_score 5.5 (tune showed higher frequency worse). max_position_usd 25 sized for the $100 demo account.",
-    "_conviction_note": "CONVICTION OVERRIDE (2026-07-13): candidates scoring >= high_conviction_score (8.0 \u2014 well above the 5.25 gate, needs several corroborating signals) get the higher HC daily/weekly caps instead of the routine ones. Rationale: only trade MORE when the evidence is genuinely strong. UNTESTED vs the blanket-frequency finding \u2014 the nightly deep run should validate it; treat as a rehearsal experiment. Hard vetoes + confluence gate still protect every entry regardless of tier."
+    "_conviction_note": "CONVICTION OVERRIDE (2026-07-13): candidates scoring >= high_conviction_score (8.0 \u2014 well above the 5.25 gate, needs several corroborating signals) get the higher HC daily/weekly caps instead of the routine ones. Rationale: only trade MORE when the evidence is genuinely strong. UNTESTED vs the blanket-frequency finding \u2014 the nightly deep run should validate it; treat as a rehearsal experiment. Hard vetoes + confluence gate still protect every entry regardless of tier.",
+    "_resize_note": "2026-07-14: T212 demo reset to \u00a3500 (~$670). Position cap 25->100 (~15% of book max), sim seed 134->670. Risk %s unchanged \u2014 they scale with equity naturally."
   },
   "confluence": {
     "min_checks_passed": 4,
