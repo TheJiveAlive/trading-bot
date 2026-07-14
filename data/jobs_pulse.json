@@ -1,0 +1,19 @@
+{
+ "generated": "2026-07-14T19:42:31+00:00",
+ "tracked": {
+  "NTSK": {
+   "openings": 153,
+   "prev": null,
+   "source": "greenhouse",
+   "held": true
+  },
+  "YEXT": {
+   "openings": 24,
+   "prev": null,
+   "source": "greenhouse",
+   "held": true
+  }
+ },
+ "flags": [],
+ "note": "Public-ATS headcount pulse. Archive feeds a future velocity model; flags are risk-officer LEADS, not scores."
+}
