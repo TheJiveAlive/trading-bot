@@ -782,15 +782,18 @@ def _fetch_state():
                              "FROM trades ORDER BY id").fetchall()
     decisions = con.execute("SELECT ts,kind,detail FROM decisions "
                             "ORDER BY id DESC LIMIT 40").fetchall()
-    cand_rows = con.execute("SELECT ts,ticker,score,detail FROM scan_candidates "
-                            "ORDER BY id DESC LIMIT 24").fetchall()
-    seen, candidates, cand_ts = set(), [], None
-    for ts, t, s, d in cand_rows:
-        cand_ts = cand_ts or ts
-        if t not in seen:
-            seen.add(t)
-            candidates.append((t, s, json.loads(d)))
-    candidates = sorted(candidates[:8], key=lambda c: c[1], reverse=True)
+    # the LATEST scan only (one coherent cycle), score-sorted — not a mix of
+    # recent rows across scans (that muddled held vs new-target detection)
+    cand_ts = con.execute("SELECT MAX(ts) FROM scan_candidates").fetchone()[0]
+    candidates, seen = [], set()
+    if cand_ts:
+        for t, s, d in con.execute(
+                "SELECT ticker,score,detail FROM scan_candidates WHERE ts=? "
+                "ORDER BY score DESC", (cand_ts,)):
+            if t not in seen:
+                seen.add(t)
+                candidates.append((t, s, json.loads(d)))
+    candidates = candidates[:12]
     rewards = con.execute("SELECT signal, COUNT(*), AVG(pnl_pct) FROM signal_rewards "
                           "WHERE contribution > 0.2 GROUP BY signal").fetchall()
     buys_wk = ledger.buys_this_week(con)
