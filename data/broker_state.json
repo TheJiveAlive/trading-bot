@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-14T18:22:20Z",
+  "generated": "2026-07-14T18:23:37Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 5 position(s), free \u00a3216.62",
   "cash": {
     "free": 216.62,
-    "total": 506.61,
-    "ppl": 7.03,
+    "total": 506.63,
+    "ppl": 7.05,
     "result": 0,
     "invested": 282.96,
     "pieCash": 0,
@@ -23,7 +23,7 @@
       "shares": 41.13,
       "avg_price": 2.07999027,
       "current_price": 2.14,
-      "pnl": 2.0
+      "pnl": 2.01
     },
     {
       "ticker": "UUUU",
@@ -55,7 +55,7 @@
       "shares": 7.8,
       "avg_price": 5.36025641,
       "current_price": 5.52,
-      "pnl": 0.98
+      "pnl": 0.99
     }
   ],
   "reconciliation": [
