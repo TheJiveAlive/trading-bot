@@ -85,7 +85,8 @@ def review_buy(cfg, cand, confluence_detail, headlines=None):
     env["CLAUDE_CODE_OAUTH_TOKEN"] = _token()
     try:
         r = subprocess.run(
-            ["claude", "-p", prompt, "--output-format", "json",
+            ["claude", "-p", prompt, "--model", "claude-opus-4-8",
+             "--output-format", "json",
              "--allowedTools", "", "--max-turns", "1"],
             capture_output=True, text=True, timeout=int(
                 cfg.get("critic", {}).get("timeout_s", 90)), env=env)

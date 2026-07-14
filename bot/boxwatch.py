@@ -134,7 +134,8 @@ def _local_diagnosis(report):
             + json.dumps(report) + "\nRecent warnings from the journal:\n" + journal)
         env = dict(os.environ, CLAUDE_CODE_OAUTH_TOKEN=token)
         r = subprocess.run(
-            ["claude", "-p", prompt, "--output-format", "json",
+            ["claude", "-p", prompt, "--model", "claude-opus-4-8",
+             "--output-format", "json",
              "--allowedTools", "", "--max-turns", "1"],
             capture_output=True, text=True, timeout=120, env=env)
         body = json.loads(r.stdout).get("result", "")

@@ -54,6 +54,7 @@ jobs:
         run: |
           if [ -n "$ANTHROPIC_API_KEY" ]; then unset CLAUDE_CODE_OAUTH_TOKEN; fi
           claude -p "$(cat research/intel_prompt.md)" \
+            --model claude-opus-4-8 \
             --allowedTools "WebSearch,WebFetch,Read,Write" \
             --permission-mode acceptEdits --output-format json > /tmp/claude_intel.json \
             || echo "::warning::claude session skipped (usage limit or transient error) — continuing"

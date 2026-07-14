@@ -68,6 +68,7 @@ jobs:
         run: |
           if [ -n "$ANTHROPIC_API_KEY" ]; then unset CLAUDE_CODE_OAUTH_TOKEN; fi
           claude -p "$(cat research/medic_prompt.md)" \
+            --model claude-opus-4-8 \
             --allowedTools "Read,Write,Edit,Bash(python3:*),Bash(git log:*),Bash(git diff:*),WebSearch,WebFetch" \
             --permission-mode acceptEdits --output-format json > /tmp/claude_medic.json \
             || echo "::warning::medic session failed (usage limit or transient) — continuing"
