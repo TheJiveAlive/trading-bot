@@ -1,11 +1,13 @@
 name: overnight-learnings
 # Out-of-hours study: refresh the parameter sweep + a Claude analysis session
-# that writes proposed improvements to data/learnings.md. Runs nightly.
+# that writes proposed improvements to data/learnings.md.
+#
+# DISPATCH-ONLY (2026-07-14): GitHub's cron scheduler silently dropped these
+# runs — last cron fire was 07-11 despite a 3x/day schedule. Same failure that
+# moved intel/risk to box dispatch. The always-on OptiPlex now fires this via
+# bot-learnings.timer (02:17 Tue-Sat, 11:30 Mon-Fri, 13:00 Sat). The Saturday
+# 36-month deep-cycle logic reads the weekday at runtime, so it still works.
 on:
-  schedule:
-    - cron: '17 2 * * 2-6'    # post-close reflection (Tue–Sat, after each US close)
-    - cron: '30 11 * * 1-5'   # pre-open prep (Mon–Fri 07:30 ET) — fresh weights + study before the bell
-    - cron: '0 13 * * 6'      # Saturday DEEP cycle — market shut, box idle: 36-month sweep instead of 6
   workflow_dispatch:
 
 permissions:

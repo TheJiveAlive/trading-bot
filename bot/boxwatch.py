@@ -233,22 +233,42 @@ def check(now=None):
         open_.append({"what": "disk", "state": "{:.1f}G free".format(free_gb),
                       "action": "low disk — needs cleanup"})
 
-    # cloud workflows: latest run of each — failures need the medic
+    # cloud workflows: latest run of each — failures need the medic, and a
+    # workflow that hasn't run in too long is a SILENT miss (GitHub cron drops
+    # runs — this is exactly how learnings went dark for 3 days undetected)
+    STALE_MAX_H = {"overnight-learnings": 26}   # weekday-daily minimum cadence
     try:
         req = urllib.request.Request(
-            "https://api.github.com/repos/{}/actions/runs?per_page=15".format(REPO),
+            "https://api.github.com/repos/{}/actions/runs?per_page=30".format(REPO),
             headers={"User-Agent": "tradinghost-boxwatch"})
         runs = json.load(urllib.request.urlopen(req, timeout=10)).get(
             "workflow_runs", [])
-        seen = set()
+        seen, latest = set(), {}
         for r in runs:
-            if r["name"] in seen or r["name"] == "medic":
+            if r["name"] == "medic":
+                continue
+            latest.setdefault(r["name"], r)   # runs are newest-first
+            if r["name"] in seen:
                 continue
             seen.add(r["name"])
             if r["status"] == "completed" and r["conclusion"] == "failure":
                 open_.append({"what": "workflow " + r["name"],
                               "state": "latest run FAILED",
                               "action": "see " + r.get("html_url", "")})
+        # staleness (weekday only — weekend gaps are expected for daily jobs)
+        if now.weekday() < 5:
+            for name, max_h in STALE_MAX_H.items():
+                r = latest.get(name)
+                if not r:
+                    continue
+                age_h = (now - dt.datetime.fromisoformat(
+                    r["created_at"].replace("Z", "+00:00"))).total_seconds() / 3600
+                if age_h > max_h:
+                    open_.append({"what": "workflow " + name,
+                                  "state": "last run {:.0f}h ago (max {}h)".format(
+                                      age_h, max_h),
+                                  "action": "scheduled run silently missed — "
+                                  "check the box dispatch timer"})
     except Exception:
         pass
 
