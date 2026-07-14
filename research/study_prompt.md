@@ -30,6 +30,16 @@ This runs out of trading hours, so take the time to be thorough but concise.
    insider-active tickers that can no longer be priced (likely delisted).
    Treat every backtest return as an UPPER BOUND by roughly that order of
    magnitude until survivorship-free data is bought.
+5c. `data/finbert.json` (if present) — LOCAL transformer sentiment (FinBERT
+   on the box, deterministic, per-headline). VALIDATE before it earns score
+   weight: do tickers with strongly positive mean sentiment at entry win more
+   often? Compare against the existing news_score — if FinBERT adds nothing
+   over it, say so and we keep it display-only.
+5d. `data/quant_regime.json` (if present) — UNSUPERVISED K-means market state
+   (calm_drift / trending / stress) from SPY price action. Cross-check it
+   against research.json's regime call: when they DISAGREE, investigate which
+   was right in hindsight and log the verdict — this decides whether the
+   quant state should join the dynamic-caps blend.
 6. `walkforward.json` now carries `risk_metrics_top_combo` (Sharpe, Sortino,
    profit factor, expectancy, and a 1000x Monte Carlo bootstrap of the trade
    sequence). A negative Monte Carlo p5 means the edge may hinge on a few
