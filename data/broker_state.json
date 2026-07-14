@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-13T22:40:33Z",
+  "generated": "2026-07-14T06:34:56Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 4 position(s), free \u00a374.38",
   "cash": {
     "free": 74.38,
-    "total": 99.44,
-    "ppl": -0.09,
+    "total": 99.5,
+    "ppl": -0.03,
     "result": -0.39,
     "invested": 25.15,
     "pieCash": 0,
@@ -22,16 +22,16 @@
       "t212_ticker": "UUUU_US_EQ",
       "shares": 0.64,
       "avg_price": 13.390625,
-      "current_price": 13.02,
-      "pnl": -0.17
+      "current_price": 13.1,
+      "pnl": -0.13
     },
     {
       "ticker": "CAI",
       "t212_ticker": "CAI1_US_EQ",
       "shares": 0.49,
       "avg_price": 17.04081633,
-      "current_price": 17.03,
-      "pnl": 0.01
+      "current_price": 16.99,
+      "pnl": -0.01
     },
     {
       "ticker": "AVO",
@@ -46,8 +46,8 @@
       "t212_ticker": "NTSK_US_EQ",
       "shares": 0.674,
       "avg_price": 12.44807122,
-      "current_price": 12.7,
-      "pnl": 0.14
+      "current_price": 12.78,
+      "pnl": 0.18
     }
   ],
   "reconciliation": [
