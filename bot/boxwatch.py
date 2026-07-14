@@ -307,8 +307,26 @@ def dispatch_medic(report):
     return code == 204
 
 
+def sync_repo():
+    """Keep ~/rh in sync every 10 min. The working tree is perpetually dirty
+    (renders + data files), which silently blocked every ad-hoc `pull
+    --rebase` — 4 separate stale-code incidents on 2026-07-14 alone. One
+    owner for sync: commit the data dirt, pull (-X theirs = local data wins
+    conflicts), push. Code arrives; results leave."""
+    sh("cd {} && git add -A >/dev/null 2>&1 && "
+       "git -c user.name=trading-bot -c user.email=bot@local "
+       "commit -q -m 'boxwatch sync' >/dev/null 2>&1".format(RH))
+    for _ in range(3):
+        code, _o = sh("cd {} && git pull --rebase -X theirs -q origin main "
+                      "&& git push -q".format(RH), timeout=90)
+        if code == 0:
+            return True
+    return False
+
+
 def main():
     now = dt.datetime.now(dt.timezone.utc)
+    sync_repo()
     fixed, open_ = check(now)
     for p in fixed:
         print("FIXED:", p)
