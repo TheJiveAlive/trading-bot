@@ -14,7 +14,8 @@ from bot.config import DATA_DIR
 RESEARCH_PATH = os.path.join(DATA_DIR, "research.json")
 RESEARCH_STALE_DAYS = 3
 STOP_FLOOR = 5.0
-STOP_CEIL = 12.0
+STOP_CEIL = 18.0   # raised 12->18 for vol-scaled stops: a 7%/day name needs a
+                   # wider leash; risk-based sizing shrinks its position to match
 
 
 def load_research():
@@ -63,25 +64,30 @@ def realized_vol_pct(ticker):
 def dynamic_stop_pct(cfg, news_score, research, ticker=None):
     """Trailing stop %% for one position. VOL-SCALED to the instrument first
     (a $2 mover needs a wider leash than a steady name or it noise-clips —
-    2026-07-14), THEN adjusted for news + regime, THEN clamped."""
+    2026-07-14), THEN adjusted for news + regime, THEN clamped with a
+    VOL-AWARE FLOOR so a flagged high-vol name can't be crushed below its own
+    daily noise. Position sizing is risk-based, so a wider stop auto-shrinks
+    the position — dollar risk stays constant."""
     stop = float(cfg["selling"]["trailing_stop_pct"])
-    # 1) scale to the stock's own volatility. ~2.5%/day close-to-close is a
-    #    "typical" small-cap; scale the leash by vol/typical, bounded 0.7–1.8x.
-    if ticker:
-        rv = realized_vol_pct(ticker)
-        if rv is not None:
-            mult = max(0.7, min(rv / 2.5, 1.8))
-            stop *= mult
+    rv = realized_vol_pct(ticker) if ticker else None
+    # 1) scale to the stock's own volatility (~3.5%/day is a typical small-cap;
+    #    calmer names tighten, wilder names widen), bounded 0.6–1.8x
+    if rv is not None:
+        stop *= max(0.6, min(rv / 3.5, 1.8))
     # 2) news + regime move it relative to that vol-appropriate base
     if news_score <= -1.0:
-        stop = min(stop, stop * 0.6, 6.0)   # bad news / flagged: tighter leash
+        stop *= 0.6                          # bad news / flagged: tighter leash
     elif news_score >= 1.0:
         stop += 2.0                          # good news: room to run
     if regime(research) == "risk_off":
         stop -= 2.0
     elif regime(research) == "risk_on":
         stop += 1.0
-    return round(max(STOP_FLOOR, min(stop, STOP_CEIL)), 1)
+    # 3) floor at the greater of the absolute floor and ~1.5x daily vol — never
+    #    tighter than the stock's own noise (this is what kills the 5% leash on
+    #    a 7%/day name); clamp to the ceiling
+    vol_floor = max(STOP_FLOOR, 1.5 * rv) if rv is not None else STOP_FLOOR
+    return round(max(vol_floor, min(stop, STOP_CEIL)), 1)
 
 
 def buy_threshold(cfg, research):

@@ -18,6 +18,36 @@ def _is_wildcard(con, ticker):
     return _is_wild(con, ticker)
 
 
+def _capture_meta_features(con, c, research, stop_pct):
+    """Bank the market-state feature vector at signal time -> meta_features
+    table, for a future meta-labeling model (López de Prado). Outcome is
+    back-filled when the position closes (bot.meta_label)."""
+    con.execute("CREATE TABLE IF NOT EXISTS meta_features ("
+                "ts TEXT, ticker TEXT, score REAL, features TEXT, "
+                "outcome_pct REAL, resolved INTEGER DEFAULT 0)")
+    feat = {"score": c["score"], "parts": c.get("parts", {}),
+            "stop_pct": stop_pct, "regime": risk.regime(research),
+            "n_confluence": c.get("confluence_passed"),
+            "realized_vol": risk.realized_vol_pct(c["ticker"])}
+    for f, key in (("finbert.json", "mean"), ("lorentzian.json", "score")):
+        try:
+            d = json.load(open(os.path.join("data", f)))
+            src = d.get("tickers", d.get("lookup", {}))
+            v = src.get(c["ticker"])
+            feat[f.split(".")[0]] = v.get(key) if isinstance(v, dict) else None
+        except Exception:
+            feat[f.split(".")[0]] = None
+    try:
+        qr = json.load(open(os.path.join("data", "quant_regime.json")))
+        feat["quant_regime"] = qr.get("state")
+    except Exception:
+        feat["quant_regime"] = None
+    con.execute("INSERT INTO meta_features (ts,ticker,score,features) VALUES (?,?,?,?)",
+                (dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+                 c["ticker"], c["score"], json.dumps(feat)))
+    con.commit()
+
+
 def manage_exits(con, cfg, research, report):
     sell_cfg = cfg["selling"]
     wc = cfg.get("wildcard", {})
@@ -230,6 +260,15 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
             "; " + critic_note if critic_note else "")
         executor.execute(con, cfg, "buy", c["ticker"], shares, c["price"], reason,
                          parts=c["parts"], catalyst=cat)
+        # META-LABEL CAPTURE: snapshot the full market-STATE feature vector at
+        # the moment the signal fired. Joined to the trade's outcome later,
+        # this is the training set for a future meta-model (a filter that
+        # predicts whether THIS signal will win) — worthless until ~150 closed
+        # trades exist, so we bank the features now and train when we can.
+        try:
+            _capture_meta_features(con, c, research, stop_pct)
+        except Exception:
+            pass
         report.append("  BUY {} x{} @ ${:.2f} — score {}{}".format(
             c["ticker"], shares, c["price"], c["score"],
             " [" + cat + "]" if cat else ""))
