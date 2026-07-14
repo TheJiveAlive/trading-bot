@@ -46,7 +46,6 @@ This runs out of trading hours, so take the time to be thorough but concise.
    forward direction). VALIDATE: do high-score names actually drift up over
    the next week? Track a paper cohort in learnings.md before proposing it
    as a score input or confluence check.
-5f. `data/local_digest.json` — the local-LLM filing/news pre-screen. Spot-check its dilution_risk/going_concern calls against reality on a few names: is the local model reliable enough to pre-filter, or does it hallucinate? Log the verdict.
 6. `walkforward.json` now carries `risk_metrics_top_combo` (Sharpe, Sortino,
    profit factor, expectancy, and a 1000x Monte Carlo bootstrap of the trade
    sequence). A negative Monte Carlo p5 means the edge may hinge on a few
