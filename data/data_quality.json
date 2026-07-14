@@ -1,9 +1,9 @@
 {
- "generated": "2026-07-13T23:45:15+00:00",
+ "generated": "2026-07-14T07:46:00+00:00",
  "source": "nightly_audit",
  "tickers_checked": 38,
- "issues": 20,
- "held_ticker_issues": 0,
+ "issues": 24,
+ "held_ticker_issues": 1,
  "detail": [
   {
    "ticker": "WRAP",
@@ -44,109 +44,138 @@
    "held": false
   },
   {
-   "ticker": "MGLD",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "HUMAW",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "SSACU",
-   "kind": "flatline",
-   "close": 10.210000038146973,
-   "held": false
-  },
-  {
-   "ticker": "SFM",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "SHLS",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "IMRA",
+   "ticker": "GLMD",
    "kind": "source_mismatch",
    "date": "2026-07-07",
-   "cache": 16.28,
-   "yahoo": 15.682,
+   "cache": 0.5499,
+   "yahoo": 0.569,
    "held": false
   },
   {
-   "ticker": "IMRA",
+   "ticker": "GLMD",
    "kind": "stale_cache",
    "cache_last": "2026-07-07",
    "yahoo_last": "2026-07-13",
    "held": false
   },
   {
-   "ticker": "AIJTY",
-   "kind": "flatline",
-   "close": 0.8109999895095825,
-   "held": false
-  },
-  {
-   "ticker": "ILMN",
+   "ticker": "FRO",
    "kind": "stale_cache",
    "cache_last": "2026-07-07",
    "yahoo_last": "2026-07-13",
    "held": false
   },
   {
-   "ticker": "KEP",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "HRTG",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "PTON",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "NKTR",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "LII",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "ZM",
+   "ticker": "SSTK",
    "kind": "stale_cache",
    "cache_last": "2026-07-08",
    "yahoo_last": "2026-07-13",
    "held": false
+  },
+  {
+   "ticker": "YHNA",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "YHNA",
+   "kind": "flatline",
+   "close": 10.859999656677246,
+   "held": false
+  },
+  {
+   "ticker": "KIQQ",
+   "kind": "stale_cache",
+   "cache_last": "2026-04-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "MCD",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "VLRS",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-08",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "QXO",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "NMIH",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "VYLD",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-08",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "ENB",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-06",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "RNGR",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "GPATU",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-06",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "GPATU",
+   "kind": "flatline",
+   "close": 10.979999542236328,
+   "held": false
+  },
+  {
+   "ticker": "CAUD",
+   "kind": "stale_cache",
+   "cache_last": "2026-05-06",
+   "yahoo_last": "2026-07-10",
+   "held": false
+  },
+  {
+   "ticker": "CAUD",
+   "kind": "flatline",
+   "close": 0.009999999776482582,
+   "held": false
+  },
+  {
+   "ticker": "CAI",
+   "kind": "broker_disagrees",
+   "broker": 17.5,
+   "cache": 16.989999771118164,
+   "drift_pct": 3.0,
+   "held": true,
+   "note": "broker is the account of record"
   }
  ],
- "verdict": "20 discrepancies (0 on HELD tickers) \u2014 study session must judge whether these tickers' data can be trusted"
+ "verdict": "24 discrepancies (1 on HELD tickers) \u2014 study session must judge whether these tickers' data can be trusted"
 }
