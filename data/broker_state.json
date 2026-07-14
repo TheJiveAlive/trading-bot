@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-14T17:57:18Z",
+  "generated": "2026-07-14T17:58:36Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -23,15 +23,15 @@
       "shares": 41.13,
       "avg_price": 2.07999027,
       "current_price": 2.13,
-      "pnl": 1.7
+      "pnl": 1.71
     },
     {
       "ticker": "UUUU",
       "t212_ticker": "UUUU_US_EQ",
       "shares": 6.18,
       "avg_price": 13.55987055,
-      "current_price": 13.26,
-      "pnl": -1.25
+      "current_price": 13.25,
+      "pnl": -1.28
     },
     {
       "ticker": "CAI",
@@ -39,7 +39,7 @@
       "shares": 4.94,
       "avg_price": 17.1902834,
       "current_price": 17.03,
-      "pnl": -0.45
+      "pnl": -0.44
     },
     {
       "ticker": "NTSK",
@@ -47,7 +47,7 @@
       "shares": 6.41,
       "avg_price": 13.00936037,
       "current_price": 14.0,
-      "pnl": 4.88
+      "pnl": 4.89
     },
     {
       "ticker": "YEXT",
