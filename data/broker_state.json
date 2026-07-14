@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-14T07:47:20Z",
+  "generated": "2026-07-14T07:47:58Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -67,7 +67,7 @@
       "ticker": "DVLT",
       "ledger_shares": 18.2776532,
       "broker_shares": null,
-      "status": "ledger_only"
+      "status": "closed_external"
     },
     {
       "ticker": "NTSK",
