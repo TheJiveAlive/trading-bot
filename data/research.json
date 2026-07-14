@@ -1,18 +1,71 @@
 {
-  "date": "2026-07-14",
-  "market_regime": "risk_off",
-  "regime_reason": "The Iran ceasefire fully collapsed over the weekend (US bombed 80+ targets, Iran shut the Strait of Hormuz again) and a US naval blockade with a 20% cargo toll takes effect today 4pm EST, sending WTI +9.4% and Nasdaq -1.88%/S&P -0.78% Monday with VIX up to 17.1, and today adds June CPI plus five big-bank earnings (JPM/BAC/GS/WFC/C) as further event risk -- trend and volatility both argue against risk_on.",
-  "sector_bias": {
-    "Energy": 0.5,
-    "Healthcare": 0.4,
-    "Financial Services": 0.2,
-    "Technology": -0.4
+ "date": "2026-07-14",
+ "market_regime": "risk_off",
+ "regime_reason": "The Iran ceasefire fully collapsed over the weekend (US bombed 80+ targets, Iran shut the Strait of Hormuz again) and a US naval blockade with a 20% cargo toll takes effect today 4pm EST, sending WTI +9.4% and Nasdaq -1.88%/S&P -0.78% Monday with VIX up to 17.1, and today adds June CPI plus five big-bank earnings (JPM/BAC/GS/WFC/C) as further event risk -- trend and volatility both argue against risk_on.",
+ "sector_bias": {
+  "Energy": 0.5,
+  "Healthcare": 0.4,
+  "Financial Services": 0.2,
+  "Technology": -0.4
+ },
+ "watchlist": [
+  {
+   "ticker": "RIG",
+   "note": "Transocean: stock +3.65% 7/13 on continuing $1B+ Equinor harsh-environment backlog (7 rig-years, day rates >$400k) plus ~$185M Norway/Australia add; director Chad Deaton bought $173k 7/2; still pre-earnings (date TBD)."
   },
-  "watchlist": [
-    {"ticker": "RIG", "note": "Transocean: stock +3.65% 7/13 on continuing $1B+ Equinor harsh-environment backlog (7 rig-years, day rates >$400k) plus ~$185M Norway/Australia add; director Chad Deaton bought $173k 7/2; still pre-earnings (date TBD)."},
-    {"ticker": "HDSN", "note": "Hudson Technologies: DLA bridge-modification extended refrigerant supply contract to 11/29/26; 10%-owner Hartree Partners kept buying in the open market 7/6-7/7 at $5.99, on top of its ~$4.5M June/July cluster buy."},
-    {"ticker": "ABSI", "note": "Absci: Phase 1 ABS-201 data (6/24) drove 8-of-9 analyst Buy ratings and PTs up to $17; stock +271% over the quarter. Caveat: priced a $100M equity offering at $7.41 same day as the data (6/24) -- real dilution alongside the real catalyst, size position accordingly."}
-  ],
-  "avoid": ["DVLT", "SHPH", "PALI", "VMAR", "NVVE", "SNAL", "SDM", "MCRP", "JMG", "REE", "CASI", "EOSE", "BRLS", "CERO", "GTI", "JZXN", "PTNM"],
-  "notes": "Held positions all clean today: UUUU -- CEO Bhappu bought $968k (7/7) and chairman Hansen bought (7/8), no negative news. CAI (Caris Life Sciences) -- a director bought $990k on 7/13 and the Caris Detect test launched commercially in early July; Evercore trimmed its PT to $25 from $30 (7/2) but that's still well above the ~$18 price, a soft, not hard, signal. AVO -- GlobalHarvest/Jay Pack insider buying continues, Q2's -24% revenue/avocado-price-glut miss is already priced in and called temporary by management. NTSK (Netskope) -- fresh 52-week high $21.69, Buy-rated by Wells Fargo/Jefferies/Cantor Fitzgerald this week, no negative news. Flagging again: DVLT is a live wildcard-sleeve position (18.28 sh) but sits on this desk's own avoid list (serial diluter) -- today's broker reconciliation shows it as ledger-only (broker no longer reports the position), worth a human check on whether it was actually closed out; the week's DVLT news (Mandela Dollar stablecoin deal 7/10, Dream Bowl meme-coin listing 7/6) remains speculative pump activity, not a fundamental catalyst, so the avoid call stands if it's still held anywhere."
+  {
+   "ticker": "HDSN",
+   "note": "Hudson Technologies: DLA bridge-modification extended refrigerant supply contract to 11/29/26; 10%-owner Hartree Partners kept buying in the open market 7/6-7/7 at $5.99, on top of its ~$4.5M June/July cluster buy."
+  },
+  {
+   "ticker": "ABSI",
+   "note": "Absci: Phase 1 ABS-201 data (6/24) drove 8-of-9 analyst Buy ratings and PTs up to $17; stock +271% over the quarter. Caveat: priced a $100M equity offering at $7.41 same day as the data (6/24) -- real dilution alongside the real catalyst, size position accordingly."
+  }
+ ],
+ "avoid": [
+  "DVLT",
+  "SHPH",
+  "PALI",
+  "VMAR",
+  "NVVE",
+  "SNAL",
+  "SDM",
+  "MCRP",
+  "JMG",
+  "REE",
+  "CASI",
+  "EOSE",
+  "BRLS",
+  "CERO",
+  "GTI",
+  "JZXN",
+  "PTNM",
+  "BOLD",
+  "LRMR",
+  "HNRG"
+ ],
+ "notes": "Held positions all clean today: UUUU -- CEO Bhappu bought $968k (7/7) and chairman Hansen bought (7/8), no negative news. CAI (Caris Life Sciences) -- a director bought $990k on 7/13 and the Caris Detect test launched commercially in early July; Evercore trimmed its PT to $25 from $30 (7/2) but that's still well above the ~$18 price, a soft, not hard, signal. AVO -- GlobalHarvest/Jay Pack insider buying continues, Q2's -24% revenue/avocado-price-glut miss is already priced in and called temporary by management. NTSK (Netskope) -- fresh 52-week high $21.69, Buy-rated by Wells Fargo/Jefferies/Cantor Fitzgerald this week, no negative news. Flagging again: DVLT is a live wildcard-sleeve position (18.28 sh) but sits on this desk's own avoid list (serial diluter) -- today's broker reconciliation shows it as ledger-only (broker no longer reports the position), worth a human check on whether it was actually closed out; the week's DVLT news (Mandela Dollar stablecoin deal 7/10, Dream Bowl meme-coin listing 7/6) remains speculative pump activity, not a fundamental catalyst, so the avoid call stands if it's still held anywhere.",
+ "avoid_evidence": {
+  "DVLT": "serial diluter (855M sh, +1518% YoY), active ATM + repeated 8-Ks; risk officer critical 7/13; manually closed 7/14",
+  "NVVE": "serial-diluter pump pattern (research 7/14); tops momentum screen on pump signature",
+  "SNAL": "serial-diluter pump pattern (research 7/14); tops momentum screen on pump signature",
+  "SHPH": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
+  "PALI": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
+  "VMAR": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
+  "SDM": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
+  "MCRP": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
+  "JMG": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
+  "REE": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
+  "CASI": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
+  "EOSE": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
+  "BRLS": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
+  "CERO": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
+  "GTI": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
+  "JZXN": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
+  "PTNM": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
+  "BOLD": "risk officer CRITICAL 7/14: 8-K offering live while sitting top-2 on the buy radar",
+  "LRMR": "risk officer elevated: live 424B5 offering (drip dilution) while top radar candidate",
+  "HNRG": "risk officer elevated: S-3ASR automatic shelf effective 2026-01-13"
+ },
+ "avoid_rebuilt": "2026-07-14T07:51:27+00:00 evidence-first merge: research screen + risk-officer EDGAR flags; no manual entries (user_watchlist disabled)"
 }
