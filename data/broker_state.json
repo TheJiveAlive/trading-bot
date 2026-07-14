@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-14T14:14:03Z",
+  "generated": "2026-07-14T14:16:39Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 5 position(s), free \u00a3216.62",
   "cash": {
     "free": 216.62,
-    "total": 502.69,
-    "ppl": 3.11,
+    "total": 501.76,
+    "ppl": 2.18,
     "result": 0,
     "invested": 282.96,
     "pieCash": 0,
@@ -22,40 +22,40 @@
       "t212_ticker": "WRTC_US_EQ",
       "shares": 41.13,
       "avg_price": 2.07999027,
-      "current_price": 2.07,
-      "pnl": -0.31
+      "current_price": 2.05,
+      "pnl": -0.9
     },
     {
       "ticker": "UUUU",
       "t212_ticker": "UUUU_US_EQ",
       "shares": 6.18,
       "avg_price": 13.55987055,
-      "current_price": 13.35,
-      "pnl": -1.0
+      "current_price": 13.39,
+      "pnl": -0.79
     },
     {
       "ticker": "CAI",
       "t212_ticker": "CAI1_US_EQ",
       "shares": 4.94,
       "avg_price": 17.1902834,
-      "current_price": 17.24,
-      "pnl": 0.15
+      "current_price": 17.2,
+      "pnl": 0.04
     },
     {
       "ticker": "NTSK",
       "t212_ticker": "NTSK_US_EQ",
       "shares": 6.41,
       "avg_price": 13.00936037,
-      "current_price": 13.82,
-      "pnl": 3.83
+      "current_price": 13.73,
+      "pnl": 3.44
     },
     {
       "ticker": "YEXT",
       "t212_ticker": "YEXT_US_EQ",
       "shares": 7.8,
       "avg_price": 5.36025641,
-      "current_price": 5.44,
-      "pnl": 0.44
+      "current_price": 5.43,
+      "pnl": 0.39
     }
   ],
   "reconciliation": [
