@@ -1228,6 +1228,22 @@ def _hero(st):
         '<button class="tf{on}" data-k="{k}" onclick="tfSel(this)">{k}</button>'.format(
             on=" on" if k == default else "", k=k) for k, _ in frames)
     return """<div class="hero">
+<div id="liveclock" style="text-align:right;font-family:ui-monospace,SF Mono,Menlo,monospace;
+  font-size:12px;color:var(--dim);padding-bottom:6px"></div>
+<script>
+(function(){{
+  function fmt(tz){{
+    return new Date().toLocaleTimeString("en-GB",
+      {{timeZone:tz,hour:"2-digit",minute:"2-digit",second:"2-digit"}});
+  }}
+  function tick(){{
+    var el=document.getElementById("liveclock"); if(!el)return;
+    el.innerHTML="&#128336; <b style='color:var(--ink)'>"+fmt("Europe/London")+" UK</b>"+
+      " &middot; "+fmt("UTC")+" UTC &middot; "+fmt("America/New_York")+" ET";
+  }}
+  tick(); setInterval(tick,1000);
+}})();
+</script>
 <div class="hrow"><div class="grow">
   <div class="hl">Total portfolio value</div>
   <div class="hv" title="{src}">{eq}</div>
