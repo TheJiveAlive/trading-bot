@@ -61,15 +61,6 @@ def _ml_context(ticker):
             qr.get("state"), qr.get("hmm_state")))
     except Exception:
         pass
-    try:
-        ld = json.load(open(os.path.join(DATA_DIR, "local_digest.json")))
-        v = ld.get("tickers", {}).get(ticker)
-        if v:
-            bits.append("local-LLM: dilution {} / {} / {}".format(
-                v.get("dilution_risk"), v.get("sentiment"),
-                (v.get("summary") or "")[:50]))
-    except Exception:
-        pass
     return "; ".join(bits) or "no local-ML data"
 
 

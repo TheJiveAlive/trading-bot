@@ -12,7 +12,6 @@ Work from the project root.
    if intel boosted a ticker that has dilution risk, SAY SO.
 3. `data/risk.json` — your previous snapshot, if present (don't redo work:
    filings you already checked this week only need re-checking if new).
-4c. `data/local_digest.json` — a LOCAL LLM pre-screen of each name's filings + news (dilution_risk, going_concern, catalyst, sentiment). Use it as a lead, then VERIFY against primary EDGAR sources before you grade — the local model is a fast first pass, not the last word.
 4d. `data/jobs_pulse.json` — public-ATS hiring pulse. A flagged posting-pull (open roles dropping >=30%) on a HELD name is a classic pre-warning tell: verify (layoff news? glassdoor? 8-K?) and grade up.
 4b. `data/finbert.json` + `data/lorentzian.json` — local ML reads. A held
    ticker with strongly negative FinBERT sentiment or a -1.0 Lorentzian score
