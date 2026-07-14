@@ -21,6 +21,7 @@ def _is_wildcard(con, ticker):
 def manage_exits(con, cfg, research, report):
     sell_cfg = cfg["selling"]
     wc = cfg.get("wildcard", {})
+    rgrades = risk.risk_flags(risk.load_risk())   # {TICKER: elevated|critical}
     for pos in ledger.open_positions(con):
         price = market.last_price(pos["ticker"])
         if price is None:
@@ -41,10 +42,13 @@ def manage_exits(con, cfg, research, report):
         else:
             take_profit = sell_cfg["take_profit_pct"]
             pos_news = news_score(market.ticker_news(pos["ticker"]))
-            if pos["ticker"] in risk.avoid_tickers(research):
-                pos_news = min(pos_news, -1.0)  # research red flag: tightest stop
-                report.append("  ! {} on research avoid list — stop tightened".format(
-                    pos["ticker"]))
+            # ELEVATED risk-officer grade OR research avoid = tighten to the
+            # tightest stop (elevated risk on a name we already hold).
+            rgrade = rgrades.get(pos["ticker"])
+            if pos["ticker"] in risk.avoid_tickers(research) or rgrade == "elevated":
+                pos_news = min(pos_news, -1.0)
+                report.append("  ! {} flagged ({}) — stop tightened".format(
+                    pos["ticker"], rgrade or "research avoid"))
             stop_pct = risk.dynamic_stop_pct(cfg, pos_news, research)
 
         # RSI overbought = momentum exhaustion → take profit sooner (sell-side
@@ -66,7 +70,12 @@ def manage_exits(con, cfg, research, report):
 
         from bot.signals.catalysts import earnings_exit_due
         reason = None
-        if not is_wc and earnings_exit_due(cfg, pos["ticker"]):
+        # CRITICAL risk-officer grade on a HELD name = exit at market, price-
+        # blind (active offering/ATM, fraud, halt, delisting). Risk trumps P/L;
+        # deliberately NOT a break-even target — that's the disposition trap.
+        if not is_wc and rgrades.get(pos["ticker"]) == "critical":
+            reason = "RISK EXIT: risk officer critical flag ({:+.1f}%)".format(gain_pct)
+        elif not is_wc and earnings_exit_due(cfg, pos["ticker"]):
             reason = "pre-earnings exit: avoiding the binary print"
         elif isell_exit:
             reason = "insider selling — bearish tell, exiting"
