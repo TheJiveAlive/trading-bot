@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-14T18:40:01+00:00",
+ "generated": "2026-07-14T19:10:05+00:00",
  "model": "qwen2.5:7b (local CPU via Ollama)",
  "tickers": {
   "NTSK": {
@@ -14,7 +14,7 @@
    "going_concern": true,
    "catalyst": "none",
    "sentiment": "neutral",
-   "summary": "Recent SEC filings show no immediate risks."
+   "summary": "Recent SEC filings but no clear catalyst."
   },
   "CAI": {
    "dilution_risk": "none",
@@ -28,7 +28,7 @@
    "going_concern": true,
    "catalyst": "none",
    "sentiment": "neutral",
-   "summary": "No recent filings suggest risk."
+   "summary": "Recent SEC filings available."
   },
   "YEXT": {
    "dilution_risk": "none",
