@@ -25,10 +25,10 @@
   },
   "buying": {
     "max_buys_per_day": 3,
-    "max_buys_per_week": 6,
+    "max_buys_per_week": 4,
     "high_conviction_score": 8.0,
     "max_buys_per_day_hc": 6,
-    "max_buys_per_week_hc": 12,
+    "max_buys_per_week_hc": 8,
     "min_composite_score": 5.25,
     "max_positions": 20,
     "max_position_usd": 25.0,
@@ -93,8 +93,8 @@
   "force_regime": "risk_on",
   "_force_regime_note": "Overrides the research/quant regime blend. 'risk_on' = full-auto aggressive (lowest buy threshold, widest stops). Set null to restore the adaptive conservative blend. Hard vetoes always apply regardless.",
   "selling": {
-    "trailing_stop_pct": 15.0,
-    "take_profit_pct": 25.0,
+    "trailing_stop_pct": 8.0,
+    "take_profit_pct": 15.0,
     "min_hold_days": 1,
     "max_hold_days": 30,
     "_note": "TP trimmed 40->25 (2026-07-13): tune had pushed TP to its ceiling, but with a small live book the learning loop needs CLOSED trades as evidence \u2014 25% locks wins sooner and feeds signal_rewards/catalyst_rewards faster. Auto-tune bounds narrowed to 8-15 stop / 15-30 TP."
