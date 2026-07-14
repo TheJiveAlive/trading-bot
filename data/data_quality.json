@@ -1,8 +1,8 @@
 {
- "generated": "2026-07-14T07:46:00+00:00",
+ "generated": "2026-07-14T08:14:03+00:00",
  "source": "nightly_audit",
- "tickers_checked": 38,
- "issues": 24,
+ "tickers_checked": 37,
+ "issues": 22,
  "held_ticker_issues": 1,
  "detail": [
   {
@@ -44,127 +44,116 @@
    "held": false
   },
   {
-   "ticker": "GLMD",
-   "kind": "source_mismatch",
-   "date": "2026-07-07",
-   "cache": 0.5499,
-   "yahoo": 0.569,
-   "held": false
-  },
-  {
-   "ticker": "GLMD",
+   "ticker": "SBLX",
    "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "FRO",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "SSTK",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-08",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "YHNA",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "YHNA",
-   "kind": "flatline",
-   "close": 10.859999656677246,
-   "held": false
-  },
-  {
-   "ticker": "KIQQ",
-   "kind": "stale_cache",
-   "cache_last": "2026-04-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "MCD",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "VLRS",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-08",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "QXO",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "NMIH",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "VYLD",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-08",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "ENB",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-06",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "RNGR",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "GPATU",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-06",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "GPATU",
-   "kind": "flatline",
-   "close": 10.979999542236328,
-   "held": false
-  },
-  {
-   "ticker": "CAUD",
-   "kind": "stale_cache",
-   "cache_last": "2026-05-06",
+   "cache_last": "2026-04-08",
    "yahoo_last": "2026-07-10",
    "held": false
   },
   {
-   "ticker": "CAUD",
+   "ticker": "IMPP",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "ONCHW",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-02",
+   "yahoo_last": "2026-07-10",
+   "held": false
+  },
+  {
+   "ticker": "ONCHW",
    "kind": "flatline",
-   "close": 0.009999999776482582,
+   "close": 0.4300999939441681,
+   "held": false
+  },
+  {
+   "ticker": "GMTL",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "RELL",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "NIPG",
+   "kind": "source_mismatch",
+   "date": "2026-07-02",
+   "cache": 0.247,
+   "yahoo": 7.41,
+   "held": false
+  },
+  {
+   "ticker": "NIPG",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "METCI",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "HNI",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "INFQ",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "LPAA",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "XOMAP",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-08",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "ODYS",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "EU",
+   "kind": "source_mismatch",
+   "date": "2026-07-13",
+   "cache": 1.27,
+   "yahoo": 1.22,
+   "held": false
+  },
+  {
+   "ticker": "TXMD",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-08",
+   "yahoo_last": "2026-07-13",
    "held": false
   },
   {
@@ -177,5 +166,5 @@
    "note": "broker is the account of record"
   }
  ],
- "verdict": "24 discrepancies (1 on HELD tickers) \u2014 study session must judge whether these tickers' data can be trusted"
+ "verdict": "22 discrepancies (1 on HELD tickers) \u2014 study session must judge whether these tickers' data can be trusted"
 }
