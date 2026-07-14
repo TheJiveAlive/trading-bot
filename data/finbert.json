@@ -1,0 +1,95 @@
+{
+ "generated": "2026-07-14T07:58:51+00:00",
+ "model": "ProsusAI/finbert (local CPU)",
+ "headlines_scored": 27,
+ "tickers": {
+  "NTSK": {
+   "mean": 0.158,
+   "n": 4,
+   "best": [
+    0.631,
+    "$NTSK stock is up 3% today. Here's what we see in our data. - Quiver Quantitative"
+   ],
+   "worst": null
+  },
+  "UUUU": {
+   "mean": 0.0,
+   "n": 3,
+   "best": null,
+   "worst": null
+  },
+  "AVO": {
+   "mean": -0.02,
+   "n": 2,
+   "best": [
+    0.863,
+    "Mission Produce's Farming Segment: Is a Recovery Underway?"
+   ],
+   "worst": [
+    -0.904,
+    "Q1 Earnings Highs And Lows: Mission Produce (NASDAQ:AVO) Vs The Rest Of The Perishable Food Stocks"
+   ]
+  },
+  "CAI": {
+   "mean": 0.0,
+   "n": 3,
+   "best": null,
+   "worst": null
+  },
+  "LRMR": {
+   "mean": -0.19,
+   "n": 3,
+   "best": [
+    0.932,
+    "LRMR Stock Edges Up After Hours After Director Purchases Shares Worth About $167,000 - Stocktwits"
+   ],
+   "worst": [
+    -0.9,
+    "There are notable gap-ups and gap-downs in today's session."
+   ]
+  },
+  "BOLD": {
+   "mean": 0.0,
+   "n": 2,
+   "best": null,
+   "worst": null
+  },
+  "HNRG": {
+   "mean": 0.0,
+   "n": 2,
+   "best": null,
+   "worst": null
+  },
+  "BJDX": {
+   "mean": 0.0,
+   "n": 2,
+   "best": null,
+   "worst": null
+  },
+  "DVLT": {
+   "mean": 0.455,
+   "n": 2,
+   "best": [
+    0.911,
+    "DVLT Stock Surges 14%: Datavault AI Expands Edge Computing Push With Massive GPU Fleet - Stocktwits"
+   ],
+   "worst": null
+  },
+  "EVMN": {
+   "mean": 0.414,
+   "n": 2,
+   "best": [
+    0.827,
+    "Paramount Skydance Enhances $30 Per Share Bid For Warner Bros Discovery - Stocktwits"
+   ],
+   "worst": null
+  },
+  "WRAP": {
+   "mean": 0.0,
+   "n": 2,
+   "best": null,
+   "worst": null
+  }
+ },
+ "note": "Deterministic transformer sentiment, free and local. NOT a score input yet \u2014 the study session must validate mean-sentiment vs trade outcomes first."
+}

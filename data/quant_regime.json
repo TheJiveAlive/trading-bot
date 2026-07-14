@@ -1,0 +1,35 @@
+{
+ "generated": "2026-07-14T07:59:06+00:00",
+ "method": "KMeans k=3 on SPY (vol20, trend20, drawdown), 2y daily",
+ "state": "calm_drift",
+ "last_10_days": [
+  "trending",
+  "trending",
+  "trending",
+  "trending",
+  "calm_drift",
+  "calm_drift",
+  "calm_drift",
+  "calm_drift",
+  "calm_drift",
+  "calm_drift"
+ ],
+ "spy_vol20_ann": 14.1,
+ "spy_trend20_pct": 1.81,
+ "breadth_pct_above_20dma": 47.2,
+ "cluster_profiles": {
+  "calm_drift": {
+   "vol": 12.3,
+   "trend": 2.99
+  },
+  "stress": {
+   "vol": 49.2,
+   "trend": -2.57
+  },
+  "trending": {
+   "vol": 16.1,
+   "trend": -3.09
+  }
+ },
+ "note": "Unsupervised cross-check on the research regime. Advisory until the study session validates state vs outcomes; the dynamic caps follow research.json, not this."
+}
