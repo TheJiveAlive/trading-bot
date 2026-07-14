@@ -1,12 +1,11 @@
 name: overnight-learnings
-# Out-of-hours study: refresh the parameter sweep + a Claude analysis session
-# that writes proposed improvements to data/learnings.md.
-#
-# DISPATCH-ONLY (2026-07-14): GitHub's cron scheduler silently dropped these
-# runs — last cron fire was 07-11 despite a 3x/day schedule. Same failure that
-# moved intel/risk to box dispatch. The always-on OptiPlex now fires this via
-# bot-learnings.timer (02:17 Tue-Sat, 11:30 Mon-Fri, 13:00 Sat). The Saturday
-# 36-month deep-cycle logic reads the weekday at runtime, so it still works.
+# STUDY-ONLY since 2026-07-14. The heavy Python compute (parameter sweep,
+# walk-forward, weight learning) runs NATIVELY on the OptiPlex where the
+# 5.7M-row bar cache lives — this runner is a blank machine with no bars.db,
+# and running the sweep here starved it into a -100%/0-trade walkforward on
+# 07-12. The box (~/bot/learning_compute.sh, bot-learnings.timer) computes,
+# commits the results, then dispatches THIS workflow, which only runs the
+# sandboxed Claude study session over the freshly-pushed numbers.
 on:
   workflow_dispatch:
 
@@ -18,7 +17,7 @@ concurrency:
 jobs:
   study:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 25
     steps:
       - name: check token
         env:
@@ -30,47 +29,6 @@ jobs:
           fi
       - uses: actions/checkout@v4
         if: env.SKIP != '1'
-      - uses: actions/setup-python@v5
-        if: env.SKIP != '1'
-        with:
-          python-version: '3.12'
-          cache: pip
-      - name: install deps
-        if: env.SKIP != '1'
-        run: pip install -r requirements.txt
-      - name: refresh parameter sweep (cached candidates → fast)
-        if: env.SKIP != '1'
-        env:
-          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
-          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
-        run: |
-          # Saturday = deep cycle: sweep 36 months while nothing is moving
-          M=6; [ "$(date -u +%u)" = "6" ] && M=36
-          echo "parameter sweep over $M months"
-          python backtest.py --months $M --tune || echo "tune skipped (no cache yet)"
-
-      - name: walk-forward validation (out-of-sample truth serum)
-        if: env.SKIP != '1'
-        env:
-          ALPACA_KEY: ${{ secrets.ALPACA_KEY }}
-          ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
-        run: python backtest.py --walkforward || echo "walkforward skipped (no cache yet)"
-      - name: apply bounded signal-weight learning
-        if: env.SKIP != '1'
-        env:
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
-          EMAIL_TO: ${{ secrets.EMAIL_TO }}
-        run: |
-          python3 -c "
-          import json, os
-          json.dump({'smtp_host':'smtp.gmail.com','smtp_port':465,
-                     'smtp_user':os.environ.get('SMTP_USER',''),
-                     'smtp_app_password':os.environ.get('SMTP_APP_PASSWORD',''),
-                     'email_to':os.environ.get('EMAIL_TO','')}, open('data/secrets.json','w'))"
-          python -m bot.learn || echo "learning: insufficient evidence"
-          python -m bot.learn tune || echo "auto-tune: skipped"
-          rm -f data/secrets.json
       - uses: actions/setup-node@v4
         if: env.SKIP != '1'
         with:
@@ -99,12 +57,16 @@ jobs:
         run: |
           # email the latest learnings section, Markdown-rendered, BEFORE removing secrets
           python3 -c "
-          import re
+          import json, os
+          json.dump({'smtp_host':'smtp.gmail.com','smtp_port':465,
+                     'smtp_user':os.environ.get('SMTP_USER',''),
+                     'smtp_app_password':os.environ.get('SMTP_APP_PASSWORD',''),
+                     'email_to':os.environ.get('EMAIL_TO','')}, open('data/secrets.json','w'))"
+          python3 -c "
           from bot import config, notify
           config.load()
           try: md=open('data/learnings.md').read()
           except Exception: md='no learnings file produced'
-          # send only the most recent dated section (from the last '## ' heading)
           parts=md.split('\n## ')
           latest=('## '+parts[-1]) if len(parts)>1 else md
           notify.send_email('[bot] overnight learnings', latest[:6000], markdown=True)" || true
