@@ -22,6 +22,7 @@ def manage_exits(con, cfg, research, report):
     sell_cfg = cfg["selling"]
     wc = cfg.get("wildcard", {})
     rgrades = risk.risk_flags(risk.load_risk())   # {TICKER: elevated|critical}
+    intel_flags = risk.intel_flagged(risk.load_intel())   # intel's avoid-this-session set
     for pos in ledger.open_positions(con):
         price = market.last_price(pos["ticker"])
         if price is None:
@@ -45,10 +46,14 @@ def manage_exits(con, cfg, research, report):
             # ELEVATED risk-officer grade OR research avoid = tighten to the
             # tightest stop (elevated risk on a name we already hold).
             rgrade = rgrades.get(pos["ticker"])
-            if pos["ticker"] in risk.avoid_tickers(research) or rgrade == "elevated":
+            flagged = (rgrade == "elevated" or pos["ticker"] in risk.avoid_tickers(research)
+                       or pos["ticker"] in intel_flags)
+            if flagged:
                 pos_news = min(pos_news, -1.0)
+                why = rgrade or ("intel avoid" if pos["ticker"] in intel_flags
+                                 else "research avoid")
                 report.append("  ! {} flagged ({}) — stop tightened".format(
-                    pos["ticker"], rgrade or "research avoid"))
+                    pos["ticker"], why))
             stop_pct = risk.dynamic_stop_pct(cfg, pos_news, research)
 
         # RSI overbought = momentum exhaustion → take profit sooner (sell-side
