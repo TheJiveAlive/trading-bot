@@ -1,21 +1,37 @@
 {
-  "generated": "2026-07-14T12:03:28Z",
+  "generated": "2026-07-14T13:31:16Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
   "mode": "live",
   "account_currency": "GBP",
   "ok": true,
-  "detail": "demo account reachable: 0 position(s), free \u00a3500.0",
+  "detail": "demo account reachable: 1 position(s), free \u00a3468.76",
   "cash": {
-    "free": 500.0,
-    "total": 500.0,
-    "ppl": 0,
+    "free": 468.76,
+    "total": 499.83,
+    "ppl": -0.12,
     "result": 0,
-    "invested": 0,
+    "invested": 31.19,
     "pieCash": 0,
     "blocked": 0
   },
-  "positions": [],
-  "reconciliation": []
+  "positions": [
+    {
+      "ticker": "YEXT",
+      "t212_ticker": "YEXT_US_EQ",
+      "shares": 7.8,
+      "avg_price": 5.36025641,
+      "current_price": 5.34,
+      "pnl": -0.12
+    }
+  ],
+  "reconciliation": [
+    {
+      "ticker": "YEXT",
+      "ledger_shares": 7.8044,
+      "broker_shares": 7.8,
+      "status": "match"
+    }
+  ]
 }
