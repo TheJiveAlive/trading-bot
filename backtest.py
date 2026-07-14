@@ -137,10 +137,56 @@ def download_history(tickers, start, end):
     return hist
 
 
+_ASOF_CACHE = {}
+
+
+def _series(df):
+    """(dates list[str], closes ndarray, volumes ndarray) cached per frame —
+    asof() used to strftime the WHOLE index on every call, in the innermost
+    loop of a 672-combo sweep (refactor 2026-07-14)."""
+    key = id(df)
+    hit = _ASOF_CACHE.get(key)
+    if hit is None:
+        import numpy as np
+        dates = [ix.strftime("%Y-%m-%d") for ix in df.index]
+        hit = (dates, df["Close"].to_numpy(dtype=float),
+               df["Volume"].to_numpy(dtype=float) if "Volume" in df else None)
+        _ASOF_CACHE[key] = hit
+    return hit
+
+
 def asof(df, date_iso, col="Close"):
-    """Last value at or before date; None if unavailable."""
-    sub = df[df.index.strftime("%Y-%m-%d") <= date_iso]
-    return float(sub[col].iloc[-1]) if len(sub) else None
+    """Last value at or before date; None if unavailable. O(log n)."""
+    import bisect
+    dates, closes, vols = _series(df)
+    i = bisect.bisect_right(dates, date_iso)
+    if i == 0:
+        return None
+    arr = closes if col == "Close" else vols
+    return float(arr[i - 1]) if arr is not None else None
+
+
+def vol20_asof(df, date_iso):
+    """20d close-to-close realized vol (daily %) as of date — the SAME measure
+    the live bot uses, so sim stops match live stops. None if thin."""
+    import bisect
+    import numpy as np
+    dates, closes, _ = _series(df)
+    i = bisect.bisect_right(dates, date_iso)
+    if i < 16:
+        return None
+    win = closes[max(0, i - 21):i]
+    rets = win[1:] / win[:-1] - 1.0
+    return float(np.std(rets) * 100)
+
+
+def scaled_stop(base_stop, rv):
+    """LIVE-PARITY vol scaling (mirror of risk.dynamic_stop_pct core):
+    scale by vol/3.5 bounded 0.6-1.8x, floor at max(5, 1.5*vol), ceil 18."""
+    if rv is None:
+        return base_stop
+    s = base_stop * max(0.6, min(rv / 3.5, 1.8))
+    return max(max(5.0, 1.5 * rv), min(s, 18.0))
 
 
 def metrics_asof(df, date_iso):
@@ -251,7 +297,8 @@ def simulate(cfg, weekly_candidates, hist, trading_days, start, progress=False):
             gain = (price / p["cost"] - 1) * 100
             dd = (1 - price / p["hwm"]) * 100
             reason = None
-            if dd >= sell_cfg["trailing_stop_pct"] and held >= sell_cfg["min_hold_days"]:
+            eff_stop = p.get("eff_stop", sell_cfg["trailing_stop_pct"])
+            if dd >= eff_stop and held >= sell_cfg["min_hold_days"]:
                 reason = "stop"
             elif gain >= sell_cfg["take_profit_pct"]:
                 reason = "take_profit"
@@ -303,9 +350,14 @@ def simulate(cfg, weekly_candidates, hist, trading_days, start, progress=False):
                 if shares * fill < 1:   # skip sub-$1 dust
                     continue
                 cash -= shares * fill
+                # vol-scaled stop at entry — parity with the live bot
+                # (2026-07-14): wild names get room, calm names stay tight
+                rv = vol20_asof(hist[c["ticker"]], d)
                 positions[c["ticker"]] = {"shares": shares, "cost": fill,
                                           "hwm": fill, "opened": day.date(),
-                                          "score": c["score"]}
+                                          "score": c["score"],
+                                          "eff_stop": scaled_stop(
+                                              sell_cfg["trailing_stop_pct"], rv)}
                 buys_this_week += 1
                 break
 
