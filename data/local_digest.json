@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-14T18:04:18+00:00",
+ "generated": "2026-07-14T18:10:09+00:00",
  "model": "qwen2.5:7b (local CPU via Ollama)",
  "tickers": {
   "NTSK": {
@@ -21,7 +21,7 @@
    "going_concern": true,
    "catalyst": "none",
    "sentiment": "neutral",
-   "summary": "No recent dilution, SEC filings available."
+   "summary": "No recent filings suggest risk."
   },
   "WRAP": {
    "dilution_risk": "none",
@@ -35,14 +35,14 @@
    "going_concern": true,
    "catalyst": "none",
    "sentiment": "neutral",
-   "summary": "No recent SEC filings indicate risk."
+   "summary": "Recent SEC filings available."
   },
   "JEM": {
    "dilution_risk": "none",
    "going_concern": true,
    "catalyst": "none",
    "sentiment": "neutral",
-   "summary": "No recent headlines provided."
+   "summary": "No recent news."
   }
  },
  "note": "Local-model digest of filings/news. Pre-screen for Claude, NOT a score input until the study validates it. Fail-open: empty when Ollama is down."
