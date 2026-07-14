@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 5 position(s), free \u00a3216.62",
   "cash": {
     "free": 216.62,
-    "total": 507.22,
-    "ppl": 7.64,
+    "total": 507.17,
+    "ppl": 7.59,
     "result": 0,
     "invested": 282.96,
     "pieCash": 0,
@@ -23,15 +23,15 @@
       "shares": 41.13,
       "avg_price": 2.07999027,
       "current_price": 2.17,
-      "pnl": 2.95
+      "pnl": 2.94
     },
     {
       "ticker": "UUUU",
       "t212_ticker": "UUUU_US_EQ",
       "shares": 6.18,
       "avg_price": 13.55987055,
-      "current_price": 13.28,
-      "pnl": -1.14
+      "current_price": 13.27,
+      "pnl": -1.19
     },
     {
       "ticker": "CAI",
