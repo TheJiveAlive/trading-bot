@@ -1,0 +1,49 @@
+{
+ "generated": "2026-07-14T18:01:51+00:00",
+ "model": "qwen2.5:7b (local CPU via Ollama)",
+ "tickers": {
+  "NTSK": {
+   "dilution_risk": "none",
+   "going_concern": true,
+   "catalyst": "none",
+   "sentiment": "neutral",
+   "summary": "Recent SEC filings but no clear catalyst."
+  },
+  "UUUU": {
+   "dilution_risk": "none",
+   "going_concern": true,
+   "catalyst": "none",
+   "sentiment": "neutral",
+   "summary": "No recent headlines or catalysts."
+  },
+  "CAI": {
+   "dilution_risk": "none",
+   "going_concern": false,
+   "catalyst": "none",
+   "sentiment": "neutral",
+   "summary": "No recent SEC filings or catalysts."
+  },
+  "WRAP": {
+   "dilution_risk": "none",
+   "going_concern": false,
+   "catalyst": "none",
+   "sentiment": "neutral",
+   "summary": "No recent SEC filings or catalysts."
+  },
+  "YEXT": {
+   "dilution_risk": "none",
+   "going_concern": true,
+   "catalyst": "none",
+   "sentiment": "neutral",
+   "summary": "Recent SEC filings but no clear catalyst."
+  },
+  "JEM": {
+   "dilution_risk": "none",
+   "going_concern": false,
+   "catalyst": "none",
+   "sentiment": "neutral",
+   "summary": "No recent SEC filings or catalysts."
+  }
+ },
+ "note": "Local-model digest of filings/news. Pre-screen for Claude, NOT a score input until the study validates it. Fail-open: empty when Ollama is down."
+}
