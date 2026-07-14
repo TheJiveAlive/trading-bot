@@ -1,9 +1,9 @@
 {
- "generated": "2026-07-14T08:18:48+00:00",
+ "generated": "2026-07-14T23:45:10+00:00",
  "source": "nightly_audit",
  "tickers_checked": 37,
- "issues": 24,
- "held_ticker_issues": 1,
+ "issues": 21,
+ "held_ticker_issues": 5,
  "detail": [
   {
    "ticker": "WRAP",
@@ -11,173 +11,155 @@
    "date": "2026-07-08",
    "cache": 1.555,
    "yahoo": 1.59,
-   "held": false
+   "held": true
   },
   {
    "ticker": "WRAP",
    "kind": "stale_cache",
    "cache_last": "2026-07-08",
-   "yahoo_last": "2026-07-13",
-   "held": false
+   "yahoo_last": "2026-07-14",
+   "held": true
   },
   {
    "ticker": "TDIC",
    "kind": "stale_cache",
    "cache_last": "2026-07-08",
-   "yahoo_last": "2026-07-13",
+   "yahoo_last": "2026-07-14",
    "held": false
   },
   {
-   "ticker": "EVMN",
+   "ticker": "JEM",
    "kind": "source_mismatch",
    "date": "2026-07-13",
-   "cache": 12.54,
-   "yahoo": 12.1,
+   "cache": 0.386,
+   "yahoo": 6.0396,
    "held": false
   },
   {
-   "ticker": "LRMR",
-   "kind": "source_mismatch",
-   "date": "2026-07-13",
-   "cache": 3.825,
-   "yahoo": 3.725,
-   "held": false
-  },
-  {
-   "ticker": "ITRG",
+   "ticker": "TRMK",
    "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
+   "cache_last": "2026-07-08",
+   "yahoo_last": "2026-07-14",
    "held": false
   },
   {
-   "ticker": "RYLBF",
-   "kind": "flatline",
-   "close": 19.49799919128418,
-   "held": false
-  },
-  {
-   "ticker": "MBVIU",
+   "ticker": "CMSC",
    "kind": "stale_cache",
    "cache_last": "2026-07-06",
-   "yahoo_last": "2026-07-13",
+   "yahoo_last": "2026-07-14",
    "held": false
   },
   {
-   "ticker": "MBVIU",
-   "kind": "flatline",
-   "close": 10.25,
+   "ticker": "ASM",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-06",
+   "yahoo_last": "2026-07-14",
    "held": false
   },
   {
-   "ticker": "INTZ",
-   "kind": "source_mismatch",
-   "date": "2026-07-07",
-   "cache": 0.909,
-   "yahoo": 0.87,
-   "held": false
-  },
-  {
-   "ticker": "INTZ",
+   "ticker": "HXHX",
    "kind": "stale_cache",
    "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-14",
+   "held": false
+  },
+  {
+   "ticker": "AKO-A",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-02",
    "yahoo_last": "2026-07-13",
    "held": false
   },
   {
-   "ticker": "TAC",
-   "kind": "source_mismatch",
-   "date": "2026-07-08",
-   "cache": 14.08,
-   "yahoo": 14.48,
+   "ticker": "AFGD",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-06",
+   "yahoo_last": "2026-07-14",
    "held": false
   },
   {
-   "ticker": "TAC",
+   "ticker": "CHEC",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-06",
+   "yahoo_last": "2026-07-14",
+   "held": false
+  },
+  {
+   "ticker": "EHLD",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-06",
+   "yahoo_last": "2026-07-14",
+   "held": false
+  },
+  {
+   "ticker": "SUI",
    "kind": "stale_cache",
    "cache_last": "2026-07-08",
-   "yahoo_last": "2026-07-13",
+   "yahoo_last": "2026-07-14",
    "held": false
   },
   {
-   "ticker": "OHACU",
+   "ticker": "NEWTI",
    "kind": "stale_cache",
    "cache_last": "2026-07-07",
    "yahoo_last": "2026-07-13",
    "held": false
   },
   {
-   "ticker": "XVO",
+   "ticker": "DSGX",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-06",
+   "yahoo_last": "2026-07-14",
+   "held": false
+  },
+  {
+   "ticker": "AMKL",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-06",
+   "yahoo_last": "2026-07-14",
+   "held": false
+  },
+  {
+   "ticker": "CAIQ",
+   "kind": "stale_cache",
+   "cache_last": "2026-04-06",
+   "yahoo_last": "2026-07-14",
+   "held": false
+  },
+  {
+   "ticker": "IPB",
    "kind": "stale_cache",
    "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
+   "yahoo_last": "2026-07-14",
    "held": false
   },
   {
-   "ticker": "ISRLU",
-   "kind": "stale_cache",
-   "cache_last": "2026-01-30",
-   "yahoo_last": "2026-07-10",
-   "held": false
-  },
-  {
-   "ticker": "RES",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "HIG",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "MENS",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "OPFI",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "OII",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "XYL",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-08",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "PLNT",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "CAI",
+   "ticker": "WRAP",
    "kind": "broker_disagrees",
-   "broker": 17.5,
-   "cache": 16.989999771118164,
-   "drift_pct": 3.0,
+   "broker": 2.16,
+   "cache": 1.5549999475479126,
+   "drift_pct": 38.9,
+   "held": true,
+   "note": "broker is the account of record"
+  },
+  {
+   "ticker": "NTSK",
+   "kind": "broker_disagrees",
+   "broker": 14.4,
+   "cache": 12.609999656677246,
+   "drift_pct": 14.2,
+   "held": true,
+   "note": "broker is the account of record"
+  },
+  {
+   "ticker": "YEXT",
+   "kind": "broker_disagrees",
+   "broker": 5.43,
+   "cache": 5.224999904632568,
+   "drift_pct": 3.9,
    "held": true,
    "note": "broker is the account of record"
   }
  ],
- "verdict": "24 discrepancies (1 on HELD tickers) \u2014 study session must judge whether these tickers' data can be trusted"
+ "verdict": "21 discrepancies (5 on HELD tickers) \u2014 study session must judge whether these tickers' data can be trusted"
 }
