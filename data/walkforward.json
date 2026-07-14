@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-14T07:38:28+00:00",
+  "generated": "2026-07-14T08:04:49+00:00",
   "train_period": "2026-01-10 to 2026-05-18",
   "test_period": "2026-05-18 to 2026-07-09",
   "top5_train_combos_tested_oos": [
@@ -10,6 +10,24 @@
       "min_score": 4.5,
       "train_median_pct": 6.76,
       "test_pct": 4.89,
+      "test_trades": 12
+    },
+    {
+      "stop": 8.0,
+      "tp": 22.0,
+      "buys_wk": 2,
+      "min_score": 4.5,
+      "train_median_pct": 5.88,
+      "test_pct": 0.88,
+      "test_trades": 10
+    },
+    {
+      "stop": 8.0,
+      "tp": 18.0,
+      "buys_wk": 2,
+      "min_score": 4.5,
+      "train_median_pct": 4.55,
+      "test_pct": 5.96,
       "test_trades": 12
     },
     {
@@ -29,24 +47,6 @@
       "train_median_pct": 3.41,
       "test_pct": 7.54,
       "test_trades": 8
-    },
-    {
-      "stop": 8.0,
-      "tp": 25.0,
-      "buys_wk": 2,
-      "min_score": 4.5,
-      "train_median_pct": 2.33,
-      "test_pct": 0.34,
-      "test_trades": 10
-    },
-    {
-      "stop": 8.0,
-      "tp": 15.0,
-      "buys_wk": 1,
-      "min_score": 4.5,
-      "train_median_pct": 2.29,
-      "test_pct": 1.89,
-      "test_trades": 6
     }
   ],
   "spy_test_return_pct": 2.03,
@@ -56,9 +56,9 @@
     "profit_factor": 1.72,
     "expectancy_pct_per_trade": 3.88,
     "monte_carlo_1000x": {
-      "p5_pct": -12.5,
-      "p50_pct": 22.5,
-      "p95_pct": 71.7,
+      "p5_pct": -13.1,
+      "p50_pct": 24.8,
+      "p95_pct": 72.6,
       "read": "5th percentile NEGATIVE \u2014 result may hinge on a few lucky trades; treat the headline with suspicion"
     }
   },
