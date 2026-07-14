@@ -12,6 +12,9 @@ Work from the project root.
    if intel boosted a ticker that has dilution risk, SAY SO.
 3. `data/risk.json` — your previous snapshot, if present (don't redo work:
    filings you already checked this week only need re-checking if new).
+4b. `data/finbert.json` + `data/lorentzian.json` — local ML reads. A held
+   ticker with strongly negative FinBERT sentiment or a -1.0 Lorentzian score
+   deserves a closer look at WHY before you grade it low-risk.
 4. `data/data_quality.json` — the nightly data audit. If a HELD ticker
    appears there (source mismatch / stale / broker disagrees), raise that
    holding's risk a notch and say why: bad data means our stops and P/L may

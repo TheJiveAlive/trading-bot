@@ -33,6 +33,37 @@ def enabled(cfg):
     return bool(cfg.get("critic", {}).get("enabled")) and _token() is not None
 
 
+def _ml_context(ticker):
+    """One line of local-ML context for the reviewed ticker: FinBERT mean
+    sentiment, Lorentzian k-NN score, and the quant regime state. Fail-silent
+    — the critic worked without these before 2026-07-14."""
+    import os
+    from bot.config import DATA_DIR
+    bits = []
+    try:
+        fb = json.load(open(os.path.join(DATA_DIR, "finbert.json")))
+        v = fb.get("tickers", {}).get(ticker)
+        if v:
+            bits.append("FinBERT sentiment {:+.2f} over {} headlines".format(
+                v["mean"], v["n"]))
+    except Exception:
+        pass
+    try:
+        lz = json.load(open(os.path.join(DATA_DIR, "lorentzian.json")))
+        v = lz.get("lookup", {}).get(ticker)
+        if v:
+            bits.append("Lorentzian kNN {:+.2f}".format(v["score"]))
+    except Exception:
+        pass
+    try:
+        qr = json.load(open(os.path.join(DATA_DIR, "quant_regime.json")))
+        bits.append("quant regime {} (hmm {})".format(
+            qr.get("state"), qr.get("hmm_state")))
+    except Exception:
+        pass
+    return "; ".join(bits) or "no local-ML data"
+
+
 def review_buy(cfg, cand, confluence_detail, headlines=None):
     """(approved: bool, note: str). Approves on any failure (fail-open)."""
     heads = "; ".join(h.get("title", "")[:70] for h in (headlines or [])[:3]) or "none cached"
@@ -40,14 +71,15 @@ def review_buy(cfg, cand, confluence_detail, headlines=None):
         "You are the final pre-trade risk reviewer for an automated small-cap bot. "
         "It is about to BUY {t} (~${n:.0f} notional, demo account). "
         "Composite score {s} from signal parts {p}. Confluence checks: {c}. "
-        "Recent headlines: {h}. "
+        "Recent headlines: {h}. Local ML: {ml}. "
         "Respond with ONLY this JSON, nothing else: "
         '{{"verdict":"approve"|"veto","confidence":"high"|"medium"|"low","reason":"<=25 words"}}. '
         "Veto ONLY for: classic pump pattern, dilution/offering risk the signals "
         "missed, a stale or misread catalyst, or an obvious data error. "
         "When in doubt, approve — the bot's hard vetoes already ran."
     ).format(t=cand["ticker"], n=cand.get("notional", 0), s=cand["score"],
-             p=json.dumps(cand.get("parts", {})), c=confluence_detail[:300], h=heads)
+             p=json.dumps(cand.get("parts", {})), c=confluence_detail[:300], h=heads,
+             ml=_ml_context(cand["ticker"]))
 
     env = dict(os.environ)
     env["CLAUDE_CODE_OAUTH_TOKEN"] = _token()

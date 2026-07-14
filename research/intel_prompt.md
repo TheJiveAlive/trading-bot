@@ -9,6 +9,11 @@ Work from the project root.
 1. `data/research.json` — today's deep research (regime, watchlist, avoid).
 2. `dashboard.html` and `radar.html` — current positions and top candidates.
 3. `data/intel.json` — your previous hourly snapshot, if present.
+3b. `data/finbert.json`, `data/lorentzian.json`, `data/quant_regime.json` —
+   the box's LOCAL ML layer (transformer sentiment, k-NN classification,
+   unsupervised regime). Use as cross-checks: if you want to boost a ticker
+   FinBERT scores strongly negative, or the quant regime says stress while
+   you read the tape as calm, SAY SO rather than ignoring the disagreement.
 4. `data/risk.json` — the RISK OFFICER's latest view (a second agent running
    offset from you, hunting dilution/red flags). NEVER award a
    conviction_boost to a ticker it flags; if your news contradicts one of its
