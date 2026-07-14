@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-14T08:16:05+00:00",
+  "generated": "2026-07-14T08:20:51+00:00",
   "train_period": "2026-01-10 to 2026-05-18",
   "test_period": "2026-05-18 to 2026-07-09",
   "top5_train_combos_tested_oos": [
@@ -56,9 +56,9 @@
     "profit_factor": 1.72,
     "expectancy_pct_per_trade": 3.88,
     "monte_carlo_1000x": {
-      "p5_pct": -11.5,
-      "p50_pct": 24.5,
-      "p95_pct": 70.7,
+      "p5_pct": -12.8,
+      "p50_pct": 21.6,
+      "p95_pct": 72.5,
       "read": "5th percentile NEGATIVE \u2014 result may hinge on a few lucky trades; treat the headline with suspicion"
     }
   },
