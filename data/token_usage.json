@@ -133,5 +133,14 @@
     "cache_read": 1168806,
     "cost_usd": 1.0032,
     "duration_ms": 238767
+  },
+  {
+    "ts": "2026-07-14T07:42:42+00:00",
+    "label": "study",
+    "input_tokens": 62,
+    "output_tokens": 17361,
+    "cache_read": 2221137,
+    "cost_usd": 1.3939,
+    "duration_ms": 239567
   }
 ]
