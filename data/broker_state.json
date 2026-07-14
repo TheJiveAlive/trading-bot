@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-14T16:26:16Z",
+  "generated": "2026-07-14T16:27:33Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 5 position(s), free \u00a3216.62",
   "cash": {
     "free": 216.62,
-    "total": 504.22,
-    "ppl": 4.64,
+    "total": 504.61,
+    "ppl": 5.03,
     "result": 0,
     "invested": 282.96,
     "pieCash": 0,
@@ -38,24 +38,24 @@
       "t212_ticker": "CAI1_US_EQ",
       "shares": 4.94,
       "avg_price": 17.1902834,
-      "current_price": 16.99,
-      "pnl": -0.61
+      "current_price": 17.07,
+      "pnl": -0.32
     },
     {
       "ticker": "NTSK",
       "t212_ticker": "NTSK_US_EQ",
       "shares": 6.41,
       "avg_price": 13.00936037,
-      "current_price": 14.14,
-      "pnl": 5.53
+      "current_price": 14.15,
+      "pnl": 5.58
     },
     {
       "ticker": "YEXT",
       "t212_ticker": "YEXT_US_EQ",
       "shares": 7.8,
       "avg_price": 5.36025641,
-      "current_price": 5.43,
-      "pnl": 0.46
+      "current_price": 5.44,
+      "pnl": 0.51
     }
   ],
   "reconciliation": [
