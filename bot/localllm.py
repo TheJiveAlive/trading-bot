@@ -42,9 +42,29 @@ def _ask(prompt, timeout=180):
         return None
 
 
+_UA = {"User-Agent": "trading-bot research joshua.ive@gmail.com"}
+_CIK = {}
+
+
+def _cik(ticker):
+    """ticker -> zero-padded CIK via SEC's official map (cached)."""
+    global _CIK
+    if not _CIK:
+        try:
+            d = json.load(urllib.request.urlopen(urllib.request.Request(
+                "https://www.sec.gov/files/company_tickers.json", headers=_UA),
+                timeout=20))
+            _CIK = {v["ticker"].upper(): str(v["cik_str"]).zfill(10)
+                    for v in d.values()}
+        except Exception:
+            _CIK = {"_": ""}
+    return _CIK.get(ticker.upper())
+
+
 def _sources(ticker):
-    """Compact raw text for one ticker: recent news titles + latest EDGAR
-    filing snippet. Kept short so local CPU inference stays quick."""
+    """Compact raw text for one ticker: recent news + the REAL recent EDGAR
+    filing history (form types + dates — the dilution/offering fingerprint)
+    from the SEC submissions API. Kept short so CPU inference stays quick."""
     chunks = []
     try:
         from bot import market
@@ -53,20 +73,24 @@ def _sources(ticker):
             chunks.append("Recent headlines:\n- " + "\n- ".join(h for h in heads if h))
     except Exception:
         pass
-    try:
-        # EDGAR full-text search: does this ticker have recent offering filings?
-        url = ("https://efts.sec.gov/LATEST/search-index?q=%22{}%22&forms="
-               "S-3,424B5,8-K&dateRange=custom").format(ticker)
-        req = urllib.request.Request(
-            "https://efts.sec.gov/LATEST/search-index?q=%22{}%22".format(ticker),
-            headers={"User-Agent": "trading-bot research joshua.ive@gmail.com"})
-        d = json.load(urllib.request.urlopen(req, timeout=15))
-        hits = d.get("hits", {}).get("hits", [])[:5]
-        forms = [h.get("_source", {}).get("file_type", "") for h in hits]
-        if forms:
-            chunks.append("Recent SEC form types on file: " + ", ".join(f for f in forms if f))
-    except Exception:
-        pass
+    cik = _cik(ticker)
+    if cik:
+        try:
+            d = json.load(urllib.request.urlopen(urllib.request.Request(
+                "https://data.sec.gov/submissions/CIK{}.json".format(cik),
+                headers=_UA), timeout=20))
+            rec = d.get("filings", {}).get("recent", {})
+            forms = rec.get("form", []); dates = rec.get("filingDate", [])
+            lines = []
+            for f, dt_ in list(zip(forms, dates))[:25]:
+                # keep the dilution/offering-relevant forms + majors
+                if f in ("S-1", "S-3", "S-3ASR", "424B5", "424B3", "424B4",
+                         "8-K", "10-Q", "10-K", "424B2", "S-8", "DEF 14A"):
+                    lines.append("{}  {}".format(dt_, f))
+            if lines:
+                chunks.append("Recent SEC filings (date, form):\n" + "\n".join(lines[:15]))
+        except Exception:
+            pass
     return "\n\n".join(chunks)
 
 
