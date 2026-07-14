@@ -4,11 +4,13 @@ name: weekend-deep
 # OptiPlex self-hosted runner (12 cores, free minutes, no 6h cap), so it can
 # run NIGHTLY after the US close instead of weekend-only — fresher walk-forward
 # validation as each day of data lands.
+# SCHEDULE REMOVED 2026-07-14: superseded by native learning_compute.sh
+# (bot-learnings.timer). Even on the self-hosted runner, the workflow CHECKOUT
+# has no bars.db (gitignored) — its sweeps ran data-starved, and its 06:05 run
+# today committed a garbage FAIL walkforward that clobbered the good native
+# result via the `pull --rebase -X ours` gotcha (in a REBASE, "ours" = the
+# REMOTE side). Kept dispatch-only as a manual tool.
 on:
-  schedule:
-    - cron: '30 21 * * 1-5'  # ~1h after US close (weeknights) — the box is idle
-    - cron: '23 6 * * 6'     # Saturday early — longest window
-    - cron: '23 6 * * 0'     # Sunday early
   workflow_dispatch:
     inputs:
       months:
