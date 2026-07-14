@@ -19,7 +19,7 @@ from bot.config import CACHE_DIR
 CACHE = os.path.join(CACHE_DIR, "gtrends.json")
 BUDGET_FILE = os.path.join(CACHE_DIR, "gtrends_budget.json")
 TTL_H = 6
-BUDGET_PER_DAY = 40
+BUDGET_PER_DAY = 80   # raised 40->80 (2026-07-14): informal ceiling has headroom
 
 
 def _budget_ok():

@@ -34,7 +34,7 @@ def next_earnings_days(ticker):
         return None
     today = dt.date.today()
     try:
-        r = requests.get(BASE + "/calendar/earnings", params={
+        from bot import apimeter; apimeter.count("finnhub"); r = requests.get(BASE + "/calendar/earnings", params={
             "symbol": ticker, "from": today.isoformat(),
             "to": (today + dt.timedelta(days=100)).isoformat(), "token": k},
             timeout=15)
@@ -56,7 +56,7 @@ def insider_sentiment_bonus(ticker):
         return None
     today = dt.date.today()
     try:
-        r = requests.get(BASE + "/stock/insider-sentiment", params={
+        from bot import apimeter; apimeter.count("finnhub"); r = requests.get(BASE + "/stock/insider-sentiment", params={
             "symbol": ticker, "from": (today - dt.timedelta(days=90)).isoformat(),
             "to": today.isoformat(), "token": k}, timeout=15)
         if r.status_code != 200:
@@ -79,7 +79,7 @@ def analyst_trend(ticker):
     if not k:
         return None
     try:
-        r = requests.get(BASE + "/stock/recommendation",
+        from bot import apimeter; apimeter.count("finnhub"); r = requests.get(BASE + "/stock/recommendation",
                          params={"symbol": ticker, "token": k}, timeout=15)
         if r.status_code != 200:
             return None
