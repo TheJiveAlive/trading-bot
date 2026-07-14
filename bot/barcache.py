@@ -18,6 +18,11 @@ DB = os.path.join(CACHE_DIR, "bars.db")
 def _con():
     os.makedirs(CACHE_DIR, exist_ok=True)
     c = sqlite3.connect(DB, timeout=30)
+    # perf pass 2026-07-14: WAL (concurrent readers don't block the writer)
+    # + 2GB mmap (5.7M-row reads served from page cache, not disk I/O)
+    c.execute("PRAGMA journal_mode=WAL")
+    c.execute("PRAGMA synchronous=NORMAL")
+    c.execute("PRAGMA mmap_size=2147483648")
     c.execute("CREATE TABLE IF NOT EXISTS bars ("
               "ticker TEXT, date TEXT, close REAL, volume REAL, "
               "PRIMARY KEY(ticker, date))")
