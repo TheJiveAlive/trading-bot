@@ -333,16 +333,19 @@ def tune(cfg, start, end):
     """Sweep exit/entry parameters over cached candidates from a prior full
     run. Fast: no SEC fetching, price history only for candidate tickers."""
     cand_cache = os.path.join(CACHE_DIR, "bt_candidates_{}_{}.json".format(start, end))
-    if not os.path.exists(cand_cache):
-        print("no candidate cache for {} -> {}; run the full backtest first "
-              "(same --months value)".format(start, end))
-        sys.exit(1)
-    with open(cand_cache) as f:
-        raw = json.load(f)
-    weekly = {}
-    for k, v in raw.items():
-        y, w = k.rsplit("-", 1)
-        weekly[(int(y), int(w))] = v
+    if os.path.exists(cand_cache):
+        with open(cand_cache) as f:
+            raw = json.load(f)
+        weekly = {}
+        for k, v in raw.items():
+            y, w = k.rsplit("-", 1)
+            weekly[(int(y), int(w))] = v
+    else:
+        # exact-window cache keys roll daily and made tune unrunnable the day
+        # after a full backtest — fall back to the newest cache like
+        # walkforward does (2026-07-14)
+        print("no cache for exact window {} -> {}; using newest".format(start, end))
+        weekly, start, end = _load_candidate_cache()
 
     tickers = sorted({c["ticker"] for v in weekly.values() for c in v})
     print("tune: {} candidate tickers across {} weeks".format(len(tickers), len(weekly)))
