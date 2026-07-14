@@ -1,7 +1,7 @@
 {
- "generated": "2026-07-14T13:46:10+00:00",
+ "generated": "2026-07-14T14:06:15+00:00",
  "model": "ProsusAI/finbert (local CPU)",
- "headlines_scored": 41,
+ "headlines_scored": 45,
  "tickers": {
   "NTSK": {
    "mean": 0.158,
@@ -24,6 +24,18 @@
    "best": null,
    "worst": null
   },
+  "WRAP": {
+   "mean": 0.024,
+   "n": 4,
+   "best": [
+    0.948,
+    "WRAP Receives International Orders Totaling ~$1.2M To Open Q3; Reaffirms Target Of ~100% YoY Revenue Growth In"
+   ],
+   "worst": [
+    -0.853,
+    "Unusual volume stocks in Monday's session"
+   ]
+  },
   "YEXT": {
    "mean": 0.0,
    "n": 2,
@@ -38,13 +50,13 @@
   },
   "SHPH": {
    "mean": 0.0,
-   "n": 2,
+   "n": 3,
    "best": null,
    "worst": null
   },
   "RIG": {
    "mean": 0.0,
-   "n": 2,
+   "n": 3,
    "best": null,
    "worst": null
   },
@@ -133,12 +145,6 @@
     0.827,
     "Paramount Skydance Enhances $30 Per Share Bid For Warner Bros Discovery - Stocktwits"
    ],
-   "worst": null
-  },
-  "WRAP": {
-   "mean": 0.0,
-   "n": 2,
-   "best": null,
    "worst": null
   }
  },
