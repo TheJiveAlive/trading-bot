@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-14T08:49:02Z",
+  "generated": "2026-07-14T12:03:28Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -17,30 +17,5 @@
     "blocked": 0
   },
   "positions": [],
-  "reconciliation": [
-    {
-      "ticker": "AVO",
-      "ledger_shares": 0.6218,
-      "broker_shares": null,
-      "status": "closed_external"
-    },
-    {
-      "ticker": "CAI",
-      "ledger_shares": 0.4922,
-      "broker_shares": null,
-      "status": "closed_external"
-    },
-    {
-      "ticker": "NTSK",
-      "ledger_shares": 0.674,
-      "broker_shares": null,
-      "status": "closed_external"
-    },
-    {
-      "ticker": "UUUU",
-      "ledger_shares": 0.6358,
-      "broker_shares": null,
-      "status": "closed_external"
-    }
-  ]
+  "reconciliation": []
 }
