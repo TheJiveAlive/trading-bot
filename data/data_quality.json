@@ -1,8 +1,8 @@
 {
- "generated": "2026-07-14T08:14:03+00:00",
+ "generated": "2026-07-14T08:18:48+00:00",
  "source": "nightly_audit",
  "tickers_checked": 37,
- "issues": 22,
+ "issues": 24,
  "held_ticker_issues": 1,
  "detail": [
   {
@@ -44,115 +44,128 @@
    "held": false
   },
   {
-   "ticker": "SBLX",
-   "kind": "stale_cache",
-   "cache_last": "2026-04-08",
-   "yahoo_last": "2026-07-10",
-   "held": false
-  },
-  {
-   "ticker": "IMPP",
+   "ticker": "ITRG",
    "kind": "stale_cache",
    "cache_last": "2026-07-07",
    "yahoo_last": "2026-07-13",
    "held": false
   },
   {
-   "ticker": "ONCHW",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-02",
-   "yahoo_last": "2026-07-10",
-   "held": false
-  },
-  {
-   "ticker": "ONCHW",
+   "ticker": "RYLBF",
    "kind": "flatline",
-   "close": 0.4300999939441681,
+   "close": 19.49799919128418,
    "held": false
   },
   {
-   "ticker": "GMTL",
+   "ticker": "MBVIU",
    "kind": "stale_cache",
-   "cache_last": "2026-07-07",
+   "cache_last": "2026-07-06",
    "yahoo_last": "2026-07-13",
    "held": false
   },
   {
-   "ticker": "RELL",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
+   "ticker": "MBVIU",
+   "kind": "flatline",
+   "close": 10.25,
    "held": false
   },
   {
-   "ticker": "NIPG",
+   "ticker": "INTZ",
    "kind": "source_mismatch",
-   "date": "2026-07-02",
-   "cache": 0.247,
-   "yahoo": 7.41,
+   "date": "2026-07-07",
+   "cache": 0.909,
+   "yahoo": 0.87,
    "held": false
   },
   {
-   "ticker": "NIPG",
+   "ticker": "INTZ",
    "kind": "stale_cache",
    "cache_last": "2026-07-07",
    "yahoo_last": "2026-07-13",
    "held": false
   },
   {
-   "ticker": "METCI",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
+   "ticker": "TAC",
+   "kind": "source_mismatch",
+   "date": "2026-07-08",
+   "cache": 14.08,
+   "yahoo": 14.48,
    "held": false
   },
   {
-   "ticker": "HNI",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "INFQ",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "LPAA",
-   "kind": "stale_cache",
-   "cache_last": "2026-07-07",
-   "yahoo_last": "2026-07-13",
-   "held": false
-  },
-  {
-   "ticker": "XOMAP",
+   "ticker": "TAC",
    "kind": "stale_cache",
    "cache_last": "2026-07-08",
    "yahoo_last": "2026-07-13",
    "held": false
   },
   {
-   "ticker": "ODYS",
+   "ticker": "OHACU",
    "kind": "stale_cache",
    "cache_last": "2026-07-07",
    "yahoo_last": "2026-07-13",
    "held": false
   },
   {
-   "ticker": "EU",
-   "kind": "source_mismatch",
-   "date": "2026-07-13",
-   "cache": 1.27,
-   "yahoo": 1.22,
+   "ticker": "XVO",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
    "held": false
   },
   {
-   "ticker": "TXMD",
+   "ticker": "ISRLU",
+   "kind": "stale_cache",
+   "cache_last": "2026-01-30",
+   "yahoo_last": "2026-07-10",
+   "held": false
+  },
+  {
+   "ticker": "RES",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "HIG",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "MENS",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "OPFI",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "OII",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "XYL",
    "kind": "stale_cache",
    "cache_last": "2026-07-08",
+   "yahoo_last": "2026-07-13",
+   "held": false
+  },
+  {
+   "ticker": "PLNT",
+   "kind": "stale_cache",
+   "cache_last": "2026-07-07",
    "yahoo_last": "2026-07-13",
    "held": false
   },
@@ -166,5 +179,5 @@
    "note": "broker is the account of record"
   }
  ],
- "verdict": "22 discrepancies (1 on HELD tickers) \u2014 study session must judge whether these tickers' data can be trusted"
+ "verdict": "24 discrepancies (1 on HELD tickers) \u2014 study session must judge whether these tickers' data can be trusted"
 }
