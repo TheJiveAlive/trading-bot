@@ -37,18 +37,51 @@ def regime(research):
     return v if v in ("risk_on", "neutral", "risk_off") else "neutral"
 
 
-def dynamic_stop_pct(cfg, news_score, research):
-    """Trailing stop %% for one position, given its news and the market regime."""
+def realized_vol_pct(ticker):
+    """20-day close-to-close realized volatility as a DAILY %, from bars.db.
+    None if insufficient history. (True ATR needs high/low we don't cache;
+    close-to-close vol is the available, equivalent-in-spirit measure.)"""
+    try:
+        import math
+        from bot import barcache
+        c = barcache._con()
+        rows = [r[0] for r in c.execute(
+            "SELECT close FROM bars WHERE ticker=? ORDER BY date DESC LIMIT 21",
+            (ticker,)).fetchall()]
+        c.close()
+        if len(rows) < 15:
+            return None
+        rows = rows[::-1]
+        rets = [(rows[i] / rows[i - 1] - 1) for i in range(1, len(rows))
+                if rows[i - 1] > 0]
+        mu = sum(rets) / len(rets)
+        return math.sqrt(sum((r - mu) ** 2 for r in rets) / len(rets)) * 100
+    except Exception:
+        return None
+
+
+def dynamic_stop_pct(cfg, news_score, research, ticker=None):
+    """Trailing stop %% for one position. VOL-SCALED to the instrument first
+    (a $2 mover needs a wider leash than a steady name or it noise-clips —
+    2026-07-14), THEN adjusted for news + regime, THEN clamped."""
     stop = float(cfg["selling"]["trailing_stop_pct"])
+    # 1) scale to the stock's own volatility. ~2.5%/day close-to-close is a
+    #    "typical" small-cap; scale the leash by vol/typical, bounded 0.7–1.8x.
+    if ticker:
+        rv = realized_vol_pct(ticker)
+        if rv is not None:
+            mult = max(0.7, min(rv / 2.5, 1.8))
+            stop *= mult
+    # 2) news + regime move it relative to that vol-appropriate base
     if news_score <= -1.0:
-        stop = min(stop, 6.0)          # bad news: get out sooner
+        stop = min(stop, stop * 0.6, 6.0)   # bad news / flagged: tighter leash
     elif news_score >= 1.0:
-        stop += 2.0                     # good news: give it room to run
+        stop += 2.0                          # good news: room to run
     if regime(research) == "risk_off":
         stop -= 2.0
     elif regime(research) == "risk_on":
         stop += 1.0
-    return max(STOP_FLOOR, min(stop, STOP_CEIL))
+    return round(max(STOP_FLOOR, min(stop, STOP_CEIL)), 1)
 
 
 def buy_threshold(cfg, research):

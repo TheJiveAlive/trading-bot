@@ -54,7 +54,7 @@ def manage_exits(con, cfg, research, report):
                                  else "research avoid")
                 report.append("  ! {} flagged ({}) — stop tightened".format(
                     pos["ticker"], why))
-            stop_pct = risk.dynamic_stop_pct(cfg, pos_news, research)
+            stop_pct = risk.dynamic_stop_pct(cfg, pos_news, research, ticker=pos["ticker"])
 
         # RSI overbought = momentum exhaustion → take profit sooner (sell-side
         # use of the same indicator that gates entries). Only when already green.
@@ -175,7 +175,7 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
         equity = available + sum(
             p["shares"] * (market.last_price(p["ticker"]) or p["avg_cost"])
             for p in ledger.open_positions(con))
-        stop_pct = risk.dynamic_stop_pct(cfg, c["parts"].get("news", 0), research)
+        stop_pct = risk.dynamic_stop_pct(cfg, c["parts"].get("news", 0), research, ticker=c["ticker"])
         affordable = risk.qty(cfg, available / c["price"])
         shares = min(risk.position_size(cfg, equity, c["price"], stop_pct,
                                         conviction=hc), affordable)
