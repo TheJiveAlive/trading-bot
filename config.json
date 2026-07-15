@@ -80,13 +80,13 @@
   },
   "learning": {
     "enabled": true,
-    "auto_apply_tuning": true,
+    "auto_apply_tuning": false,
     "nudge_pct": 5.0,
     "min_trades_per_signal": 4,
     "weight_floor_x": 0.5,
     "weight_ceil_x": 1.5,
     "_auto_tuning_note": "auto_apply_tuning: overnight job auto-applies the best ROBUST stop/take-profit region from the tune sweep, clamped to safe bounds (stop 8-15%, TP 15-40%). Never touches hard vetoes or position caps.",
-    "_pause_note": "Paused 2026-07-14: tune ranks on the 6mo window only; it flip-flops exits against full-year evidence. Re-enable once learn.py ranks across BOTH windows."
+    "_pause_note": "PAUSED again 2026-07-15 after empirical check: full-year sim at 11/22 returned +8.0% vs +40.3% at 12/25-base \u2014 the notch-walk guard ranks worst-case WITHIN the 6-mo sweep window, not ACROSS windows, so it still inherits the window's regime bias. Re-enable only when tune ranks cells across BOTH the 6-mo sweep AND a full-year cell check (post-break weighted). Exits reverted to 12/25 pending that."
   },
   "fractional_shares": true,
   "_fractional_note": "Trading 212's API supports fractional (decimal) share quantities. true = size positions to exact dollar amounts (4dp); false = whole shares only. With fractional on, max_position_usd is deployed precisely and expensive names are reachable.",
@@ -95,8 +95,8 @@
   "force_regime": "risk_on",
   "_force_regime_note": "Overrides the research/quant regime blend. 'risk_on' = full-auto aggressive (lowest buy threshold, widest stops). Set null to restore the adaptive conservative blend. Hard vetoes always apply regardless.",
   "selling": {
-    "trailing_stop_pct": 11.0,
-    "take_profit_pct": 22.0,
+    "trailing_stop_pct": 12.0,
+    "take_profit_pct": 25.0,
     "min_hold_days": 1,
     "max_hold_days": 30,
     "_note": "WINDOW-CONFLICT HOLD (2026-07-14): 6mo/8wk sweeps favour stop8/TP15 (+4.9% OOS) but the full 12mo sim shows -11.5% with them vs +23.5% at 15/25. Set to the overlap-robust middle (12/25, both windows agree the region is profitable) and auto-tune PAUSED until the study adjudicates which window reflects the live regime."
