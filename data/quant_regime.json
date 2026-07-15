@@ -1,5 +1,11 @@
 {
- "generated": "2026-07-15T08:05:14+00:00",
+ "generated": "2026-07-15T08:41:17+00:00",
+ "gold_macro": {
+  "real_yield_10y": 2.36,
+  "real_yield_5d_chg": 0.12,
+  "dxy": 100.88,
+  "gold_regime": "chop"
+ },
  "method": "KMeans k=3 on SPY (vol20, trend20, drawdown), 2y daily",
  "hmm_state": "trending",
  "hmm_persistence": 0.954,
@@ -19,7 +25,7 @@
  ],
  "spy_vol20_ann": 14.1,
  "spy_trend20_pct": 1.81,
- "breadth_pct_above_20dma": 51.7,
+ "breadth_pct_above_20dma": 48.9,
  "cusum_breaks_2y": [
   "2026-03-03",
   "2026-03-20",
