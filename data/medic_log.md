@@ -1,6 +1,58 @@
 # Medic Log
 
-## 2026-07-15 — terminal shows buy line 6.0 vs truth 5.25 (monitor.py, box-local)
+## 2026-07-15 — "T212 API unreachable / exits blind" = broken `requests` stack in the box venv (box-local)
+
+**Report:** `FAILURE_REPORT.json` from tradinghost at 2026-07-15T14:13:18Z. One
+open item: `T212 API` `unreachable`, "broker down during market hours — exits
+blind". `fixed_locally` empty.
+
+**Investigation:**
+- The boxwatch label "broker down" is a **misread**. `data/connectivity.json`
+  (the box's own probe output, `generated` 2026-07-15T14:13:21Z — 3s after the
+  report, committed back via `sync_repo`) shows the decisive fingerprint:
+  - **failed instantly, ms=0:** `T212`, `Alpaca`
+  - **succeeded, normal latency:** `Finnhub` (135ms), `Yahoo` (159ms),
+    `EDGAR` (291ms), `GitHub` (243ms), `ApeWisdom` (263ms)
+- The split is exactly **`requests` vs stdlib `urllib`**. In `boxwatch.connectivity()`
+  the T212 probe (`broker_t212.account_cash`) and the Alpaca probe
+  (`alpaca.latest_prices`) are the only two that go through modules importing
+  `requests` (`bot/broker_t212.py:23`, `bot/alpaca.py:12`). Every probe that
+  succeeded — Finnhub, Yahoo, EDGAR, GitHub, ApeWisdom — uses `urllib.request`
+  (stdlib) via boxwatch's local `http()`/lambdas.
+- **ms=0 proves no network I/O happened** — an unreachable broker or SSL/DNS
+  failure would time out with ms in the hundreds/thousands; ms=0 means the
+  exception was raised *before/at* the `requests` call, i.e. an import-time or
+  immediate failure of the `requests` stack (`requests`/`urllib3`/`certifi`/
+  `charset-normalizer`/`idna`), not a broker outage.
+- **Not repo-fixable:** in this sandbox the same code imports cleanly —
+  `requests 2.31.0`, and `from bot import config, broker_t212, alpaca` succeeds.
+  `requirements.txt` correctly pins `requests>=2.28`. `data/secrets.json` is
+  gitignored (untracked) and `box_exits.sh` re-materializes full secrets from
+  `~/.bot/secrets.json` at runtime, and Finnhub (which reads that same file)
+  worked — so secrets/keys are intact; this is not an auth/IP/key problem.
+- **Real exit risk:** the box's exit loop is `~/rh/scripts/box_exits.sh` →
+  `./venv/bin/python3 run.py exits` (every 5 min, market hours). The whole live
+  path — market data, `broker_t212.place_market_order`, `broker_sync` — runs on
+  `requests`. If `~/rh/venv`'s `requests` is broken, `run.py exits` fails and is
+  swallowed by the script's `|| true`, so stops/take-profits are genuinely NOT
+  being checked ⇒ "exits blind" is accurate, but the cause is a broken venv, not
+  the broker. (`executor._route_live_order` would also fail and queue sells to
+  `pending_orders.json`, which nothing auto-drains — they sit unexecuted.)
+
+**Classification:** **BOX-LOCAL** — a corrupted/partially-upgraded `requests`
+dependency stack in the box's Python environment (`~/rh/venv`, and/or whatever
+interpreter boxwatch itself runs under). Not a T212 outage, not a network/DNS
+fault (all other endpoints healthy), not an auth/key problem, not repo-fixable.
+
+**Action taken:** No code / config / workflow change — the repo and
+`requirements.txt` are correct and import cleanly in the sandbox; per the hard
+rules a speculative edit would not touch the broken component (the box venv) and
+would violate "minimal diff / no drive-by". Emailed the human the confirm-command
+(`~/rh/venv/bin/python3 -c "import requests"`), the force-reinstall of the
+requests stack, a `bot.broker_check` verification, and the `rh-exits.service`
+restart + log check. Flagged high priority: if the trading venv is the affected
+one, exits have been unprotected during market hours since ~14:13Z.
+
 
 **Report:** `FAILURE_REPORT.json` from tradinghost at 2026-07-15T13:32:40Z. One
 open item: terminal "shows wrong values" — display audit found `buy_line` shown
