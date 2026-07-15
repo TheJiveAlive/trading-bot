@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-15T17:53:47Z",
+  "generated": "2026-07-15T17:55:28Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 4 position(s), free \u00a3273.68",
   "cash": {
     "free": 273.68,
-    "total": 499.55,
-    "ppl": 5.4,
+    "total": 499.61,
+    "ppl": 5.46,
     "result": -5.34,
     "invested": 220.47,
     "pieCash": 0,
@@ -46,8 +46,8 @@
       "t212_ticker": "YEXT_US_EQ",
       "shares": 7.8,
       "avg_price": 5.36025641,
-      "current_price": 5.48,
-      "pnl": 0.36
+      "current_price": 5.49,
+      "pnl": 0.42
     }
   ],
   "reconciliation": [
