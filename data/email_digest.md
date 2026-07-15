@@ -12,3 +12,10 @@ should buffer
 Suggested commands:
 - `systemctl --no-pager status '*dispatch*' '*agent*'; systemctl list-timers --all | grep -iE 'intel|risk|dispatch'`
 - `ps -ef | grep -iE 'dispatch|agent|intel|risk
+
+### 16:21 UTC · 🔴 SELL UUUU — 6.1781 shares @ $12.50  ·  P/L −$6.30 (-7.5%)
+SELL UUUU x6.1781 @ $12.50 ($77.23)
+P/L: -$6.30 (-7.5%)
+why: insider selling — Form 144 proposed insider sale $5596k — bearish tell, exiting
+cash: $368.61
+equity: $677.59
