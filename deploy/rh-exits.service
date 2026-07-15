@@ -1,0 +1,8 @@
+[Unit]
+Description=Stock bot exit-stop check (box-native, GH cron unreliable)
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/rh/scripts/box_exits.sh
+TimeoutStartSec=240

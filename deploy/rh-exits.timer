@@ -1,0 +1,10 @@
+[Unit]
+Description=Run stock-bot exit checks every 5 min (market-hours guard in script)
+
+[Timer]
+OnBootSec=90
+OnCalendar=*:0/5
+Persistent=false
+
+[Install]
+WantedBy=timers.target
