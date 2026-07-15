@@ -1,71 +1,53 @@
 {
- "date": "2026-07-14",
- "market_regime": "risk_off",
- "regime_reason": "The Iran ceasefire fully collapsed over the weekend (US bombed 80+ targets, Iran shut the Strait of Hormuz again) and a US naval blockade with a 20% cargo toll takes effect today 4pm EST, sending WTI +9.4% and Nasdaq -1.88%/S&P -0.78% Monday with VIX up to 17.1, and today adds June CPI plus five big-bank earnings (JPM/BAC/GS/WFC/C) as further event risk -- trend and volatility both argue against risk_on.",
+ "date": "2026-07-15",
+ "market_regime": "neutral",
+ "regime_reason": "Yesterday's acute risk_off tail resolved benignly -- June CPI came in cool (headline 3.5% vs 3.8% est, core 2.6%), the July rate HIKE is now off the table (CME 85.6% hold), oil plunged ~21% to ~$77 on the mid-June ceasefire and reopened Strait of Hormuz, VIX fell to ~16.5 and the S&P/Nasdaq sit near record highs (Dow at an intraday ATH, ASML's raised AI-capex guide lifting chips 7/15) -- but a September Fed HIKE is still expected (0% cuts priced, ~42% chance of a year-end hike), breadth is narrow (~49% above 20dma) and the AI/tech rotation persists (IBM -25% on an AI-spend warning), so this is a constructive upgrade off risk_off, not a clean risk_on.",
  "sector_bias": {
-  "Energy": 0.5,
   "Healthcare": 0.4,
+  "Industrials": 0.3,
   "Financial Services": 0.2,
-  "Technology": -0.4
+  "Consumer Defensive": 0.2,
+  "Energy": -0.2,
+  "Technology": -0.3
  },
  "watchlist": [
   {
-   "ticker": "RIG",
-   "note": "Transocean: stock +3.65% 7/13 on continuing $1B+ Equinor harsh-environment backlog (7 rig-years, day rates >$400k) plus ~$185M Norway/Australia add; director Chad Deaton bought $173k 7/2; still pre-earnings (date TBD)."
-  },
-  {
    "ticker": "HDSN",
-   "note": "Hudson Technologies: DLA bridge-modification extended refrigerant supply contract to 11/29/26; 10%-owner Hartree Partners kept buying in the open market 7/6-7/7 at $5.99, on top of its ~$4.5M June/July cluster buy."
-  },
-  {
-   "ticker": "ABSI",
-   "note": "Absci: Phase 1 ABS-201 data (6/24) drove 8-of-9 analyst Buy ratings and PTs up to $17; stock +271% over the quarter. Caveat: priced a $100M equity offering at $7.41 same day as the data (6/24) -- real dilution alongside the real catalyst, size position accordingly."
+   "note": "Hudson Technologies (~$6, NASDAQ): DLA bridge modification (7/) extended the refrigerant supply contract from 7/29/26 to 11/29/26 with options through 5/29/27; 10%-owner Hartree Partners kept buying open-market (5,234 sh 7/7 to 4,976,536 total, +$31k 7/8) -- 769,436 sh bought over the past year with zero sales. Real contract + insider-cluster catalyst, no dilution flag."
   }
  ],
  "avoid": [
-  "DVLT",
-  "SHPH",
-  "PALI",
-  "VMAR",
-  "NVVE",
-  "SNAL",
-  "SDM",
-  "MCRP",
-  "JMG",
-  "REE",
-  "CASI",
-  "EOSE",
-  "BRLS",
-  "CERO",
-  "GTI",
-  "JZXN",
-  "PTNM",
   "BOLD",
+  "BJDX",
+  "ARTV",
+  "PRQR",
+  "TDIC",
+  "PALI",
+  "HNRG",
   "LRMR",
-  "HNRG"
+  "SHPH",
+  "JEM",
+  "DVLT",
+  "RIG",
+  "ABSI",
+  "PTNM"
  ],
- "notes": "Held positions all clean today: UUUU -- CEO Bhappu bought $968k (7/7) and chairman Hansen bought (7/8), no negative news. CAI (Caris Life Sciences) -- a director bought $990k on 7/13 and the Caris Detect test launched commercially in early July; Evercore trimmed its PT to $25 from $30 (7/2) but that's still well above the ~$18 price, a soft, not hard, signal. AVO -- GlobalHarvest/Jay Pack insider buying continues, Q2's -24% revenue/avocado-price-glut miss is already priced in and called temporary by management. NTSK (Netskope) -- fresh 52-week high $21.69, Buy-rated by Wells Fargo/Jefferies/Cantor Fitzgerald this week, no negative news. Flagging again: DVLT is a live wildcard-sleeve position (18.28 sh) but sits on this desk's own avoid list (serial diluter) -- today's broker reconciliation shows it as ledger-only (broker no longer reports the position), worth a human check on whether it was actually closed out; the week's DVLT news (Mandela Dollar stablecoin deal 7/10, Dream Bowl meme-coin listing 7/6) remains speculative pump activity, not a fundamental catalyst, so the avoid call stands if it's still held anywhere.",
  "avoid_evidence": {
-  "DVLT": "serial diluter (855M sh, +1518% YoY), active ATM + repeated 8-Ks; risk officer critical 7/13; manually closed 7/14",
-  "NVVE": "serial-diluter pump pattern (research 7/14); tops momentum screen on pump signature",
-  "SNAL": "serial-diluter pump pattern (research 7/14); tops momentum screen on pump signature",
-  "SHPH": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
-  "PALI": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
-  "VMAR": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
-  "SDM": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
-  "MCRP": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
-  "JMG": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
-  "REE": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
-  "CASI": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
-  "EOSE": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
-  "BRLS": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
-  "CERO": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
-  "GTI": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
-  "JZXN": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
-  "PTNM": "research 7/14 dilution/fraud/delisting screen (WebSearch-verified this morning)",
-  "BOLD": "risk officer CRITICAL 7/14: 8-K offering live while sitting top-2 on the buy radar",
-  "LRMR": "risk officer elevated: live 424B5 offering (drip dilution) while top radar candidate",
-  "HNRG": "risk officer elevated: S-3ASR automatic shelf effective 2026-01-13"
+  "BOLD": "risk officer CRITICAL 7/15: definitive Serapha Bio reverse-merger + $230M concurrent PIPE leaves legacy holders ~3.7% of the combined co; oncology pipeline halted, ~75% workforce cut, hiring pulse now 0 open roles.",
+  "BJDX": "risk officer CRITICAL 7/15: most recent 10-Q discloses going-concern doubt incl. possible Chapter 7; just closed a $23.7M private placement (warrant overhang). Keep hard-vetoed if it resurfaces.",
+  "ARTV": "risk officer elevated 7/15: $300M underwritten offering (23,871,526 sh @ $11.52 + 2.17M pre-funded warrants) closed ~5/11; stock ~$9.35 sits BELOW the offer -- the +4.0 insider score is offering-backer accumulation, not management conviction.",
+  "PRQR": "risk officer elevated 7/15: ~30% dilution -- $50M registered direct (27,624,310 sh @ $1.81) + $9.2M Lilly PIPE closed 6/26, 7/6 F-3 registers 3.03M PIPE sh for resale; stock ~$1.70 below offer, CEO's 7/7 buy came after the raise.",
+  "TDIC": "risk officer elevated 7/15: textbook pump-and-dump -- HK microcap ran ~$0.23 (6/12) to >$10 (6/16) then collapsed to ~$3.59 with no fundamental driver; reject on the pump veto.",
+  "PALI": "risk officer elevated 7/15: active $300M S-3 shelf (7/8) + 13.95M warrants, authorized shares hiked to 450M -- severe dilution overhang despite constructive Phase 2 news.",
+  "HNRG": "risk officer elevated 7/15: S-3ASR automatic shelf effective 2026-01-13, already used twice via 424B5, plus an active $50M ATM -- ongoing drip-dilution setup.",
+  "LRMR": "risk officer elevated 7/15: Feb-2026 $107.6M underwritten offering (20M sh @ $5.00) now underwater near $3.7, plus a live $100M ATM since 2024.",
+  "SHPH": "carried, evidence still live: down ~91% YoY near 52-wk lows despite a token insider buy, 10-for-1 reverse split tied to Nasdaq compliance, pivoting into Dogecoin-mining hardware -- distress, not a turnaround.",
+  "JEM": "risk officer/intel elevated 7/15: 12-for-1 reverse split effective 7/14 (new CUSIP G8071C137) purely for Nasdaq $1 compliance on an unfunded AI/blockchain/crypto-pivot pump; the +0.919 FinBERT is a misattributed generic headline.",
+  "DVLT": "do-not-REBUY 7/15: serial diluter (855M sh) with active pump activity (Mandela Dollar stablecoin 7/10, Dream Bowl meme-coin 7/6); position closed out and broker_state reconciles clean today (last cycle's ledger-only desync resolved).",
+  "RIG": "moved OFF the watchlist 7/15 (was a watchlist name): pending ~$5.8B all-stock Valaris acquisition (15.235 ratio) dilutes existing holders to ~53% of the combined co, carries a DOJ second request (parties won't certify before 7/31, earliest close ~9/29) -- material dilution + binary-vote risk; risk officer + intel concur do-not-chase.",
+  "ABSI": "moved OFF the watchlist 7/15: priced a $100M underwritten offering (13,495,277 sh @ $7.41) on 6/24 alongside the ABS-201 Phase 1 data; ~$10.44 sits ABOVE mean analyst PT -- real dilution, do not buy as a fresh breakout.",
+  "PTNM": "WebSearch-verified 7/14, still live: Nasdaq delisting determination after an SEC trading halt tied to social-media pump-and-dump manipulation; suspension effective 7/16 absent appeal."
  },
- "avoid_rebuilt": "2026-07-14T07:51:27+00:00 evidence-first merge: research screen + risk-officer EDGAR flags; no manual entries (user_watchlist disabled)"
+ "avoid_rebuilt": "2026-07-15 evidence-first rebuild: merged risk.json EDGAR forensics (dated today -- all critical + live-elevated flags) with a WebSearch dilution/delisting screen; RIG and ABSI demoted from the watchlist to avoid on live merger/offering dilution. Dropped yesterday's stale penny carryovers (VMAR, NVVE, SNAL, SDM, MCRP, JMG, REE, CASI, EOSE, BRLS, CERO, GTI, JZXN) per the >7-day re-verify rule -- none re-confirmed today and several are already delisted/suspended (out of the $1-20 tradable universe). No held names on the list.",
+ "notes": "OPERATIONAL, most material item: two HELD names' price caches are badly desynced from the broker of record -- WRAP cache 1.555 (last 7/8) vs broker 2.18 (38.9%) and NTSK cache 12.61 vs broker 14.49 (14.2%); WRAP's stop line $2.03 sits ABOVE the stale cache, so a stop-check reading that cache could PHANTOM-SELL a +$3.11 winner at a fake loss -- a human should confirm the live feed drives the stop logic before the next stop check (dashboard/exit-radar already use the correct price). Held-position news is otherwise clean on a same-day EDGAR/news re-check (NO fresh July offering on any held name): WRAP -- $200M baby-shelf is capacity only, recent insider activity is CEO BUYING; NTSK -- best gainer +$7.09 at $14.49 on an intact breakout but a post-lockup distribution overhang persists (Form 144 1.75M Class A 7/8 + Lightspeed VC sales); UUUU -- -$1.18 at $13.30, $300M ATM undrawn but Chalmers' Form 144 SALE stack (~800k sh, ~$10M+) outweighs the Bhappu/Hansen buys so the insider signal is net-negative; CAI +$0.65 at $17.36 clean (director $990k buy 7/13, Caris Detect launch, $100M buyback); YEXT +$0.75 at $5.49 clean (anti-dilutive $140M self-tender). Note the config force_regime=risk_on overrides this neutral call inside the bot regardless."
 }
