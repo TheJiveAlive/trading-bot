@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 5 position(s), free \u00a3216.62",
   "cash": {
     "free": 216.62,
-    "total": 505.02,
-    "ppl": 5.44,
+    "total": 505.03,
+    "ppl": 5.45,
     "result": 0,
     "invested": 282.96,
     "pieCash": 0,
@@ -23,15 +23,15 @@
       "shares": 41.13,
       "avg_price": 2.07999027,
       "current_price": 2.12,
-      "pnl": 1.12
+      "pnl": 1.11
     },
     {
       "ticker": "UUUU",
       "t212_ticker": "UUUU_US_EQ",
       "shares": 6.18,
       "avg_price": 13.55987055,
-      "current_price": 12.84,
-      "pnl": -3.44
+      "current_price": 12.85,
+      "pnl": -3.4
     },
     {
       "ticker": "CAI",
@@ -39,7 +39,7 @@
       "shares": 4.94,
       "avg_price": 17.1902834,
       "current_price": 17.05,
-      "pnl": -0.64
+      "pnl": -0.65
     },
     {
       "ticker": "NTSK",
@@ -47,7 +47,7 @@
       "shares": 6.41,
       "avg_price": 13.00936037,
       "current_price": 14.62,
-      "pnl": 7.55
+      "pnl": 7.54
     },
     {
       "ticker": "YEXT",
