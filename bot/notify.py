@@ -89,7 +89,34 @@ def _md_to_html(md):
     return "".join(out)
 
 
-def send_email(subject, body, markdown=False):
+
+def _digest_only():
+    try:
+        import json
+        from bot.config import ROOT
+        return json.load(open(os.path.join(ROOT, "config.json"))).get(
+            "email", {}).get("digest_only", False)
+    except Exception:
+        return False
+
+
+def _to_digest(subject, body):
+    """Buffer a suppressed email into data/email_digest.md; the market-close
+    summary flushes it. Only 2 emails/day are actually sent (user 2026-07-15)."""
+    try:
+        import datetime as _dt
+        from bot.config import DATA_DIR
+        with open(os.path.join(DATA_DIR, "email_digest.md"), "a") as f:
+            f.write("\n### {} · {}\n{}\n".format(
+                _dt.datetime.now(_dt.timezone.utc).strftime("%H:%M UTC"),
+                subject, (body or "")[:1200]))
+    except Exception:
+        pass
+
+
+def send_email(subject, body, markdown=False, critical=False):
+    if _digest_only() and not critical:
+        _to_digest(subject, body); return "digested"
     """Report email (research/review/health/learnings): branded dark card.
     markdown=True renders the body as formatted HTML (headings/bold/bullets);
     otherwise the body is shown verbatim in monospace (good for aligned text)."""
@@ -128,7 +155,9 @@ def _deliver_report(subject, inner_html, text_body):
     return _deliver(msg, subject)
 
 
-def send_html_email(subject, html, text, images=None):
+def send_html_email(subject, html, text, images=None, critical=False):
+    if _digest_only() and not critical:
+        _to_digest(subject, text); return "digested"
     """HTML email with plain-text alternative and optional inline PNGs.
 
     images: {content_id: png_bytes} referenced in html as src="cid:content_id".

@@ -21,6 +21,16 @@ fi
 git pull --rebase -X theirs -q origin main || true
 
 # broker/API secrets live outside the repo on the box
+# CONCURRENCY GUARD (2026-07-15): the native session loop OWNS exits during
+# market hours (13:25-20:05 UTC weekdays) — two engines selling the same
+# positions concurrently is a double-sell race. This service only covers the
+# off-hours gap the session leaves.
+H=$(date -u +%H%M); D=$(date -u +%u)
+if [ "$D" -le 5 ] && [ "$H" -ge 1320 ] && [ "$H" -le 2005 ]; then
+  echo "$(date -u +%FT%TZ) session loop owns exits now - skipping" >> logs/box_exits.log 2>/dev/null
+  exit 0
+fi
+
 install -m 600 "$HOME/.bot/secrets.json" data/secrets.json
 
 ./venv/bin/python3 run.py exits >> logs/box_exits.log 2>&1 || true

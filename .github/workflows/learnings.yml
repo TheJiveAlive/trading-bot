@@ -70,7 +70,7 @@ jobs:
           except Exception: md='no learnings file produced'
           parts=md.split('\n## ')
           latest=('## '+parts[-1]) if len(parts)>1 else md
-          notify.send_email('[bot] overnight learnings', latest[:6000], markdown=True)" || true
+          pass  # email suppressed 2026-07-15: folded into the market-close summary" || true
           rm -f data/secrets.json
           git config user.name "trading-bot"
           git config user.email "trading-bot@users.noreply.github.com"

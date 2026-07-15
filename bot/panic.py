@@ -63,7 +63,7 @@ def flatten_all(reason="manual panic flatten"):
 
     # summary email — always sent, so the button doubles as an email-path test
     notify.send_email(
-        "🛑 PANIC FLATTEN — {} position(s) sold, {} order(s) cancelled".format(
+        "🛑 PANIC FLATTEN — {} position(s, critical=True) sold, {} order(s) cancelled".format(
             len(sold), cancelled),
         "\n".join(report) + "\n\nReason: {}\nMode: {} ({}), orders {}".format(
             reason, cfg.get("mode"),

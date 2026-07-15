@@ -46,7 +46,7 @@ def latest_prices(tickers):
         return {}
     out = {}
     try:
-        r = requests.get(DATA_BASE + "/stocks/trades/latest",
+        from bot import apimeter; apimeter.count("alpaca"); r = requests.get(DATA_BASE + "/stocks/trades/latest",
                          params={"symbols": ",".join(tickers), "feed": "iex"},
                          headers=_headers(), timeout=20)
         if r.status_code != 200:
@@ -79,7 +79,7 @@ def historical_bars(tickers, start, end, timeframe="1Day"):
             if page_token:
                 params["page_token"] = page_token
             try:
-                r = requests.get(DATA_BASE + "/stocks/bars", params=params,
+                from bot import apimeter; apimeter.count("alpaca"); r = requests.get(DATA_BASE + "/stocks/bars", params=params,
                                  headers=_headers(), timeout=40)
                 if r.status_code != 200:
                     break
@@ -106,7 +106,7 @@ def latest_quote(ticker):
     if not configured():
         return (None, None)
     try:
-        r = requests.get(DATA_BASE + "/stocks/quotes/latest",
+        from bot import apimeter; apimeter.count("alpaca"); r = requests.get(DATA_BASE + "/stocks/quotes/latest",
                          params={"symbols": ticker, "feed": "iex"},
                          headers=_headers(), timeout=15)
         if r.status_code != 200:

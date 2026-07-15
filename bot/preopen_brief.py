@@ -132,7 +132,7 @@ def main():
         subject, md = build()
     except Exception as e:
         subject, md = "[bot] pre-open brief FAILED", "Error: {}".format(e)
-    notify.send_email(subject, md, markdown=True)
+    notify.send_email(subject, md, markdown=True, critical=True)
     print("sent:", subject)
 
 

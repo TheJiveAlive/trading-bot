@@ -123,5 +123,9 @@
     "enabled": true,
     "timeout_s": 90,
     "_note": "Pre-buy critic: local Claude CLI reviews each buy before execution (subscription auth from the vault). FAIL-OPEN: if Claude is unreachable the buy proceeds \u2014 advisory layer, hard vetoes already ran. Vetoes logged as critic_veto."
+  },
+  "email": {
+    "digest_only": true,
+    "_note": "2026-07-15: only 2 emails/day \u2014 pre-open plan (14:25 UK) and market-close summary (20:05 UTC). All other emails buffer into data/email_digest.md, flushed by the close summary. panic/flatten still sends immediately (critical)."
   }
 }
