@@ -325,10 +325,65 @@ def sync_repo():
     return False
 
 
+def connectivity():
+    """Probe every external dependency (~1 req each, tight timeouts) and
+    write data/connectivity.json for the terminal monitor. T212 failing
+    during market hours is a real problem and joins the open list."""
+    import time as _t
+    checks = []
+
+    def probe(name, fn):
+        t0 = _t.time()
+        try:
+            ok = bool(fn())
+        except Exception:
+            ok = False
+        checks.append({"name": name, "ok": ok,
+                       "ms": int((_t.time() - t0) * 1000)})
+        return ok
+
+    def http(url, hdrs=None, timeout=8):
+        req = urllib.request.Request(url, headers=hdrs or {"User-Agent": "tradinghost"})
+        return urllib.request.urlopen(req, timeout=timeout).status == 200
+
+    import sys
+    sys.path.insert(0, RH)
+    os.chdir(RH)
+    t212_ok = True
+    try:
+        import warnings; warnings.filterwarnings("ignore")
+        from bot import config, broker_t212 as bt
+        cfg = config.load()
+        t212_ok = probe("T212", lambda: bt.account_cash(cfg).get("total") is not None)
+    except Exception:
+        checks.append({"name": "T212", "ok": False, "ms": 0}); t212_ok = False
+    probe("Alpaca", lambda: http("https://api.alpaca.markets/v2/clock") or True)  # 401 = reachable
+    probe("Finnhub", lambda: http("https://finnhub.io/api/v1/stock/market-status?exchange=US") or True)
+    probe("Yahoo", lambda: http("https://query1.finance.yahoo.com/v8/finance/chart/SPY?range=1d&interval=1d",
+                                {"User-Agent": "Mozilla/5.0"}))
+    probe("EDGAR", lambda: http("https://data.sec.gov/submissions/CIK0000320193.json",
+                                {"User-Agent": "trading-bot research joshua.ive@gmail.com"}))
+    probe("GitHub", lambda: http("https://api.github.com/repos/{}".format(REPO)))
+    probe("ApeWisdom", lambda: http("https://apewisdom.io/api/v1.0/filter/wallstreetbets"))
+    out = {"generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+           "checks": checks,
+           "ok": sum(1 for c in checks if c["ok"]), "total": len(checks)}
+    try:
+        json.dump(out, open(os.path.join(RH, "data", "connectivity.json"), "w"))
+    except Exception:
+        pass
+    return out, t212_ok
+
+
 def main():
     now = dt.datetime.now(dt.timezone.utc)
     sync_repo()
     fixed, open_ = check(now)
+    conn, t212_ok = connectivity()
+    print("connectivity: {}/{} ok".format(conn["ok"], conn["total"]))
+    if not t212_ok and _market_hours(now):
+        open_.append({"what": "T212 API", "state": "unreachable",
+                      "action": "broker down during market hours — exits blind"})
     for p in fixed:
         print("FIXED:", p)
     for p in open_:
