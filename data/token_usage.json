@@ -637,5 +637,14 @@
     "cache_read": 541476,
     "cost_usd": 1.1654,
     "duration_ms": 225672
+  },
+  {
+    "ts": "2026-07-15T15:02:57+00:00",
+    "label": "intel",
+    "input_tokens": 2521,
+    "output_tokens": 7727,
+    "cache_read": 878560,
+    "cost_usd": 1.5698,
+    "duration_ms": 155702
   }
 ]
