@@ -1,5 +1,49 @@
 # Medic Log
 
+## 2026-07-15 — terminal shows buy line 6.0 vs truth 5.25 (monitor.py, box-local)
+
+**Report:** `FAILURE_REPORT.json` from tradinghost at 2026-07-15T13:32:40Z. One
+open item: terminal "shows wrong values" — display audit found `buy_line` shown
+`6.0` while truth is `5.25`, `kind=code`. `fixed_locally` empty. Local diagnosis:
+render/computation bug in the display path (wrong variable / rounding-ceil /
+regime-adjusted value), coincident with `goldbot-cnews.service` failing to start
+(start timed out, SIGTERM 15); high severity.
+
+**Investigation:**
+- Source of truth is correct. `risk.buy_threshold(cfg, research)` = `5.25`
+  (`config.json` `buying.min_composite_score` = 5.25 + neutral-regime adj 0.0).
+  Verified live: `research.json` is **fresh** (date 2026-07-15, regime
+  `neutral`), and the function returns 5.25. `data/display_audit.json` truth
+  block agrees (`buy_line: 5.25`).
+- Because the current regime is neutral and research is fresh, the stale-regime
+  theory (goldbot-cnews hang feeding a stale adjustment) is **ruled out**: 5.25
+  is already the correct neutral value. The auditor's `kind=code` confirms this
+  is a formula defect in the renderer, not stale data.
+- Every **repo-side** renderer is correct — both `bot/preopen_brief.py:82` and
+  `bot/dashboard.py` (1887/2232/2292) call `risk.buy_threshold` and would print
+  5.25. `git grep` finds no repo code that emits "buy line 6.0".
+- The wrong `6.0` is produced by the terminal monitor the auditor renders,
+  `~/monitor.py` (`bot/displayaudit.py:27` `MON = ~/monitor.py`). That file is
+  **not in this repo** (`git ls-files` has no monitor.py; it lives beside the
+  `~/rh` checkout, not inside it). It is not importing `risk.buy_threshold` — if
+  it were, it would show 5.25 — so it carries its own divergent formula. `6.0`
+  is consistent with `ceil(5.25)` / round-up, or a hardcoded base+regime.
+- `goldbot-cnews.service` start-timeout is a systemd/host issue; not reachable
+  from the sandbox and, per the above, not the cause of the display number.
+
+**Classification:** Both items **BOX-LOCAL**. The buggy renderer (`~/monitor.py`)
+and the timed-out unit both live only on tradinghost. Not repo-fixable.
+
+**Action taken:** No code / config / workflow change. The repo's source of truth
+and all repo renderers are already correct at 5.25; per the hard rules a
+speculative edit would not touch the broken component (the box-local monitor) and
+would violate "minimal diff / no drive-by". Emailed the human the exact fix for
+`~/monitor.py` (point its buy-line render at `risk.buy_threshold(cfg, research)`
+formatted `{:.2f}`, dropping any local ceil/duplicated formula) plus the
+systemd/journal diagnostics and restart for `goldbot-cnews.service`. Operator
+risk noted: the terminal reads ~14% high (6.0 vs 5.25) but the **engine trades
+against the correct 5.25** — display-only, no trade impact.
+
 ## 2026-07-14 — risk.json 203m stale (risk dispatch leg dark)
 
 **Report:** `FAILURE_REPORT.json` from tradinghost at 2026-07-14T17:43:05Z. One
