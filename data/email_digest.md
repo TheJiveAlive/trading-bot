@@ -59,3 +59,10 @@ P/L: +$2.12 (+2.5%)
 why: trailing stop (11%): 10.7% off high
 cash: $454.28
 equity: $670.45
+
+### 18:43 UTC · [bot boxwatch] 0 self-healed, 2 open
+## Boxwatch report — 18:43 UTC
+- **OPEN**: intel.json — 130m stale (agent dispatch chain may be broken)
+- **OPEN**: risk.json — 142m stale (agent dispatch chain may be broken)
+
+Sandboxed medic dispatched (unless on cooldown).
