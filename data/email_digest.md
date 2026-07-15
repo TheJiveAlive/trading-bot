@@ -52,3 +52,10 @@ Sandboxed medic dispatched (unless on cooldown).
 - **OPEN**: risk.json — 132m stale (agent dispatch chain may be broken)
 
 Sandboxed medic dispatched (unless on cooldown).
+
+### 18:39 UTC · 🔴 SELL NTSK — 6.4097 shares @ $13.37  ·  P/L +$2.12 (+2.5%)
+SELL NTSK x6.4097 @ $13.37 ($85.67)
+P/L: +$2.12 (+2.5%)
+why: trailing stop (11%): 10.7% off high
+cash: $454.28
+equity: $670.45
