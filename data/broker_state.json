@@ -1,93 +1,13 @@
 {
-  "generated": "2026-07-15T14:04:44Z",
+  "generated": "2026-07-15T14:06:46Z",
   "environment": "demo",
-  "configured": true,
+  "configured": false,
   "live_orders_enabled": true,
   "mode": "live",
   "account_currency": "GBP",
-  "ok": true,
-  "detail": "demo account reachable: 5 position(s), free \u00a3216.62",
-  "cash": {
-    "free": 216.62,
-    "total": 509.92,
-    "ppl": 10.34,
-    "result": 0,
-    "invested": 282.96,
-    "pieCash": 0,
-    "blocked": 0
-  },
-  "positions": [
-    {
-      "ticker": "WRAP",
-      "t212_ticker": "WRTC_US_EQ",
-      "shares": 41.13,
-      "avg_price": 2.07999027,
-      "current_price": 2.26,
-      "pnl": 5.37
-    },
-    {
-      "ticker": "UUUU",
-      "t212_ticker": "UUUU_US_EQ",
-      "shares": 6.18,
-      "avg_price": 13.55987055,
-      "current_price": 13.02,
-      "pnl": -2.64
-    },
-    {
-      "ticker": "CAI",
-      "t212_ticker": "CAI1_US_EQ",
-      "shares": 4.94,
-      "avg_price": 17.1902834,
-      "current_price": 17.13,
-      "pnl": -0.37
-    },
-    {
-      "ticker": "NTSK",
-      "t212_ticker": "NTSK_US_EQ",
-      "shares": 6.41,
-      "avg_price": 13.00936037,
-      "current_price": 14.53,
-      "pnl": 7.09
-    },
-    {
-      "ticker": "YEXT",
-      "t212_ticker": "YEXT_US_EQ",
-      "shares": 7.8,
-      "avg_price": 5.36025641,
-      "current_price": 5.53,
-      "pnl": 0.89
-    }
-  ],
-  "reconciliation": [
-    {
-      "ticker": "CAI",
-      "ledger_shares": 4.9363,
-      "broker_shares": 4.94,
-      "status": "match"
-    },
-    {
-      "ticker": "NTSK",
-      "ledger_shares": 6.4097,
-      "broker_shares": 6.41,
-      "status": "match"
-    },
-    {
-      "ticker": "UUUU",
-      "ledger_shares": 6.1781,
-      "broker_shares": 6.18,
-      "status": "match"
-    },
-    {
-      "ticker": "WRAP",
-      "ledger_shares": 41.1342,
-      "broker_shares": 41.13,
-      "status": "match"
-    },
-    {
-      "ticker": "YEXT",
-      "ledger_shares": 7.8044,
-      "broker_shares": 7.8,
-      "status": "match"
-    }
-  ]
+  "ok": false,
+  "detail": "no T212 API key set \u2014 broker sync idle (dashboard is showing the paper ledger)",
+  "cash": null,
+  "positions": [],
+  "reconciliation": []
 }
