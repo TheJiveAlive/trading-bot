@@ -25,3 +25,9 @@ equity: $677.59
 - **OPEN**: risk.json — 92m stale (agent dispatch chain may be broken)
 
 Sandboxed medic dispatched (unless on cooldown).
+
+### 18:03 UTC · [bot boxwatch] 0 self-healed, 1 open
+## Boxwatch report — 18:03 UTC
+- **OPEN**: risk.json — 102m stale (agent dispatch chain may be broken)
+
+Sandboxed medic dispatched (unless on cooldown).
