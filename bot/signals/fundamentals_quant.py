@@ -135,10 +135,17 @@ def piotroski_part(ticker, weight=1.0):
 
 
 def z_distress(ticker):
-    """(True, z) only on POSITIVE evidence of distress (classic Z < 1.8)."""
+    """(True, z) only on CORROBORATED distress: Z < 1.8 AND Piotroski <= 4.
+
+    Classic Z alone false-positives on cash-rich growth names (built for
+    manufacturers — live test 2026-07-15: NTSK Z=-0.18 / F=6 and YEXT Z=0.21
+    / F=7 are healthy SaaS, while PRQR Z=-3.9 / F=2 is a genuine cash-burn
+    trap). Requiring BOTH weak keeps the veto for the real spirals only."""
     v = scores(ticker)
     z = v.get("altman_z")
-    return (z is not None and z < 1.8), z
+    fsc = v.get("piotroski")
+    hit = (z is not None and z < 1.8 and fsc is not None and fsc <= 4)
+    return hit, z
 
 
 if __name__ == "__main__":
