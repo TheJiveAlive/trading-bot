@@ -357,8 +357,17 @@ def connectivity():
         t212_ok = probe("T212", lambda: bt.account_cash(cfg).get("total") is not None)
     except Exception:
         checks.append({"name": "T212", "ok": False, "ms": 0}); t212_ok = False
-    probe("Alpaca", lambda: http("https://api.alpaca.markets/v2/clock") or True)  # 401 = reachable
-    probe("Finnhub", lambda: http("https://finnhub.io/api/v1/stock/market-status?exchange=US") or True)
+    # authed probes — validates the KEYS too, not just reachability
+    def _alpaca():
+        from bot import alpaca
+        return alpaca.latest_prices(["AAPL"]).get("AAPL") is not None
+    probe("Alpaca", _alpaca)
+
+    def _finnhub():
+        sec = json.load(open(SECRETS))
+        return http("https://finnhub.io/api/v1/quote?symbol=AAPL&token="
+                    + sec.get("finnhub_key", ""))
+    probe("Finnhub", _finnhub)
     probe("Yahoo", lambda: http("https://query1.finance.yahoo.com/v8/finance/chart/SPY?range=1d&interval=1d",
                                 {"User-Agent": "Mozilla/5.0"}))
     probe("EDGAR", lambda: http("https://data.sec.gov/submissions/CIK0000320193.json",
