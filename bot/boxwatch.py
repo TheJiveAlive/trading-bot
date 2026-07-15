@@ -236,6 +236,21 @@ def check(now=None):
     except Exception:
         pass
 
+    # SECRETS SELF-HEAL (2026-07-15): data/secrets.json vanished mid-session
+    # (T212+Alpaca went dark, exits ran blind on cached prices). The vault is
+    # the durable copy — if the runtime file is missing but the vault exists,
+    # reinstall it immediately and log the heal.
+    try:
+        sec_run = os.path.join(RH, "data", "secrets.json")
+        if not os.path.exists(sec_run) and os.path.exists(SECRETS):
+            import shutil
+            shutil.copy(SECRETS, sec_run)
+            os.chmod(sec_run, 0o600)
+            fixed.append({"what": "data/secrets.json", "state": "missing",
+                          "action": "reinstalled from vault (self-heal)"})
+    except Exception:
+        pass
+
     # git repo health (empty-object corruption killed pulls once already)
     g = _repair_git(st)
     if g:
