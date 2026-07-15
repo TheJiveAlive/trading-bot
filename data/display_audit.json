@@ -1,1 +1,18 @@
-{"generated": "2026-07-15T13:31:39+00:00", "deterministic_issues": [{"field": "buy_line", "shown": 6.0, "truth": 5.25, "kind": "code"}], "semantic_issues": [], "clean": false, "truth": {"buy_line": 5.25, "regime": "neutral", "positions": {"WRAP": 2.09, "UUUU": -1.46, "CAI": -0.48, "NTSK": 6.94, "YEXT": 0.93}, "account_total": 507.6}}
+{
+ "generated": "2026-07-15T13:33:43+00:00",
+ "deterministic_issues": [],
+ "semantic_issues": [],
+ "clean": true,
+ "truth": {
+  "buy_line": 5.25,
+  "regime": "neutral",
+  "positions": {
+   "WRAP": 1.16,
+   "UUUU": -1.28,
+   "CAI": 0.03,
+   "NTSK": 8.6,
+   "YEXT": 1.16
+  },
+  "account_total": 509.25
+ }
+}
