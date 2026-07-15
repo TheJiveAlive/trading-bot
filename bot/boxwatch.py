@@ -222,6 +222,25 @@ def check(now=None):
             except FileNotFoundError:
                 pass
 
+    # git-sync gap: box falling behind origin means agent data (intel/risk)
+    # isn't reaching the live loop — the 2026-07-15 stale-lock symptom.
+    _clear_stale_lock()
+    code, behind = sh("git -C {} rev-list HEAD..origin/main --count 2>/dev/null".format(RH))
+    if behind.strip().isdigit() and int(behind) > 3:
+        # try to self-heal the pull first
+        sh("cd {} && git add -A && git -c user.name=bot -c user.email=b@l commit "
+           "-m heal 2>/dev/null; git pull --rebase -X theirs origin main".format(RH), timeout=90)
+        code2, behind2 = sh("git -C {} rev-list HEAD..origin/main --count 2>/dev/null".format(RH))
+        if behind2.strip().isdigit() and int(behind2) > 3:
+            open_.append({"what": "git sync", "state": "{} commits behind origin".format(behind2),
+                          "action": "box not pulling — agent data stale on box"})
+        else:
+            fixed.append({"what": "git sync", "state": "was {} behind".format(behind),
+                          "action": "cleared lock + pulled"})
+
+    # git fetch so the behind-count is current
+    sh("git -C {} fetch -q origin 2>/dev/null".format(RH), timeout=30)
+
     # display-value audit: a CODE-level display bug (terminal shows a wrong
     # number/label) escalates to the medic — data-staleness is self-healing so
     # it's not escalated. Three such bugs surfaced by eye 2026-07-15.
@@ -337,12 +356,29 @@ def dispatch_medic(report):
     return code == 204
 
 
+def _clear_stale_lock():
+    """A crashed git process leaves .git/index.lock, which freezes EVERY git
+    op — the box fell 7 commits behind for 3.5h on 2026-07-15. If no git
+    process is running, the lock is stale: remove it."""
+    lock = os.path.join(RH, ".git", "index.lock")
+    if os.path.exists(lock):
+        code, out = sh("pgrep -a git | grep -v pgrep")
+        if not out.strip():
+            try:
+                os.remove(lock)
+                return True
+            except Exception:
+                pass
+    return False
+
+
 def sync_repo():
     """Keep ~/rh in sync every 10 min. The working tree is perpetually dirty
     (renders + data files), which silently blocked every ad-hoc `pull
     --rebase` — 4 separate stale-code incidents on 2026-07-14 alone. One
     owner for sync: commit the data dirt, pull (-X theirs = local data wins
     conflicts), push. Code arrives; results leave."""
+    _clear_stale_lock()
     sh("cd {} && git add -A >/dev/null 2>&1 && "
        "git -c user.name=trading-bot -c user.email=bot@local "
        "commit -q -m 'boxwatch sync' >/dev/null 2>&1".format(RH))
