@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-15T13:33:43+00:00",
+ "generated": "2026-07-15T13:50:43+00:00",
  "deterministic_issues": [],
  "semantic_issues": [],
  "clean": true,
@@ -7,12 +7,12 @@
   "buy_line": 5.25,
   "regime": "neutral",
   "positions": {
-   "WRAP": 1.16,
-   "UUUU": -1.28,
-   "CAI": 0.03,
-   "NTSK": 8.6,
-   "YEXT": 1.16
+   "WRAP": 1.42,
+   "UUUU": -3.39,
+   "CAI": -0.71,
+   "NTSK": 7.36,
+   "YEXT": 0.85
   },
-  "account_total": 509.25
+  "account_total": 505.11
  }
 }
