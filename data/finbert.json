@@ -1,7 +1,7 @@
 {
- "generated": "2026-07-15T16:06:08+00:00",
+ "generated": "2026-07-15T16:26:27+00:00",
  "model": "ProsusAI/finbert (local CPU)",
- "headlines_scored": 58,
+ "headlines_scored": 59,
  "tickers": {
   "NTSK": {
    "mean": 0.158,
@@ -10,12 +10,6 @@
     0.631,
     "$NTSK stock is up 3% today. Here's what we see in our data. - Quiver Quantitative"
    ],
-   "worst": null
-  },
-  "UUUU": {
-   "mean": 0.0,
-   "n": 5,
-   "best": null,
    "worst": null
   },
   "CAI": {
@@ -42,6 +36,12 @@
   "YEXT": {
    "mean": 0.0,
    "n": 4,
+   "best": null,
+   "worst": null
+  },
+  "UUUU": {
+   "mean": 0.0,
+   "n": 6,
    "best": null,
    "worst": null
   },
