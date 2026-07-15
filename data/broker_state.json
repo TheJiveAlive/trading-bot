@@ -1,18 +1,18 @@
 {
-  "generated": "2026-07-15T16:19:52Z",
+  "generated": "2026-07-15T16:21:23Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
   "mode": "live",
   "account_currency": "GBP",
   "ok": true,
-  "detail": "demo account reachable: 5 position(s), free \u00a3216.62",
+  "detail": "demo account reachable: 4 position(s), free \u00a3273.68",
   "cash": {
-    "free": 216.62,
-    "total": 502.9,
-    "ppl": 3.32,
-    "result": 0,
-    "invested": 282.96,
+    "free": 273.68,
+    "total": 502.52,
+    "ppl": 8.37,
+    "result": -5.34,
+    "invested": 220.47,
     "pieCash": 0,
     "blocked": 0
   },
@@ -23,31 +23,23 @@
       "shares": 41.13,
       "avg_price": 2.07999027,
       "current_price": 2.21,
-      "pnl": 3.56
-    },
-    {
-      "ticker": "UUUU",
-      "t212_ticker": "UUUU_US_EQ",
-      "shares": 6.18,
-      "avg_price": 13.55987055,
-      "current_price": 12.5,
-      "pnl": -5.27
+      "pnl": 3.53
     },
     {
       "ticker": "CAI",
       "t212_ticker": "CAI1_US_EQ",
       "shares": 4.94,
       "avg_price": 17.1902834,
-      "current_price": 17.55,
-      "pnl": 0.9
+      "current_price": 17.54,
+      "pnl": 0.84
     },
     {
       "ticker": "NTSK",
       "t212_ticker": "NTSK_US_EQ",
       "shares": 6.41,
       "avg_price": 13.00936037,
-      "current_price": 13.76,
-      "pnl": 3.14
+      "current_price": 13.74,
+      "pnl": 3.02
     },
     {
       "ticker": "YEXT",
@@ -55,7 +47,7 @@
       "shares": 7.8,
       "avg_price": 5.36025641,
       "current_price": 5.57,
-      "pnl": 0.99
+      "pnl": 0.98
     }
   ],
   "reconciliation": [
@@ -69,12 +61,6 @@
       "ticker": "NTSK",
       "ledger_shares": 6.4097,
       "broker_shares": 6.41,
-      "status": "match"
-    },
-    {
-      "ticker": "UUUU",
-      "ledger_shares": 6.1781,
-      "broker_shares": 6.18,
       "status": "match"
     },
     {
