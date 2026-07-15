@@ -1,7 +1,7 @@
 {
- "generated": "2026-07-15T07:46:08+00:00",
+ "generated": "2026-07-15T08:06:10+00:00",
  "model": "ProsusAI/finbert (local CPU)",
- "headlines_scored": 54,
+ "headlines_scored": 55,
  "tickers": {
   "NTSK": {
    "mean": 0.158,
@@ -28,8 +28,8 @@
    "worst": null
   },
   "WRAP": {
-   "mean": 0.024,
-   "n": 4,
+   "mean": 0.019,
+   "n": 5,
    "best": [
     0.948,
     "WRAP Receives International Orders Totaling ~$1.2M To Open Q3; Reaffirms Target Of ~100% YoY Revenue Growth In"
