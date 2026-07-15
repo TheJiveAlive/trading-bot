@@ -107,11 +107,12 @@ def adjust_weights():
 
 
 def auto_apply_tuning():
-    """When learning.auto_apply_tuning is on, pick the best ROBUST stop/take-profit
-    region from the tune sweep and apply it to config, clamped to safe bounds.
-    Robust = the parameter whose neighbourhood also performs well, not the single
-    lucky top row. Never touches hard vetoes or position caps."""
+    """Guarded auto-tune (2026-07-15, per the exit-window study): tighten
+    stop/TP toward the robust cell, but only BY ONE GRID NOTCH per run and
+    only if the data supports it. Exits walk down gradually and reverse if
+    the regime flips, instead of whiplashing to a recency-overfit cell."""
     import os
+    from collections import defaultdict
     cfg = botconfig.load()
     if not cfg.get("learning", {}).get("auto_apply_tuning"):
         return "auto-tuning disabled"
@@ -121,59 +122,58 @@ def auto_apply_tuning():
     rows = json.load(open(path))
     if not rows:
         return "empty tune results"
-    # group by (stop, tp); score each by MEDIAN return across its variants
-    from collections import defaultdict
-    import statistics
+
+    STOP_GRID = [8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0]
+    TP_GRID = [15.0, 18.0, 20.0, 22.0, 25.0, 28.0]
+
+    def step_toward(cur, target, grid):
+        cur = min(grid, key=lambda g: abs(g - cur))
+        tgt = min(grid, key=lambda g: abs(g - target))
+        i, j = grid.index(cur), grid.index(tgt)
+        if i == j:
+            return cur
+        return grid[i + (1 if j > i else -1)]
+
     groups = defaultdict(list)
     for r in rows:
         groups[(r["stop"], r["tp"])].append(r["return_pct"])
-    ranked = sorted(groups.items(), key=lambda kv: statistics.median(kv[1]), reverse=True)
-    (best_stop, best_tp), rets = ranked[0]
-    # clamp to safe bounds
-    best_stop = max(8.0, min(float(best_stop), 15.0))
-    # TP ceiling 30 (was 40): a small live book needs closed trades as learning
-    # evidence — letting tune push TP to 40 starved signal_rewards of samples.
-    best_tp = max(15.0, min(float(best_tp), 30.0)) if best_tp < 900 else 30.0
+    ranked = sorted(groups.items(), key=lambda kv: min(kv[1]), reverse=True)
+    (tgt_stop, tgt_tp), rets = ranked[0]
+    tgt_stop = max(8.0, min(float(tgt_stop), 15.0))
+    tgt_tp = max(15.0, min(float(tgt_tp), 28.0)) if tgt_tp < 900 else 28.0
 
-    # weekly buy-frequency base: pick the median-best buys/wk from the sweep.
-    # Evidence (2026-07-13 sweep): 1/wk 7.2%, 2/wk 30.4%, 3/wk 28.6%, 4/wk
-    # 27.6% — frequency past ~2-3 decays returns (each extra buy dips into
-    # weaker candidates). Bounds [4, 8] during the demo rehearsal (floor 4
-    # keeps closed-trade evidence flowing to the learning loop); tighten the
-    # floor to 2 at go-live. The regime/stress dynamic caps (risk.dynamic_caps)
-    # still breathe ±2 around whatever base is set here.
+    cur_stop = float(cfg["selling"]["trailing_stop_pct"])
+    cur_tp = float(cfg["selling"]["take_profit_pct"])
+    new_stop = step_toward(cur_stop, tgt_stop, STOP_GRID)
+    new_tp = step_toward(cur_tp, tgt_tp, TP_GRID)
+
     bgroups = defaultdict(list)
     for r in rows:
         b = r.get("buys_wk")
         if b is not None:
             bgroups[int(b)].append(r["return_pct"])
-    best_buys = None
+    cur_buys = cfg["buying"].get("max_buys_per_week", 4)
+    new_buys = cur_buys
     if bgroups:
-        best_buys = sorted(bgroups.items(),
-                           key=lambda kv: statistics.median(kv[1]),
-                           reverse=True)[0][0]
-        best_buys = max(4, min(best_buys * 2, 8))   # sweep tops at 4; base ~2x
+        tgt_buys = max(4, min(sorted(bgroups.items(), key=lambda kv: min(kv[1]), reverse=True)[0][0] * 2, 8))
+        new_buys = cur_buys + (1 if tgt_buys > cur_buys else -1 if tgt_buys < cur_buys else 0)
+        new_buys = max(4, min(new_buys, 8))
 
     con = ledger.connect()
-    old = (cfg["selling"]["trailing_stop_pct"], cfg["selling"]["take_profit_pct"],
-           cfg["buying"].get("max_buys_per_week"))
-    new = (best_stop, best_tp, best_buys if best_buys else old[2])
-    if new != old:
-        cfg["selling"]["trailing_stop_pct"] = best_stop
-        cfg["selling"]["take_profit_pct"] = best_tp
-        if best_buys:
-            cfg["buying"]["max_buys_per_week"] = best_buys
-            cfg["buying"]["max_buys_per_week_hc"] = best_buys * 2
+    changed = (new_stop, new_tp, new_buys) != (cur_stop, cur_tp, cur_buys)
+    if changed:
+        cfg["selling"]["trailing_stop_pct"] = new_stop
+        cfg["selling"]["take_profit_pct"] = new_tp
+        cfg["buying"]["max_buys_per_week"] = new_buys
+        cfg["buying"]["max_buys_per_week_hc"] = new_buys * 2
         with open(os.path.join(ROOT, "config.json"), "w") as f:
             json.dump(cfg, f, indent=2)
-        msg = ("auto-tuned: stop {}->{}%, tp {}->{}%, buys/wk {}->{} "
-               "(robust median return {:+.1f}%)").format(
-            old[0], best_stop, old[1], best_tp, old[2], new[2],
-            statistics.median(rets))
+        msg = ("auto-tuned (1-notch, worst-case): stop {}->{}%, tp {}->{}%, buys/wk {}->{} (target {}/{}; worst-case {:+.1f}%)").format(
+            cur_stop, new_stop, cur_tp, new_tp, cur_buys, new_buys, tgt_stop, tgt_tp, min(rets))
         ledger.log_decision(con, "auto_tune", msg)
         con.commit()
     else:
-        msg = "auto-tune: current params already optimal (stop {}%, tp {}%, buys/wk {})".format(*old)
+        msg = "auto-tune: already at robust target (stop {}%, tp {}%, buys/wk {})".format(cur_stop, cur_tp, cur_buys)
     con.close()
     print(msg)
     return msg

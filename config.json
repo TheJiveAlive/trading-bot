@@ -80,7 +80,7 @@
   },
   "learning": {
     "enabled": true,
-    "auto_apply_tuning": false,
+    "auto_apply_tuning": true,
     "nudge_pct": 5.0,
     "min_trades_per_signal": 4,
     "weight_floor_x": 0.5,
@@ -95,8 +95,8 @@
   "force_regime": "risk_on",
   "_force_regime_note": "Overrides the research/quant regime blend. 'risk_on' = full-auto aggressive (lowest buy threshold, widest stops). Set null to restore the adaptive conservative blend. Hard vetoes always apply regardless.",
   "selling": {
-    "trailing_stop_pct": 12.0,
-    "take_profit_pct": 25.0,
+    "trailing_stop_pct": 11.0,
+    "take_profit_pct": 22.0,
     "min_hold_days": 1,
     "max_hold_days": 30,
     "_note": "WINDOW-CONFLICT HOLD (2026-07-14): 6mo/8wk sweeps favour stop8/TP15 (+4.9% OOS) but the full 12mo sim shows -11.5% with them vs +23.5% at 15/25. Set to the overlap-robust middle (12/25, both windows agree the region is profitable) and auto-tune PAUSED until the study adjudicates which window reflects the live regime."
