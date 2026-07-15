@@ -1,0 +1,1 @@
+{"generated": "2026-07-15T08:02:34+00:00", "checks": [{"name": "T212", "ok": true, "ms": 147}, {"name": "Alpaca", "ok": false, "ms": 287}, {"name": "Finnhub", "ok": false, "ms": 268}, {"name": "Yahoo", "ok": true, "ms": 138}, {"name": "EDGAR", "ok": true, "ms": 246}, {"name": "GitHub", "ok": true, "ms": 254}, {"name": "ApeWisdom", "ok": true, "ms": 145}], "ok": 5, "total": 7}
