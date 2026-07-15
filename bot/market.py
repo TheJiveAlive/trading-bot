@@ -68,6 +68,26 @@ def make_universe_filter(cfg):
     return _filter, snapshot
 
 
+def _broker_held_price(ticker, max_age_min=45):
+    """current_price from the broker-of-record snapshot (broker_state.json)
+    for a HELD name, or None. Only trusted while the snapshot's own
+    'generated' stamp is fresh — file mtime lies after git checkouts."""
+    import datetime as dt, json, os
+    try:
+        from bot.broker_sync import BROKER_STATE
+        with open(BROKER_STATE) as f:
+            s = json.load(f)
+        gen = dt.datetime.fromisoformat(s["generated"].replace("Z", "+00:00"))
+        if (dt.datetime.now(dt.timezone.utc) - gen).total_seconds() > max_age_min * 60:
+            return None
+        for p in s.get("positions") or []:
+            if p.get("ticker") == ticker and p.get("current_price"):
+                return float(p["current_price"])
+    except Exception:
+        pass
+    return None
+
+
 def last_price(ticker):
     # prefer Alpaca IEX when configured (real-time, no Yahoo throttling)
     try:
@@ -78,11 +98,28 @@ def last_price(ticker):
                 return px[ticker]
     except Exception:
         pass
+    # held names: the broker's own positions quote beats Yahoo — on thin
+    # tickers Yahoo's last daily close can run a week stale (2026-07-15:
+    # WRAP Yahoo 1.555 from Jul-8 vs broker 2.15) and a stop-check against
+    # that stale print would phantom-sell a winner at a fake loss.
+    bp = _broker_held_price(ticker)
+    if bp is not None:
+        return bp
     try:
         h = yf.Ticker(ticker).history(period="5d")
         if h is None or h.empty:
             return None
-        return float(h["Close"].dropna().iloc[-1])
+        closes = h["Close"].dropna()
+        # staleness gate: if Yahoo's newest bar is >4 days old, the print is
+        # unusable for exit checks — better NO price (caller skips the check)
+        # than a phantom stop-out on a week-old close.
+        import datetime as dt
+        last_ts = closes.index[-1].to_pydatetime()
+        if last_ts.tzinfo is None:
+            last_ts = last_ts.replace(tzinfo=dt.timezone.utc)
+        if (dt.datetime.now(dt.timezone.utc) - last_ts).days > 4:
+            return None
+        return float(closes.iloc[-1])
     except Exception:
         return None
 
