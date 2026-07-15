@@ -1,7 +1,7 @@
 {
- "generated": "2026-07-15T13:26:10+00:00",
+ "generated": "2026-07-15T13:46:12+00:00",
  "model": "ProsusAI/finbert (local CPU)",
- "headlines_scored": 55,
+ "headlines_scored": 56,
  "tickers": {
   "NTSK": {
    "mean": 0.158,
@@ -14,7 +14,7 @@
   },
   "UUUU": {
    "mean": 0.0,
-   "n": 4,
+   "n": 5,
    "best": null,
    "worst": null
   },
