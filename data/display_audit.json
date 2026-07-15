@@ -1,0 +1,18 @@
+{
+ "generated": "2026-07-15T13:31:39+00:00",
+ "deterministic_issues": [],
+ "semantic_issues": [],
+ "clean": true,
+ "truth": {
+  "buy_line": 5.25,
+  "regime": "neutral",
+  "positions": {
+   "WRAP": 2.09,
+   "UUUU": -1.46,
+   "CAI": -0.48,
+   "NTSK": 6.94,
+   "YEXT": 0.93
+  },
+  "account_total": 507.6
+ }
+}
