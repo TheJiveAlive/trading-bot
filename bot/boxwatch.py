@@ -378,12 +378,28 @@ def connectivity():
     import sys
     sys.path.insert(0, RH)
     os.chdir(RH)
-    t212_ok = True
-    try:
+    def _t212_probe():
         import warnings; warnings.filterwarnings("ignore")
         from bot import config, broker_t212 as bt
-        cfg = config.load()
-        t212_ok = probe("T212", lambda: bt.account_cash(cfg).get("total") is not None)
+        return bt.account_cash(config.load()).get("total") is not None
+
+    t212_ok = True
+    try:
+        t212_ok = probe("T212", _t212_probe)
+        if not t212_ok:
+            # AUTO-FIX (2026-07-15): the #1 cause of a dead T212 probe is the
+            # runtime secrets file going missing (a rogue cleanup deleted it
+            # every 5 min today). Reinstall from the vault and re-probe once.
+            sec_run = os.path.join(RH, "data", "secrets.json")
+            if os.path.exists(SECRETS):
+                import shutil
+                shutil.copy(SECRETS, sec_run)
+                os.chmod(sec_run, 0o600)
+                if probe("T212-retry", _t212_probe):
+                    t212_ok = True
+                    checks[:] = [c for c in checks if c["name"] != "T212"]
+                    checks.append({"name": "T212", "ok": True, "ms": 0})
+                    checks[:] = [c for c in checks if c["name"] != "T212-retry"]
     except Exception:
         checks.append({"name": "T212", "ok": False, "ms": 0}); t212_ok = False
     # authed probes — validates the KEYS too, not just reachability

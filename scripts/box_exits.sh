@@ -25,7 +25,10 @@ install -m 600 "$HOME/.bot/secrets.json" data/secrets.json
 
 ./venv/bin/python3 run.py exits >> logs/box_exits.log 2>&1 || true
 
-rm -f data/secrets.json
+# NOTE (2026-07-15): do NOT delete data/secrets.json here — that pattern
+# belongs to EPHEMERAL GitHub runners. On the box this file is the SHARED
+# runtime copy used by the session loop, agents and monitors; deleting it
+# every 5 min took T212/Alpaca dark mid-session. Vault stays the source.
 git add -A data dashboard.html radar.html history.html 2>/dev/null || true
 if ! git diff --cached --quiet; then
   git -c user.name=trading-bot -c user.email=trading-bot@users.noreply.github.com \
