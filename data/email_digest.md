@@ -19,3 +19,9 @@ P/L: -$6.30 (-7.5%)
 why: insider selling — Form 144 proposed insider sale $5596k — bearish tell, exiting
 cash: $368.61
 equity: $677.59
+
+### 17:53 UTC · [bot boxwatch] 0 self-healed, 1 open
+## Boxwatch report — 17:53 UTC
+- **OPEN**: risk.json — 92m stale (agent dispatch chain may be broken)
+
+Sandboxed medic dispatched (unless on cooldown).
