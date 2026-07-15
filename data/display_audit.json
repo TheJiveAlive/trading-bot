@@ -1,30 +1,17 @@
 {
- "generated": "2026-07-15T17:20:24+00:00",
- "deterministic_issues": [
-  {
-   "field": "pl_WRAP",
-   "shown": 3.69,
-   "truth": 4.3,
-   "kind": "data"
-  },
-  {
-   "field": "pl_CAI",
-   "shown": -0.55,
-   "truth": -0.22,
-   "kind": "data"
-  }
- ],
+ "generated": "2026-07-15T17:50:23+00:00",
+ "deterministic_issues": [],
  "semantic_issues": [],
- "clean": false,
+ "clean": true,
  "truth": {
   "buy_line": 5.25,
   "regime": "neutral",
   "positions": {
-   "WRAP": 4.3,
-   "CAI": -0.22,
-   "NTSK": 2.4,
-   "YEXT": 0.5
+   "WRAP": 3.63,
+   "CAI": -0.45,
+   "NTSK": 1.88,
+   "YEXT": 0.48
   },
-  "account_total": 501.13
+  "account_total": 499.69
  }
 }
