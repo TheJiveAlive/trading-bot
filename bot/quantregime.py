@@ -112,6 +112,32 @@ def run(years=2):
     except Exception:
         pass
 
+    # CUSUM structural-break filter (Lopez de Prado): flags when cumulative
+    # deviations from the running mean exceed h = 5 sigma — a regime break.
+    # Use: a tune/walkforward window that CROSSES the latest break mixes two
+    # different markets (the 7/14 exit-window conflict, made measurable).
+    breaks = []
+    try:
+        r = ret.dropna().values
+        mu = float(r[:60].mean()) if len(r) > 60 else float(r.mean())
+        sigma = float(r[:60].std()) if len(r) > 60 else float(r.std())
+        h = 5.0 * sigma
+        s_pos = s_neg = 0.0
+        dates_r = list(ret.dropna().index)
+        for i, x in enumerate(r):
+            s_pos = max(0.0, s_pos + x - mu)
+            s_neg = min(0.0, s_neg + x - mu)
+            if s_pos > h or s_neg < -h:
+                breaks.append(dates_r[i])
+                s_pos = s_neg = 0.0
+                mu = float(r[max(0, i - 60):i + 1].mean())
+    except Exception:
+        pass
+    last_break = breaks[-1] if breaks else None
+    days_since = None
+    if last_break:
+        days_since = (dt.date.today() - dt.date.fromisoformat(last_break)).days
+
     out = {
         "generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "method": "KMeans k=3 on SPY (vol20, trend20, drawdown), 2y daily",
@@ -123,6 +149,10 @@ def run(years=2):
         "spy_vol20_ann": round(float(today["vol20"]) * 100, 1),
         "spy_trend20_pct": round(float(today["trend20"]) * 100, 2),
         "breadth_pct_above_20dma": breadth,
+        "cusum_breaks_2y": breaks[-6:],
+        "last_structural_break": last_break,
+        "days_since_break": days_since,
+        "tune_window_clean": (days_since is None or days_since > 185),
         "cluster_profiles": {names[i]: {"vol": round(float(r["vol20"]) * 100, 1),
                                         "trend": round(float(r["trend20"]) * 100, 2)}
                              for i, r in prof.iterrows()},
