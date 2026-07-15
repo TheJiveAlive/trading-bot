@@ -1,13 +1,93 @@
 {
-  "generated": "2026-07-15T14:16:41Z",
+  "generated": "2026-07-15T14:17:26Z",
   "environment": "demo",
-  "configured": false,
+  "configured": true,
   "live_orders_enabled": true,
   "mode": "live",
   "account_currency": "GBP",
-  "ok": false,
-  "detail": "no T212 API key set \u2014 broker sync idle (dashboard is showing the paper ledger)",
-  "cash": null,
-  "positions": [],
-  "reconciliation": []
+  "ok": true,
+  "detail": "demo account reachable: 5 position(s), free \u00a3216.62",
+  "cash": {
+    "free": 216.62,
+    "total": 511.47,
+    "ppl": 11.89,
+    "result": 0,
+    "invested": 282.96,
+    "pieCash": 0,
+    "blocked": 0
+  },
+  "positions": [
+    {
+      "ticker": "WRAP",
+      "t212_ticker": "WRTC_US_EQ",
+      "shares": 41.13,
+      "avg_price": 2.07999027,
+      "current_price": 2.29,
+      "pnl": 6.29
+    },
+    {
+      "ticker": "UUUU",
+      "t212_ticker": "UUUU_US_EQ",
+      "shares": 6.18,
+      "avg_price": 13.55987055,
+      "current_price": 12.92,
+      "pnl": -3.1
+    },
+    {
+      "ticker": "CAI",
+      "t212_ticker": "CAI1_US_EQ",
+      "shares": 4.94,
+      "avg_price": 17.1902834,
+      "current_price": 17.22,
+      "pnl": -0.04
+    },
+    {
+      "ticker": "NTSK",
+      "t212_ticker": "NTSK_US_EQ",
+      "shares": 6.41,
+      "avg_price": 13.00936037,
+      "current_price": 14.64,
+      "pnl": 7.61
+    },
+    {
+      "ticker": "YEXT",
+      "t212_ticker": "YEXT_US_EQ",
+      "shares": 7.8,
+      "avg_price": 5.36025641,
+      "current_price": 5.57,
+      "pnl": 1.13
+    }
+  ],
+  "reconciliation": [
+    {
+      "ticker": "CAI",
+      "ledger_shares": 4.9363,
+      "broker_shares": 4.94,
+      "status": "match"
+    },
+    {
+      "ticker": "NTSK",
+      "ledger_shares": 6.4097,
+      "broker_shares": 6.41,
+      "status": "match"
+    },
+    {
+      "ticker": "UUUU",
+      "ledger_shares": 6.1781,
+      "broker_shares": 6.18,
+      "status": "match"
+    },
+    {
+      "ticker": "WRAP",
+      "ledger_shares": 41.1342,
+      "broker_shares": 41.13,
+      "status": "match"
+    },
+    {
+      "ticker": "YEXT",
+      "ledger_shares": 7.8044,
+      "broker_shares": 7.8,
+      "status": "match"
+    }
+  ]
 }
