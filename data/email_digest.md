@@ -72,3 +72,10 @@ BUY NTSK x7.0931 @ $13.25 ($93.99)
 why: score 9.62 (parts {'insider': 6.0, 'sector': 0.8, 'fundamentals': 1.5, 'news': 0.0, 'piotroski': 0.25, 'ai_news': 0.5, 'insider_sentiment': -0.06, 'analyst_trend': 0.38, 'events': 0.4, 'sector_bias': -0.15}); risk-sized 7.0931 sh at 11% stop; confluence: 8/10 pass | unusual_volume | momentum | tight_spread | news_ok | options_flow | rsi_ok | clean_dilution_history | no_insider_selling | FAIL: above_vwap,price_action; critic unavailable (Expecting value: line 1 column 1 (char 0)) — fail-open
 cash: $360.29
 equity: $670.47
+
+### 18:53 UTC · [bot boxwatch] 0 self-healed, 2 open
+## Boxwatch report — 18:53 UTC
+- **OPEN**: intel.json — 140m stale (agent dispatch chain may be broken)
+- **OPEN**: risk.json — 152m stale (agent dispatch chain may be broken)
+
+Sandboxed medic dispatched (unless on cooldown).
