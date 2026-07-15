@@ -96,12 +96,21 @@ def manage_exits(con, cfg, research, report):
             if rsi is not None and rsi >= 80:
                 eff_tp = min(take_profit, max(gain_pct, 8))  # lock the gain in now
 
-        # insider SELLING on a held name = bearish exit trigger (mirror signal)
+        # insider SELLING on a held name = bearish exit trigger (mirror signal).
+        # Executed sales (Form 4, $100k) OR proposed sales (Form 144, $250k —
+        # weaker signal so a higher bar). Form 144 added 2026-07-15 after UUUU:
+        # a director filed to sell 500k shares the Form-4 check couldn't see.
         isell_exit = False
+        isell_why = ""
         if held_days >= sell_cfg["min_hold_days"] and not is_wc:
             from bot.signals.events import insider_selling
-            if insider_selling(cfg, pos["ticker"]).get("total_usd", 0) >= 100000:
+            _is = insider_selling(cfg, pos["ticker"])
+            if _is.get("total_usd", 0) >= 100000:
                 isell_exit = True
+                isell_why = "executed insider selling ${:.0f}k".format(_is["total_usd"] / 1000)
+            elif _is.get("form144_usd", 0) >= 250000:
+                isell_exit = True
+                isell_why = "Form 144 proposed insider sale ${:.0f}k".format(_is["form144_usd"] / 1000)
 
         from bot.signals.catalysts import earnings_exit_due
         reason = None
@@ -113,7 +122,7 @@ def manage_exits(con, cfg, research, report):
         elif not is_wc and earnings_exit_due(cfg, pos["ticker"]):
             reason = "pre-earnings exit: avoiding the binary print"
         elif isell_exit:
-            reason = "insider selling — bearish tell, exiting"
+            reason = "insider selling — {} — bearish tell, exiting".format(isell_why)
         elif dd_pct >= stop_pct and held_days >= sell_cfg["min_hold_days"]:
             reason = "trailing stop ({:.0f}%): {:.1f}% off high".format(stop_pct, dd_pct)
         elif gain_pct >= eff_tp:

@@ -183,8 +183,54 @@ def insider_selling(cfg, ticker, days=10):
                         continue
         except Exception:
             pass
+    # Form 144 = NOTICE of proposed insider sale (weaker than an executed
+    # Form-4 sale, but an early tell — often filed days before the print).
+    # UUUU 2026-07-15: a director filed to sell 500k shares via Form 144 that
+    # the Form-4-only check was blind to. Tracked separately with its own bar.
+    out["form144_usd"] = _form144_usd(cfg, ticker, cik, days=30)
     _cache_put(ck, out)
     return out
+
+
+def _form144_usd(cfg, ticker, cik, days=30):
+    """Aggregate $ market value of proposed insider sales (Form 144) in the
+    window. Fail-open (0.0). Form 144s are electronic XML since 2022."""
+    import datetime as dt
+    import xml.etree.ElementTree as ET
+    if not cik:
+        return 0.0
+    total = 0.0
+    try:
+        end = dt.date.today(); start = end - dt.timedelta(days=days)
+        r = requests.get(FTS, params={"q": "", "forms": "144", "ciks": cik,
+                         "dateRange": "custom", "startdt": start.isoformat(),
+                         "enddt": end.isoformat()},
+                         headers={"User-Agent": cfg["edgar_user_agent"]}, timeout=15)
+        if r.status_code != 200:
+            return 0.0
+        for h in r.json().get("hits", {}).get("hits", [])[:4]:
+            s = h.get("_source", {})
+            adsh = s.get("adsh", "")
+            doc = h.get("_id", "").split(":", 1)[-1] or "primary_doc.xml"
+            ic = int((s.get("ciks") or [cik])[0])
+            url = "https://www.sec.gov/Archives/edgar/data/{}/{}/{}".format(
+                ic, adsh.replace("-", ""), doc)
+            try:
+                rr = requests.get(url, headers={"User-Agent": cfg["edgar_user_agent"]}, timeout=15)
+                root = ET.fromstring(rr.content)
+                # sum any element whose tag mentions aggregate market value
+                for el in root.iter():
+                    tag = el.tag.split("}")[-1].lower()
+                    if "aggregatemarketvalue" in tag or tag == "marketvalue":
+                        try:
+                            total += float((el.text or "0").replace(",", ""))
+                        except (TypeError, ValueError):
+                            pass
+            except Exception:
+                continue
+    except Exception:
+        pass
+    return round(total, 2)
 
 
 def event_score(cfg, ticker, company_name=None):
