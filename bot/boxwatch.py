@@ -222,6 +222,20 @@ def check(now=None):
             except FileNotFoundError:
                 pass
 
+    # display-value audit: a CODE-level display bug (terminal shows a wrong
+    # number/label) escalates to the medic — data-staleness is self-healing so
+    # it's not escalated. Three such bugs surfaced by eye 2026-07-15.
+    try:
+        da = json.load(open(os.path.join(RH, "data", "display_audit.json")))
+        code_bugs = [i for i in da.get("deterministic_issues", [])
+                     if i.get("kind") == "code"] + da.get("semantic_issues", [])
+        if code_bugs:
+            open_.append({"what": "terminal display", "state": "shows wrong values",
+                          "action": "display audit: {}".format(
+                              json.dumps(code_bugs)[:150])})
+    except Exception:
+        pass
+
     # git repo health (empty-object corruption killed pulls once already)
     g = _repair_git(st)
     if g:
