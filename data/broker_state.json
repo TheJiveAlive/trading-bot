@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-15T18:22:19Z",
+  "generated": "2026-07-15T18:23:53Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 4 position(s), free \u00a3273.68",
   "cash": {
     "free": 273.68,
-    "total": 497.44,
-    "ppl": 3.29,
+    "total": 497.5,
+    "ppl": 3.35,
     "result": -5.34,
     "invested": 220.47,
     "pieCash": 0,
@@ -31,15 +31,15 @@
       "shares": 4.94,
       "avg_price": 17.1902834,
       "current_price": 17.11,
-      "pnl": -0.98
+      "pnl": -0.97
     },
     {
       "ticker": "NTSK",
       "t212_ticker": "NTSK_US_EQ",
       "shares": 6.41,
       "avg_price": 13.00936037,
-      "current_price": 13.47,
-      "pnl": 1.5
+      "current_price": 13.48,
+      "pnl": 1.55
     },
     {
       "ticker": "YEXT",
