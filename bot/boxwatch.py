@@ -28,7 +28,11 @@ MAX_RESTARTS_PER_DAY = 3
 MEDIC_COOLDOWN_H = 2
 
 TIMERS = ["bot-session.timer", "bot-intel.timer", "bot-risk.timer",
-          "cache-warm.timer", "night-screens.timer"]
+          "bot-learnings.timer", "cache-warm.timer", "night-screens.timer",
+          "finbert.timer", "display-audit.timer", "preopen-brief.timer",
+          "close-summary.timer", "boxwatch.timer"]  # incl. itself: a boxwatch
+          # RUN re-enables its own timer if stopped (systemd + Persistent
+          # recover it across reboots; the cloud watchdog is the outer net)
 SERVICES = ["lan-dashboard.service", "bot-monitor.service",
             "bot-webmonitor.service"]
 ENDPOINTS = [("dashboard", "http://127.0.0.1:8080/"),
