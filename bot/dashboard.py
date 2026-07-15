@@ -1846,9 +1846,31 @@ def _candidates_panel(st, threshold):
                      '<div class="mut">no candidates in the last scan</div>')
     top = max(c[1] for c in st["candidates"]) or 1
     held = {p["ticker"] for p in st["positions"]}
-    # NEW names (not held) above the buy line = what it wants to add next
-    fresh_above = [(t, s) for t, s, d in st["candidates"]
-                   if t not in held and s >= threshold]
+    # what actually blocks a buy, so the radar never shows a false target
+    avoid = risk.avoid_tickers(st.get("research") or {})
+    iflags = risk.intel_flagged(st.get("intel") or {})
+    rflags = risk.risk_flags(st.get("riskoff") or {})
+
+    def _blocked(t):
+        if t in avoid:
+            return "avoid"
+        if t in iflags:
+            return "intel"
+        if rflags.get(t) == "critical":
+            return "risk"
+        try:
+            from bot.signals.fundamentals_quant import z_distress
+            hit, z = z_distress(t)
+            if hit:
+                return "Z {}".format(z)
+        except Exception:
+            pass
+        return None
+
+    above = [(t, s, _blocked(t)) for t, s, d in st["candidates"]
+             if t not in held and s >= threshold]
+    fresh_above = [(t, s) for t, s, b in above if not b]
+    blocked_above = [(t, s, b) for t, s, b in above if b]
     banner = ""
     if fresh_above:
         chips = " ".join(
@@ -1864,6 +1886,12 @@ def _candidates_panel(st, threshold):
         banner = ('<div class="note" style="margin-bottom:10px">&#128269; scanning '
                   '{} non-held names this cycle — none above the {} buy line yet'
                   '</div>').format(n_new, threshold)
+    if blocked_above:
+        banner += ('<div class="note" style="margin-bottom:10px">&#128683; '
+                   '<b>above the line but BLOCKED:</b> ' +
+                   " ".join('<span class="chip" style="border-color:#F8717155;'
+                            'color:#F87171">{} {:.1f} ({})</span>'.format(t, s, b)
+                            for t, s, b in blocked_above[:5]) + '</div>')
     rows = []
     for t, s, d in st["candidates"]:
         hchip = (' <span class="chip" style="border-color:#60A5FA55;color:#60A5FA;'
