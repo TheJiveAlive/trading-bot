@@ -6,6 +6,12 @@ outcome_pct, building the labeled training set for a future meta-model (the
 signal-filter from Lopez de Prado's meta-labeling). Runs in the nightly
 learning compute. Training itself stays GATED until ~150 labeled rows exist.
 """
+# ACCEPTANCE GATE (learned from goldbot 2026-07-15): goldbot trained the
+# same idea on 376 trades and got AUC 0.531 — honestly rejected as coin-flip.
+# When our labeled set reaches ~150, train with TIME-ORDERED CV and only wire
+# the filter in if out-of-sample AUC > ACCEPT_AUC. Otherwise: log and decline.
+ACCEPT_AUC = 0.55
+
 import sqlite3
 import os
 

@@ -133,6 +133,12 @@ def position_size(cfg, equity, price, stop_pct, conviction=False):
 
 
 def trading_halted(con, cfg):
+    # KILL SWITCH (ported from goldbot 2026-07-15): `touch data/KILL` blocks
+    # every new entry instantly, no deploy needed; exits keep managing the
+    # book. `rm data/KILL` resumes. The fastest possible human brake.
+    import os as _os
+    if _os.path.exists(_os.path.join("data", "KILL")):
+        return "KILL file present (data/KILL) — manual stop, remove to resume"
     """Reason string if buying should halt (drawdown/daily-loss circuit
     breaker), else None. Sells are never halted — exits always run."""
     rows = con.execute("SELECT ts, equity FROM equity_history ORDER BY id").fetchall()

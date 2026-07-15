@@ -138,8 +138,27 @@ def run(years=2):
     if last_break:
         days_since = (dt.date.today() - dt.date.fromisoformat(last_break)).days
 
+    # CROSS-BOT FEED (2026-07-15): goldbot on this same box maintains real
+    # 10Y yields, DXY and a gold HMM regime — macro context equities lack.
+    # Rising real yields + strong dollar = headwind for risk assets broadly.
+    gold_macro = None
+    try:
+        gm = json.load(open(os.path.expanduser("~/goldbot/data/macro.json")))
+        gr = json.load(open(os.path.expanduser("~/goldbot/data/regime.json")))
+        ry = gm.get("real_yield", {}).get("series", [])
+        dxy = gm.get("dxy", {}).get("series", [])
+        gold_macro = {
+            "real_yield_10y": ry[-1][1] if ry else None,
+            "real_yield_5d_chg": round(ry[-1][1] - ry[-6][1], 3) if len(ry) > 5 else None,
+            "dxy": round(dxy[-1][1], 2) if dxy else None,
+            "gold_regime": gr.get("regime"),
+        }
+    except Exception:
+        pass
+
     out = {
         "generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+        "gold_macro": gold_macro,
         "method": "KMeans k=3 on SPY (vol20, trend20, drawdown), 2y daily",
         "hmm_state": hmm_state,
         "hmm_persistence": hmm_stick,
