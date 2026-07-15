@@ -23,6 +23,7 @@ JOBS = [
     ("quantregime",  [PY, "-m", "bot.quantregime"]),
     ("lorentzian",   [PY, "-m", "bot.lorentzian"]),
     ("boxwatch",     [PY, "-m", "bot.boxwatch"]),
+    ("displaycheck", [PY, "-m", "bot.displaycheck"]),
     ("walkforward",  [PY, "backtest.py", "--walkforward"]),
 ]
 
