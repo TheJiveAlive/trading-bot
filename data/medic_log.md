@@ -1,5 +1,61 @@
 # Medic Log
 
+## 2026-07-15 — intel.json (109m) + risk.json (93m) both stale = box dispatch stopped firing (box-local, recurrence)
+
+**Report:** `FAILURE_REPORT.json` from tradinghost at 2026-07-15T15:53:21Z. Two
+open items: `intel.json` ~109m stale and `risk.json` ~93m stale, both
+"agent dispatch chain may be broken". `fixed_locally` empty. Local diagnosis:
+near-simultaneous staleness + empty journal (no crash traces) ⇒ the upstream
+scheduler/dispatcher that fans out to both agents silently stopped rather than
+the agents crashing; high severity.
+
+**Investigation:**
+- Both `intel.yml` and `risk.yml` are **`on: workflow_dispatch:` only** — by
+  design (headers: "Trigger is DISPATCH-ONLY"). They are fired by the box's
+  systemd timers `bot-intel.timer` (:00/:30) and `bot-risk.timer` (:15/:45).
+  Claude runs in the ephemeral GitHub runner; the box only *triggers* and pulls
+  the commit back.
+- Repo side is **healthy**: both workflow YAMLs parse clean (`yaml.safe_load`),
+  both prompts exist (`research/intel_prompt.md`, `research/risk_prompt.md`),
+  the commit/push and market-hours-guard steps are correct. At the report time
+  (15:53Z = 11:53 ET, mid-session) neither guard would skip — so a healthy
+  dispatch WOULD have produced fresh files. It didn't ⇒ dispatch never fired.
+- The box's staleness check (`boxwatch`/`risk.py` line ~217) keys on the file's
+  **mtime on the box**, not the internal `generated` field, so the two stale
+  ages are real box-side observations of "no fresh commit landed."
+- **Why intel is also stale this time** (unlike 2026-07-14, when intel stayed
+  fresh): per `SCHEDULING.md`, intel has an external cron-job.org pinger, but
+  only at **14:08/17:08/20:08** — sparse. Between those, the every-30-min box
+  timer does the real work. With the box timer dark, intel only refreshes 3×/day
+  and reads ~109m stale between the 14:08 and 17:08 pings (it should partially
+  self-recover at the 17:08 ping). **risk.yml is NOT in the pinger table at all**
+  → risk has no backup dispatcher and stays fully dark until the box or a manual
+  dispatch. Both symptoms trace to one cause: box-side dispatch stopped.
+- **Recurrence:** this is the 2nd dispatch-staleness incident in 2 days
+  (2026-07-14 was risk-only, same box-timer SPOF). The prior entry's optional
+  robustness follow-ups (add risk.yml to the cron-job.org pinger; have boxwatch
+  verify the triggered dispatch *service* succeeded, not just the timer's
+  active state) were evidently not yet applied — this recurrence is the argument
+  to apply them now.
+- **Hazard:** `risk.load_risk()` self-guards with `RISK_STALE_HOURS = 6` — after
+  6h it returns `{_stale}` and `risk_flags()` yields nothing (elevated/critical
+  gates silently stop applying). At ~93m the risk officer's flags are still being
+  honored on ~1.5h-old data; the real danger window opens if dispatch stays dark
+  past ~6h. Same 6h self-guard applies to intel.
+
+**Classification:** **BOX-LOCAL** (single point of failure: the box's
+`bot-intel.timer` / `bot-risk.timer` dispatch chain on tradinghost). Not
+repo-fixable. Re-adding a GitHub `schedule:` cron to these workflows was a
+deliberate prior removal ("GitHub cron dropped the schedule too often") and is a
+human infra decision; pinger changes are manual human actions at cron-job.org.
+
+**Action taken:** No code / config / workflow change — per the hard rules a
+speculative edit would not touch the broken component (box systemd timers) and
+would violate minimal-diff. Emailed the human the exact box diagnostics
+(list-timers + status/journal for the bot-intel/bot-risk units), two one-line
+manual dispatches to close the gap immediately, and — flagged as the durable fix
+for this now-recurring failure — the two redundancy follow-ups from 2026-07-14.
+
 ## 2026-07-15 — "T212 API unreachable / exits blind" = broken `requests` stack in the box venv (box-local)
 
 **Report:** `FAILURE_REPORT.json` from tradinghost at 2026-07-15T14:13:18Z. One
