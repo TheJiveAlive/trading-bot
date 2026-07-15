@@ -46,6 +46,7 @@ This runs out of trading hours, so take the time to be thorough but concise.
    forward direction). VALIDATE: do high-score names actually drift up over
    the next week? Track a paper cohort in learnings.md before proposing it
    as a score input or confluence check.
+5g. **Piotroski/Altman (new 2026-07-15)** — `piotroski` is now a small score part and Altman Z<1.8 hard-vetoes buys (`z_veto` in decisions). Validate both: do high-F entries outperform? Did any z_veto block a name that then rallied (false positive) or cratered (save)? Coverage matters too — how often do microcap statements even exist?
 6. `walkforward.json` now carries `risk_metrics_top_combo` (Sharpe, Sortino,
    profit factor, expectancy, and a 1000x Monte Carlo bootstrap of the trade
    sequence). A negative Monte Carlo p5 means the edge may hinge on a few

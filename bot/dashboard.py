@@ -1549,7 +1549,7 @@ SIGNAL_COLORS = {
     "earnings": "#F472B6", "events": "#F87171", "watchlist": "#94A3B8",
     "sector_bias": "#64748B", "insider_sentiment": "#22D3EE", "wildcard": "#E879F9",
     "trending": "#38BDF8", "analyst_trend": "#A3E635", "ai_news": "#F0ABFC", "intel": "#FDE047", "gtrends": "#5EEAD4",
-    "risk": "#F87171",
+    "risk": "#F87171", "piotroski": "#86EFAC",
 }
 
 

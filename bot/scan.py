@@ -233,6 +233,17 @@ def maybe_buy(con, cfg, candidates, research, report, reddit_data=None):
             report.append("  RISK VETO {}: critical flag from risk officer".format(
                 c["ticker"]))
             continue
+        # ALTMAN-Z VETO: classic Z < 1.8 = distress zone — a cheap stock
+        # spiralling toward insolvency is the microcap trap (fail-open: only
+        # fires on positive evidence; most microcaps lack full statements)
+        from bot.signals.fundamentals_quant import z_distress
+        _zd, _z = z_distress(c["ticker"])
+        if _zd:
+            ledger.log_decision(con, "z_veto", "{}: Altman Z {} < 1.8 — "
+                                "insolvency risk".format(c["ticker"], _z))
+            report.append("  Z VETO {}: Altman Z {} (distress)".format(
+                c["ticker"], _z))
+            continue
         # PRE-BUY CRITIC: Claude reviews this specific trade (fail-open)
         critic_note = ""
         from bot import critic as _critic

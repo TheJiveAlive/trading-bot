@@ -42,6 +42,10 @@ def score_candidates(cfg, insider_hits, sector_ranks, snapshot, research=None,
             "fundamentals": fundamentals_score(info) * w["fundamentals_weight"],
             "news": news_score(news) * w["news_weight"],
         }
+        from bot.signals.fundamentals_quant import piotroski_part
+        pio = piotroski_part(ticker, w.get("piotroski_weight", 1.0))
+        if pio:
+            parts["piotroski"] = pio
         r_sc = reddit_score((reddit_data or {}).get(ticker))
         if r_sc:
             parts["reddit"] = round(r_sc * w.get("reddit_weight", 0.75), 2)
