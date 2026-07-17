@@ -1,17 +1,24 @@
 {
- "generated": "2026-07-17T17:20:10+00:00",
- "deterministic_issues": [],
+ "generated": "2026-07-17T17:50:09+00:00",
+ "deterministic_issues": [
+  {
+   "field": "pl_SLND",
+   "shown": -0.48,
+   "truth": -1.37,
+   "kind": "data"
+  }
+ ],
  "semantic_issues": [],
- "clean": true,
+ "clean": false,
  "truth": {
   "buy_line": 5.25,
   "regime": "neutral",
   "positions": {
-   "WRAP": -0.8,
-   "SLND": -0.04,
-   "CAI": -2.44,
-   "YEXT": 0
+   "WRAP": 0.43,
+   "SLND": -1.37,
+   "CAI": -2.18,
+   "YEXT": 0.18
   },
-  "account_total": 491.39
+  "account_total": 491.73
  }
 }
