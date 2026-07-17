@@ -105,3 +105,7 @@ Sandboxed medic dispatched (unless on cooldown).
 ### 06:43 UTC · [bot boxwatch] 1 self-healed, 0 open
 ## Boxwatch report — 06:43 UTC
 - **self-healed**: git repo (repaired: empties deleted, refetched, reset to origin/main)
+
+### 06:53 UTC · [bot boxwatch] 1 self-healed, 0 open
+## Boxwatch report — 06:53 UTC
+- **self-healed**: lan-dashboard.service (restarted (1/3))
