@@ -362,3 +362,11 @@ P/L: -$0.33 (-0.3%)
 why: insider selling — Form 144 proposed insider sale $2775k — bearish tell, exiting
 cash: $453.95
 equity: $665.71
+
+### 13:33 UTC · [bot boxwatch] 0 self-healed, 3 open
+## Boxwatch report — 13:33 UTC
+- **OPEN**: lan-dashboard.service — activating (restart budget exhausted — needs medic)
+- **OPEN**: intel.json — 2700m stale (agent dispatch chain may be broken)
+- **OPEN**: risk.json — 2712m stale (agent dispatch chain may be broken)
+
+Sandboxed medic dispatched (unless on cooldown).
