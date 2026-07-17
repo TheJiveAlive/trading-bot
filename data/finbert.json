@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-17T15:26:10+00:00",
+ "generated": "2026-07-17T15:46:12+00:00",
  "model": "ProsusAI/finbert (local CPU)",
  "headlines_scored": 60,
  "tickers": {
@@ -40,10 +40,13 @@
    ]
   },
   "ECAT": {
-   "mean": 0.0,
-   "n": 3,
+   "mean": -0.137,
+   "n": 4,
    "best": null,
-   "worst": null
+   "worst": [
+    -0.546,
+    "ECAT: Dividend May Be Reduced Following Saba Capital Drama"
+   ]
   },
   "FULC": {
    "mean": -0.483,
@@ -131,7 +134,7 @@
   },
   "SHPH": {
    "mean": 0.0,
-   "n": 3,
+   "n": 2,
    "best": null,
    "worst": null
   }
