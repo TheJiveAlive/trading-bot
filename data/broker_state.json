@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-17T17:28:16Z",
+  "generated": "2026-07-17T17:29:41Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 4 position(s), free \u00a3286.47",
   "cash": {
     "free": 286.47,
-    "total": 491.58,
-    "ppl": -3.09,
+    "total": 491.98,
+    "ppl": -2.69,
     "result": -4.45,
     "invested": 208.2,
     "pieCash": 0,
@@ -23,23 +23,23 @@
       "shares": 41.13,
       "avg_price": 2.07999027,
       "current_price": 2.09,
-      "pnl": 0.11
+      "pnl": 0.12
     },
     {
       "ticker": "SLND",
       "t212_ticker": "LGTO_US_EQ",
       "shares": 60.4652627,
       "avg_price": 1.11005885,
-      "current_price": 1.085,
-      "pnl": -1.16
+      "current_price": 1.0913,
+      "pnl": -0.88
     },
     {
       "ticker": "CAI",
       "t212_ticker": "CAI1_US_EQ",
       "shares": 4.94,
       "avg_price": 17.1902834,
-      "current_price": 16.6,
-      "pnl": -2.38
+      "current_price": 16.69,
+      "pnl": -2.04
     },
     {
       "ticker": "YEXT",
