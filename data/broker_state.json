@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-17T14:43:55Z",
+  "generated": "2026-07-17T14:45:15Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -30,8 +30,8 @@
       "t212_ticker": "LGTO_US_EQ",
       "shares": 60.4652627,
       "avg_price": 1.11005885,
-      "current_price": 1.065,
-      "pnl": -2.05
+      "current_price": 1.0729,
+      "pnl": -1.7
     },
     {
       "ticker": "CAI",
