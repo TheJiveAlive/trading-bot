@@ -355,3 +355,10 @@ Sandboxed medic dispatched (unless on cooldown).
 - **OPEN**: lan-dashboard.service — activating (restart budget exhausted — needs medic)
 
 Sandboxed medic dispatched (unless on cooldown).
+
+### 13:30 UTC · 🔴 SELL NTSK — 7.0931 shares @ $13.21  ·  P/L −$0.33 (-0.3%)
+SELL NTSK x7.0931 @ $13.21 ($93.66)
+P/L: -$0.33 (-0.3%)
+why: insider selling — Form 144 proposed insider sale $2775k — bearish tell, exiting
+cash: $453.95
+equity: $665.71
