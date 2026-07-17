@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 4 position(s), free \u00a3286.47",
   "cash": {
     "free": 286.47,
-    "total": 489.98,
-    "ppl": -4.69,
+    "total": 489.85,
+    "ppl": -4.82,
     "result": -4.45,
     "invested": 208.2,
     "pieCash": 0,
@@ -30,8 +30,8 @@
       "t212_ticker": "LGTO_US_EQ",
       "shares": 60.4652627,
       "avg_price": 1.11005885,
-      "current_price": 1.07,
-      "pnl": -1.84
+      "current_price": 1.0669,
+      "pnl": -1.97
     },
     {
       "ticker": "CAI",
