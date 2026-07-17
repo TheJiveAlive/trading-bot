@@ -1,20 +1,11 @@
 {
- "generated": "2026-07-17T13:26:11+00:00",
+ "generated": "2026-07-17T13:46:12+00:00",
  "model": "ProsusAI/finbert (local CPU)",
- "headlines_scored": 59,
+ "headlines_scored": 60,
  "tickers": {
-  "NTSK": {
-   "mean": 0.158,
-   "n": 4,
-   "best": [
-    0.631,
-    "$NTSK stock is up 3% today. Here's what we see in our data. - Quiver Quantitative"
-   ],
-   "worst": null
-  },
   "CAI": {
-   "mean": 0.144,
-   "n": 6,
+   "mean": 0.214,
+   "n": 7,
    "best": [
     0.861,
     "Caris Life Sciences To Offer In-House PTEN Immunohistochemistry Testing After Recent FDA Approval Of Biomarker"
@@ -22,21 +13,72 @@
    "worst": null
   },
   "WRAP": {
-   "mean": 0.016,
-   "n": 6,
+   "mean": -0.004,
+   "n": 7,
    "best": [
     0.948,
     "WRAP Receives International Orders Totaling ~$1.2M To Open Q3; Reaffirms Target Of ~100% YoY Revenue Growth In"
    ],
    "worst": [
-    -0.853,
-    "Unusual volume stocks in Monday's session"
+    -0.94,
+    "$WRAP stock is down 16% today. Here's what we see in our data. - Quiver Quantitative"
    ]
   },
   "YEXT": {
    "mean": 0.0,
    "n": 4,
    "best": null,
+   "worst": null
+  },
+  "SLND": {
+   "mean": 0.0,
+   "n": 2,
+   "best": null,
+   "worst": null
+  },
+  "ECAT": {
+   "mean": 0.0,
+   "n": 2,
+   "best": null,
+   "worst": null
+  },
+  "FULC": {
+   "mean": -0.483,
+   "n": 2,
+   "best": null,
+   "worst": [
+    -0.966,
+    "Fulcrum Therapeutics (FULC) Stock Fair Value Moves Lower After Pociredir Exit"
+   ]
+  },
+  "BOLD": {
+   "mean": 0.0,
+   "n": 2,
+   "best": null,
+   "worst": null
+  },
+  "STIM": {
+   "mean": 0.0,
+   "n": 3,
+   "best": null,
+   "worst": null
+  },
+  "ARTV": {
+   "mean": -0.53,
+   "n": 2,
+   "best": null,
+   "worst": [
+    -0.557,
+    "Why Did AIM Stock Plummet 35% Today? - Stocktwits"
+   ]
+  },
+  "NTSK": {
+   "mean": 0.315,
+   "n": 2,
+   "best": [
+    0.631,
+    "$NTSK stock is up 3% today. Here's what we see in our data. - Quiver Quantitative"
+   ],
    "worst": null
   },
   "UUUU": {
@@ -52,12 +94,6 @@
    "worst": null
   },
   "HDSN": {
-   "mean": 0.0,
-   "n": 2,
-   "best": null,
-   "worst": null
-  },
-  "BOLD": {
    "mean": 0.0,
    "n": 2,
    "best": null,
@@ -109,55 +145,16 @@
    "worst": null
   },
   "LRMR": {
-   "mean": -0.19,
-   "n": 3,
+   "mean": 0.165,
+   "n": 2,
    "best": [
     0.932,
     "LRMR Stock Edges Up After Hours After Director Purchases Shares Worth About $167,000 - Stocktwits"
    ],
    "worst": [
-    -0.9,
-    "There are notable gap-ups and gap-downs in today's session."
+    -0.601,
+    "Netflix Stock Rips To Best Day In Nearly A Year: Investors Bet It Drops WBD Deal - Stocktwits"
    ]
-  },
-  "BJDX": {
-   "mean": -0.288,
-   "n": 3,
-   "best": null,
-   "worst": [
-    -0.864,
-    "BJDX Stock Pulls Back As Traders Eye Cash Runway - StocksToTrade"
-   ]
-  },
-  "AVO": {
-   "mean": -0.02,
-   "n": 2,
-   "best": [
-    0.863,
-    "Mission Produce's Farming Segment: Is a Recovery Underway?"
-   ],
-   "worst": [
-    -0.904,
-    "Q1 Earnings Highs And Lows: Mission Produce (NASDAQ:AVO) Vs The Rest Of The Perishable Food Stocks"
-   ]
-  },
-  "DVLT": {
-   "mean": 0.455,
-   "n": 2,
-   "best": [
-    0.911,
-    "DVLT Stock Surges 14%: Datavault AI Expands Edge Computing Push With Massive GPU Fleet - Stocktwits"
-   ],
-   "worst": null
-  },
-  "EVMN": {
-   "mean": 0.414,
-   "n": 2,
-   "best": [
-    0.827,
-    "Paramount Skydance Enhances $30 Per Share Bid For Warner Bros Discovery - Stocktwits"
-   ],
-   "worst": null
   }
  },
  "note": "Deterministic transformer sentiment, free and local. NOT a score input yet \u2014 the study session must validate mean-sentiment vs trade outcomes first."
