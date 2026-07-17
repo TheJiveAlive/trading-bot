@@ -54,3 +54,10 @@ Sandboxed medic dispatched (unless on cooldown).
 - **OPEN**: bot-monitor.service — activating (restart budget exhausted — needs medic)
 
 Sandboxed medic dispatched (unless on cooldown).
+
+### 21:33 UTC · [bot boxwatch] 0 self-healed, 2 open
+## Boxwatch report — 21:33 UTC
+- **OPEN**: lan-dashboard.service — activating (restart budget exhausted — needs medic)
+- **OPEN**: bot-monitor.service — activating (restart budget exhausted — needs medic)
+
+Sandboxed medic dispatched (unless on cooldown).
