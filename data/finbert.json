@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-17T17:26:11+00:00",
+ "generated": "2026-07-17T17:46:08+00:00",
  "model": "ProsusAI/finbert (local CPU)",
  "headlines_scored": 60,
  "tickers": {
@@ -31,8 +31,8 @@
    "worst": null
   },
   "SLND": {
-   "mean": -0.163,
-   "n": 5,
+   "mean": -0.116,
+   "n": 7,
    "best": null,
    "worst": [
     -0.814,
@@ -125,17 +125,14 @@
   },
   "RIG": {
    "mean": 0.0,
-   "n": 3,
+   "n": 2,
    "best": null,
    "worst": null
   },
   "ABSI": {
-   "mean": -0.027,
-   "n": 3,
-   "best": [
-    0.859,
-    "Truist Securities Maintains Buy on Absci, Raises Price Target to $17"
-   ],
+   "mean": -0.47,
+   "n": 2,
+   "best": null,
    "worst": [
     -0.941,
     "$ABSI stock is down 9% today. Here's what we see in our data. - Quiver Quantitative"
