@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-17T19:39:40Z",
+  "generated": "2026-07-17T19:40:41Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 4 position(s), free \u00a3286.47",
   "cash": {
     "free": 286.47,
-    "total": 490.03,
-    "ppl": -4.64,
+    "total": 489.65,
+    "ppl": -5.02,
     "result": -4.45,
     "invested": 208.2,
     "pieCash": 0,
@@ -38,8 +38,8 @@
       "t212_ticker": "CAI1_US_EQ",
       "shares": 4.94,
       "avg_price": 17.1902834,
-      "current_price": 16.61,
-      "pnl": -2.33
+      "current_price": 16.51,
+      "pnl": -2.69
     },
     {
       "ticker": "YEXT",
