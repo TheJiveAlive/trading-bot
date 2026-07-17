@@ -1,1 +1,1 @@
-{"generated": "2026-07-17T13:40:30+00:00", "source": "alpaca", "prices": {"ARTV": 8.96, "ECAT": 15.58, "STIM": 1.71, "JEM": 5.4, "HNRG": 15.55, "FULC": 3.51, "BOLD": 2.49, "YEXT": 5.465, "WRAP": 2.12, "CAI": 16.28, "PALI": 1.85, "BJDX": 1.27, "SHPH": 3.56}, "held": ["CAI", "WRAP", "YEXT"]}
+{"generated": "2026-07-17T13:40:32+00:00", "source": "alpaca", "prices": {"STIM": 1.71, "ECAT": 15.58, "BJDX": 1.27, "YEXT": 5.465, "BOLD": 2.49, "WRAP": 2.12, "HNRG": 15.55, "ARTV": 8.96, "SHPH": 3.56, "PALI": 1.85, "CAI": 16.28, "FULC": 3.51, "JEM": 5.4}, "held": ["CAI", "WRAP", "YEXT"]}
