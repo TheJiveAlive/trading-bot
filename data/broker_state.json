@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-17T21:14:10Z",
+  "generated": "2026-07-17T23:38:24Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 4 position(s), free \u00a3286.47",
   "cash": {
     "free": 286.47,
-    "total": 489.89,
-    "ppl": -4.78,
+    "total": 490.42,
+    "ppl": -4.25,
     "result": -4.45,
     "invested": 208.2,
     "pieCash": 0,
@@ -30,24 +30,24 @@
       "t212_ticker": "LGTO_US_EQ",
       "shares": 60.4652627,
       "avg_price": 1.11005885,
-      "current_price": 1.1,
-      "pnl": -0.53
+      "current_price": 1.0906,
+      "pnl": -0.95
     },
     {
       "ticker": "CAI",
       "t212_ticker": "CAI1_US_EQ",
       "shares": 4.94,
       "avg_price": 17.1902834,
-      "current_price": 16.49,
-      "pnl": -2.83
+      "current_price": 16.81,
+      "pnl": -1.65
     },
     {
       "ticker": "YEXT",
       "t212_ticker": "YEXT_US_EQ",
       "shares": 7.8,
       "avg_price": 5.36025641,
-      "current_price": 5.34,
-      "pnl": -0.26
+      "current_price": 5.3,
+      "pnl": -0.49
     }
   ],
   "reconciliation": [
