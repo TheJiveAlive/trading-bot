@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-17T19:49:38Z",
+  "generated": "2026-07-17T19:50:56Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -30,24 +30,24 @@
       "t212_ticker": "LGTO_US_EQ",
       "shares": 60.4652627,
       "avg_price": 1.11005885,
-      "current_price": 1.125,
-      "pnl": 0.63
+      "current_price": 1.1301,
+      "pnl": 0.86
     },
     {
       "ticker": "CAI",
       "t212_ticker": "CAI1_US_EQ",
       "shares": 4.94,
       "avg_price": 17.1902834,
-      "current_price": 16.62,
-      "pnl": -2.31
+      "current_price": 16.57,
+      "pnl": -2.49
     },
     {
       "ticker": "YEXT",
       "t212_ticker": "YEXT_US_EQ",
       "shares": 7.8,
       "avg_price": 5.36025641,
-      "current_price": 5.33,
-      "pnl": -0.3
+      "current_price": 5.32,
+      "pnl": -0.35
     }
   ],
   "reconciliation": [
