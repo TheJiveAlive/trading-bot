@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-17T14:06:08+00:00",
+ "generated": "2026-07-17T14:26:10+00:00",
  "model": "ProsusAI/finbert (local CPU)",
  "headlines_scored": 60,
  "tickers": {
@@ -38,7 +38,7 @@
   },
   "ECAT": {
    "mean": 0.0,
-   "n": 2,
+   "n": 3,
    "best": null,
    "worst": null
   },
@@ -50,12 +50,6 @@
     -0.966,
     "Fulcrum Therapeutics (FULC) Stock Fair Value Moves Lower After Pociredir Exit"
    ]
-  },
-  "BOLD": {
-   "mean": 0.0,
-   "n": 2,
-   "best": null,
-   "worst": null
   },
   "STIM": {
    "mean": 0.0,
@@ -71,6 +65,12 @@
     -0.557,
     "Why Did AIM Stock Plummet 35% Today? - Stocktwits"
    ]
+  },
+  "BOLD": {
+   "mean": 0.0,
+   "n": 2,
+   "best": null,
+   "worst": null
   },
   "NTSK": {
    "mean": 0.315,
@@ -145,12 +145,9 @@
    "worst": null
   },
   "LRMR": {
-   "mean": 0.165,
-   "n": 2,
-   "best": [
-    0.932,
-    "LRMR Stock Edges Up After Hours After Director Purchases Shares Worth About $167,000 - Stocktwits"
-   ],
+   "mean": -0.601,
+   "n": 1,
+   "best": null,
    "worst": [
     -0.601,
     "Netflix Stock Rips To Best Day In Nearly A Year: Investors Bet It Drops WBD Deal - Stocktwits"
