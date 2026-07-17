@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-17T16:46:08+00:00",
+ "generated": "2026-07-17T17:06:09+00:00",
  "model": "ProsusAI/finbert (local CPU)",
  "headlines_scored": 60,
  "tickers": {
@@ -57,12 +57,6 @@
     "Fulcrum Therapeutics (FULC) Stock Fair Value Moves Lower After Pociredir Exit"
    ]
   },
-  "BOLD": {
-   "mean": 0.0,
-   "n": 2,
-   "best": null,
-   "worst": null
-  },
   "STIM": {
    "mean": -0.238,
    "n": 4,
@@ -71,6 +65,21 @@
     -0.951,
     "Neuronetics Could Double, But The Balance Sheet May Crack First"
    ]
+  },
+  "LGHL": {
+   "mean": -0.481,
+   "n": 2,
+   "best": null,
+   "worst": [
+    -0.961,
+    "The market is filled with gapping stocks in Wednesday's session."
+   ]
+  },
+  "BOLD": {
+   "mean": 0.0,
+   "n": 2,
+   "best": null,
+   "worst": null
   },
   "ARTV": {
    "mean": -0.53,
@@ -131,12 +140,6 @@
     -0.941,
     "$ABSI stock is down 9% today. Here's what we see in our data. - Quiver Quantitative"
    ]
-  },
-  "SHPH": {
-   "mean": 0.0,
-   "n": 2,
-   "best": null,
-   "worst": null
   }
  },
  "note": "Deterministic transformer sentiment, free and local. NOT a score input yet \u2014 the study session must validate mean-sentiment vs trade outcomes first."
