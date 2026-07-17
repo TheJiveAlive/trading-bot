@@ -626,3 +626,11 @@ Sandboxed medic dispatched (unless on cooldown).
 - **OPEN**: risk.json — 3032m stale (agent dispatch chain may be broken)
 
 Sandboxed medic dispatched (unless on cooldown).
+
+### 19:03 UTC · [bot boxwatch] 0 self-healed, 3 open
+## Boxwatch report — 19:03 UTC
+- **OPEN**: lan-dashboard.service — activating (restart budget exhausted — needs medic)
+- **OPEN**: intel.json — 3030m stale (agent dispatch chain may be broken)
+- **OPEN**: risk.json — 3042m stale (agent dispatch chain may be broken)
+
+Sandboxed medic dispatched (unless on cooldown).
