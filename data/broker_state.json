@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 4 position(s), free \u00a3286.47",
   "cash": {
     "free": 286.47,
-    "total": 492.03,
-    "ppl": -2.64,
+    "total": 491.59,
+    "ppl": -3.08,
     "result": -4.45,
     "invested": 208.2,
     "pieCash": 0,
@@ -23,15 +23,15 @@
       "shares": 41.13,
       "avg_price": 2.07999027,
       "current_price": 2.05,
-      "pnl": -1.11
+      "pnl": -1.1
     },
     {
       "ticker": "SLND",
       "t212_ticker": "LGTO_US_EQ",
       "shares": 60.4652627,
       "avg_price": 1.11005885,
-      "current_price": 1.14,
-      "pnl": 1.31
+      "current_price": 1.1397,
+      "pnl": 1.3
     },
     {
       "ticker": "CAI",
