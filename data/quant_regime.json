@@ -1,9 +1,9 @@
 {
- "generated": "2026-07-15T11:03:36+00:00",
+ "generated": "2026-07-17T06:34:29+00:00",
  "gold_macro": {
-  "real_yield_10y": 2.36,
-  "real_yield_5d_chg": 0.12,
-  "dxy": 100.97,
+  "real_yield_10y": 2.32,
+  "real_yield_5d_chg": 0.01,
+  "dxy": 100.68,
   "gold_regime": "chop"
  },
  "method": "KMeans k=3 on SPY (vol20, trend20, drawdown), 2y daily",
@@ -25,7 +25,7 @@
  ],
  "spy_vol20_ann": 14.1,
  "spy_trend20_pct": 1.81,
- "breadth_pct_above_20dma": 49.1,
+ "breadth_pct_above_20dma": 52.8,
  "cusum_breaks_2y": [
   "2026-03-03",
   "2026-03-20",
@@ -35,20 +35,20 @@
   "2026-06-10"
  ],
  "last_structural_break": "2026-06-10",
- "days_since_break": 35,
+ "days_since_break": 37,
  "tune_window_clean": false,
  "cluster_profiles": {
   "calm_drift": {
    "vol": 12.3,
-   "trend": 2.99
-  },
-  "stress": {
-   "vol": 49.2,
-   "trend": -2.57
+   "trend": 3.03
   },
   "trending": {
-   "vol": 16.1,
-   "trend": -3.09
+   "vol": 15.8,
+   "trend": -2.96
+  },
+  "stress": {
+   "vol": 48.3,
+   "trend": -2.71
   }
  },
  "note": "Unsupervised cross-check on the research regime. Advisory until the study session validates state vs outcomes; the dynamic caps follow research.json, not this."

@@ -1,23 +1,17 @@
 {
- "generated": "2026-07-15T11:03:55+00:00",
+ "generated": "2026-07-17T06:34:47+00:00",
  "tracked": {
   "NTSK": {
-   "openings": 148,
-   "prev": 150,
+   "openings": 143,
+   "prev": 148,
    "source": "greenhouse",
    "held": true
   },
   "YEXT": {
-   "openings": 25,
-   "prev": 24,
+   "openings": 28,
+   "prev": 25,
    "source": "greenhouse",
    "held": true
-  },
-  "BOLD": {
-   "openings": 0,
-   "prev": null,
-   "source": "greenhouse",
-   "held": false
   }
  },
  "flags": [],

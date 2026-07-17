@@ -79,3 +79,29 @@ equity: $670.47
 - **OPEN**: risk.json — 152m stale (agent dispatch chain may be broken)
 
 Sandboxed medic dispatched (unless on cooldown).
+
+### 06:35 UTC · [goldbot research] 2026-07-15 regime: corrective consolidation below ATH; elevated real yields cap rallies while Hormuz-oil inflation fears give a two-sided safe-haven squeeze
+{
+  "date": "2026-07-15",
+  "regime": "corrective consolidation below ATH; elevated real yields cap rallies while Hormuz-oil inflation fears give a two-sided safe-haven squeeze",
+  "bias_check": "agree \u2014 the bot's -1 (bearish) read is well-supported: 10Y real yields have climbed to ~2.36% (+0.20 over two weeks), COT specs are crowded long (52% of OI), TradingView reads sell (-0.45) and analysts frame it as sell-on-rise; the cross-feed adds nothing today (tilt 0, 'rh gold regime: chop'); the only caveat is that Hormuz safe-haven bids and the soft-CPI bounce can squeeze shorts (today's short was stopped for -$13).",
+  "key_levels": {
+    "support": [
+      4000,
+      3960,
+      3887
+    ],
+    "resistance": [
+      4081,
+      4112,
+      4300
+    ]
+  },
+  "events_next_48h": [
+    "Fed Chair Kevin Warsh Senate Banking Committee testimony today ~10:00 ET / 15:00 UK (high-impact USD; bot's event blackout gate active)",
+    "US-Iran strikes / Strait of Hormuz naval blockade \u2014 unscheduled oil-spike headline risk, two-sided for gold (safe-haven bid vs higher-for-longer rate fears)",
+    "US weekly jobless claims Thu Jul 16 (minor); note the next FOMC is Jul 28\u201329, outside
+
+### 06:43 UTC · [bot boxwatch] 1 self-healed, 0 open
+## Boxwatch report — 06:43 UTC
+- **self-healed**: git repo (repaired: empties deleted, refetched, reset to origin/main)
