@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-17T18:08:08Z",
+  "generated": "2026-07-17T18:09:22Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 4 position(s), free \u00a3286.47",
   "cash": {
     "free": 286.47,
-    "total": 490.52,
-    "ppl": -4.15,
+    "total": 490.73,
+    "ppl": -3.94,
     "result": -4.45,
     "invested": 208.2,
     "pieCash": 0,
