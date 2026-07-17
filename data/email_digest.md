@@ -331,3 +331,9 @@ Sandboxed medic dispatched (unless on cooldown).
     "Fed Chair Kevin Warsh Senate Banking Committee testimony today ~10:00 ET / 15:00 UK (high-impact USD; bot's event blackout gate active)",
     "US-Iran strikes / Strait of Hormuz naval blockade \u2014 unscheduled oil-spike headline risk, two-sided for gold (safe-haven bid vs higher-for-longer rate fears)",
     "US weekly jobless claims Thu Jul 16 (minor); note the next FOMC is Jul 28\u201329, outside
+
+### 12:53 UTC · [bot boxwatch] 0 self-healed, 1 open
+## Boxwatch report — 12:53 UTC
+- **OPEN**: lan-dashboard.service — activating (restart budget exhausted — needs medic)
+
+Sandboxed medic dispatched (unless on cooldown).
