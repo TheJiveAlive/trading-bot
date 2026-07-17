@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-17T16:23:25Z",
+  "generated": "2026-07-17T16:24:40Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 4 position(s), free \u00a3286.47",
   "cash": {
     "free": 286.47,
-    "total": 490.17,
-    "ppl": -4.5,
+    "total": 491.06,
+    "ppl": -3.61,
     "result": -4.45,
     "invested": 208.2,
     "pieCash": 0,
@@ -23,15 +23,15 @@
       "shares": 41.13,
       "avg_price": 2.07999027,
       "current_price": 2.06,
-      "pnl": -0.78
+      "pnl": -0.79
     },
     {
       "ticker": "SLND",
       "t212_ticker": "LGTO_US_EQ",
       "shares": 60.4652627,
       "avg_price": 1.11005885,
-      "current_price": 1.095,
-      "pnl": -0.7
+      "current_price": 1.115,
+      "pnl": 0.2
     },
     {
       "ticker": "CAI",
