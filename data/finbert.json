@@ -1,11 +1,11 @@
 {
- "generated": "2026-07-17T14:26:10+00:00",
+ "generated": "2026-07-17T14:46:10+00:00",
  "model": "ProsusAI/finbert (local CPU)",
  "headlines_scored": 60,
  "tickers": {
   "CAI": {
-   "mean": 0.214,
-   "n": 7,
+   "mean": 0.187,
+   "n": 8,
    "best": [
     0.861,
     "Caris Life Sciences To Offer In-House PTEN Immunohistochemistry Testing After Recent FDA Approval Of Biomarker"
@@ -32,7 +32,7 @@
   },
   "SLND": {
    "mean": 0.0,
-   "n": 2,
+   "n": 3,
    "best": null,
    "worst": null
   },
@@ -57,6 +57,12 @@
    "best": null,
    "worst": null
   },
+  "BOLD": {
+   "mean": 0.0,
+   "n": 2,
+   "best": null,
+   "worst": null
+  },
   "ARTV": {
    "mean": -0.53,
    "n": 2,
@@ -65,12 +71,6 @@
     -0.557,
     "Why Did AIM Stock Plummet 35% Today? - Stocktwits"
    ]
-  },
-  "BOLD": {
-   "mean": 0.0,
-   "n": 2,
-   "best": null,
-   "worst": null
   },
   "NTSK": {
    "mean": 0.315,
@@ -136,22 +136,13 @@
    "worst": null
   },
   "JEM": {
-   "mean": 0.919,
-   "n": 2,
+   "mean": 0.904,
+   "n": 1,
    "best": [
-    0.934,
-    "US Stocks Edge Higher; Delta Air Lines Posts Upbeat Q2 Earnings"
+    0.904,
+    "Dow Gains 50 Points; Simulations Plus Earnings Top Views"
    ],
    "worst": null
-  },
-  "LRMR": {
-   "mean": -0.601,
-   "n": 1,
-   "best": null,
-   "worst": [
-    -0.601,
-    "Netflix Stock Rips To Best Day In Nearly A Year: Investors Bet It Drops WBD Deal - Stocktwits"
-   ]
   }
  },
  "note": "Deterministic transformer sentiment, free and local. NOT a score input yet \u2014 the study session must validate mean-sentiment vs trade outcomes first."
