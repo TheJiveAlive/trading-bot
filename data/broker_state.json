@@ -1,53 +1,45 @@
 {
-  "generated": "2026-07-20T16:15:52Z",
+  "generated": "2026-07-20T19:16:48Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
   "mode": "live",
   "account_currency": "GBP",
   "ok": true,
-  "detail": "demo account reachable: 4 position(s), free \u00a3286.47",
+  "detail": "demo account reachable: 3 position(s), free \u00a3343.94",
   "cash": {
-    "free": 286.47,
-    "total": 481.06,
-    "ppl": -13.61,
-    "result": -4.45,
-    "invested": 208.2,
+    "free": 343.94,
+    "total": 482.56,
+    "ppl": -5.81,
+    "result": -10.66,
+    "invested": 144.43,
     "pieCash": 0,
     "blocked": 0
   },
   "positions": [
     {
-      "ticker": "WRAP",
-      "t212_ticker": "WRTC_US_EQ",
-      "shares": 41.13,
-      "avg_price": 2.07999027,
-      "current_price": 1.91,
-      "pnl": -5.24
+      "ticker": "YEXT",
+      "t212_ticker": "YEXT_US_EQ",
+      "shares": 7.8,
+      "avg_price": 5.36025641,
+      "current_price": 5.46,
+      "pnl": 0.51
     },
     {
       "ticker": "SLND",
       "t212_ticker": "LGTO_US_EQ",
       "shares": 60.4652627,
       "avg_price": 1.11005885,
-      "current_price": 1.0258,
-      "pnl": -3.71
+      "current_price": 1.1,
+      "pnl": -0.41
     },
     {
       "ticker": "CAI",
       "t212_ticker": "CAI1_US_EQ",
       "shares": 4.94,
       "avg_price": 17.1902834,
-      "current_price": 15.87,
-      "pnl": -4.91
-    },
-    {
-      "ticker": "YEXT",
-      "t212_ticker": "YEXT_US_EQ",
-      "shares": 7.8,
-      "avg_price": 5.36025641,
-      "current_price": 5.41,
-      "pnl": 0.25
+      "current_price": 15.61,
+      "pnl": -5.91
     }
   ],
   "reconciliation": [
@@ -61,12 +53,6 @@
       "ticker": "SLND",
       "ledger_shares": 60.4652627,
       "broker_shares": 60.4652627,
-      "status": "match"
-    },
-    {
-      "ticker": "WRAP",
-      "ledger_shares": 41.1342,
-      "broker_shares": 41.13,
       "status": "match"
     },
     {

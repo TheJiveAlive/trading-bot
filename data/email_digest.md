@@ -117,3 +117,10 @@ Sandboxed medic dispatched (unless on cooldown).
 - **OPEN**: bot-monitor.service — activating (restart budget exhausted — needs medic)
 
 Sandboxed medic dispatched (unless on cooldown).
+
+### 19:16 UTC · 🔴 SELL WRAP — 41.1342 shares @ $1.87  ·  P/L −$8.64 (-10.1%)
+SELL WRAP x41.1342 @ $1.87 ($76.92)
+P/L: -$8.64 (-10.1%)
+why: trailing stop (13%): 20.4% off high
+cash: $461.84
+equity: $649.01
