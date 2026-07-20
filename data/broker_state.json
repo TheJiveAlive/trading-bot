@@ -46,14 +46,26 @@
     {
       "ticker": "CAI",
       "ledger_shares": 4.9363,
+      "broker_shares": null,
+      "status": "closed_external"
+    },
+    {
+      "ticker": "CAI1",
+      "ledger_shares": 4.94,
       "broker_shares": 4.94,
-      "status": "match"
+      "status": "adopted"
+    },
+    {
+      "ticker": "LGTO",
+      "ledger_shares": 60.4652627,
+      "broker_shares": 60.4652627,
+      "status": "adopted"
     },
     {
       "ticker": "SLND",
       "ledger_shares": 60.4652627,
-      "broker_shares": 60.4652627,
-      "status": "match"
+      "broker_shares": null,
+      "status": "closed_external"
     },
     {
       "ticker": "YEXT",
