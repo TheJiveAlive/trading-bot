@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-20T19:16:48Z",
+  "generated": "2026-07-20T20:08:57Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 3 position(s), free \u00a3343.94",
   "cash": {
     "free": 343.94,
-    "total": 482.56,
-    "ppl": -5.81,
+    "total": 480.99,
+    "ppl": -7.38,
     "result": -10.66,
     "invested": 144.43,
     "pieCash": 0,
@@ -22,50 +22,38 @@
       "t212_ticker": "YEXT_US_EQ",
       "shares": 7.8,
       "avg_price": 5.36025641,
-      "current_price": 5.46,
-      "pnl": 0.51
+      "current_price": 5.45,
+      "pnl": 0.46
     },
     {
       "ticker": "SLND",
       "t212_ticker": "LGTO_US_EQ",
       "shares": 60.4652627,
       "avg_price": 1.11005885,
-      "current_price": 1.1,
-      "pnl": -0.41
+      "current_price": 1.0697,
+      "pnl": -1.77
     },
     {
       "ticker": "CAI",
       "t212_ticker": "CAI1_US_EQ",
       "shares": 4.94,
       "avg_price": 17.1902834,
-      "current_price": 15.61,
-      "pnl": -5.91
+      "current_price": 15.56,
+      "pnl": -6.09
     }
   ],
   "reconciliation": [
     {
       "ticker": "CAI",
       "ledger_shares": 4.9363,
-      "broker_shares": null,
-      "status": "closed_external"
-    },
-    {
-      "ticker": "CAI1",
-      "ledger_shares": 4.94,
       "broker_shares": 4.94,
-      "status": "adopted"
-    },
-    {
-      "ticker": "LGTO",
-      "ledger_shares": 60.4652627,
-      "broker_shares": 60.4652627,
-      "status": "adopted"
+      "status": "match"
     },
     {
       "ticker": "SLND",
       "ledger_shares": 60.4652627,
-      "broker_shares": null,
-      "status": "closed_external"
+      "broker_shares": 60.4652627,
+      "status": "match"
     },
     {
       "ticker": "YEXT",
