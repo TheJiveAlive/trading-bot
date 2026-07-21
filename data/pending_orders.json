@@ -8,5 +8,15 @@
     "reason": "trailing stop (13%): 20.4% off high",
     "status": "pending",
     "error": "ticker WRAP not found in Trading 212 instrument list"
+  },
+  {
+    "ts": "2026-07-21T17:56:51+00:00",
+    "side": "sell",
+    "ticker": "SLND",
+    "shares": 60.4652627,
+    "limit_price_hint": 0.86,
+    "reason": "trailing stop (13%): 27.7% off high",
+    "status": "pending",
+    "error": "ticker SLND not found in Trading 212 instrument list"
   }
 ]

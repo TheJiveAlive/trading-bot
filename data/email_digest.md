@@ -124,3 +124,10 @@ P/L: -$8.64 (-10.1%)
 why: trailing stop (13%): 20.4% off high
 cash: $461.84
 equity: $649.01
+
+### 17:56 UTC · 🔴 SELL SLND — 60.4653 shares @ $0.86  ·  P/L −$15.29 (-22.8%)
+SELL SLND x60.4653 @ $0.86 ($51.83)
+P/L: -$15.29 (-22.8%)
+why: trailing stop (13%): 27.7% off high
+cash: $513.67
+equity: $632.56
