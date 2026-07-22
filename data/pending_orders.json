@@ -8,5 +8,25 @@
     "reason": "trailing stop (13%): 27.7% off high",
     "status": "pending",
     "error": "ticker SLND not found in Trading 212 instrument list"
+  },
+  {
+    "ts": "2026-07-22T17:51:52+00:00",
+    "side": "sell",
+    "ticker": "CAI",
+    "shares": 4.9363,
+    "limit_price_hint": 15.5,
+    "reason": "trailing stop (13%): 13.1% off high",
+    "status": "pending",
+    "error": "order rejected (400): {\"type\":\"/api-errors/selling-equity-not-owned\",\"title\":\"Error while placing the order\",\"status\":400,\"detail\":\"Selling more equities than owned, owned: 0.0\",\"traceId\":\"6491cd15cae9012b84da66c49268b1b4\""
+  },
+  {
+    "ts": "2026-07-22T17:51:57+00:00",
+    "side": "sell",
+    "ticker": "SLND",
+    "shares": 60.4652627,
+    "limit_price_hint": 0.67,
+    "reason": "trailing stop (13%): 43.8% off high",
+    "status": "pending",
+    "error": "order rejected (400): {\"type\":\"/api-errors/selling-equity-not-owned\",\"title\":\"Error while placing the order\",\"status\":400,\"detail\":\"Selling more equities than owned, owned: 0.0\",\"traceId\":\"a361296d97b52ab8dccfca50ec1d4aaf\""
   }
 ]

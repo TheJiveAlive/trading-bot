@@ -1,65 +1,28 @@
 {
-  "generated": "2026-07-22T15:22:10Z",
+  "generated": "2026-07-22T17:52:03Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
   "mode": "live",
   "account_currency": "GBP",
   "ok": true,
-  "detail": "demo account reachable: 3 position(s), free \u00a3343.94",
+  "detail": "demo account reachable: 0 position(s), free \u00a3100.0",
   "cash": {
-    "free": 343.94,
-    "total": 464.17,
-    "ppl": -24.2,
-    "result": -10.66,
-    "invested": 144.43,
+    "free": 100.0,
+    "total": 100.0,
+    "ppl": 0,
+    "result": 0,
+    "invested": 0,
     "pieCash": 0,
     "blocked": 0
   },
-  "positions": [
-    {
-      "ticker": "YEXT",
-      "t212_ticker": "YEXT_US_EQ",
-      "shares": 7.8,
-      "avg_price": 5.36025641,
-      "current_price": 5.03,
-      "pnl": -1.85
-    },
-    {
-      "ticker": "SLND",
-      "t212_ticker": "LGTO_US_EQ",
-      "shares": 60.4652627,
-      "avg_price": 1.11005885,
-      "current_price": 0.7498,
-      "pnl": -16.02
-    },
-    {
-      "ticker": "CAI",
-      "t212_ticker": "CAI1_US_EQ",
-      "shares": 4.94,
-      "avg_price": 17.1902834,
-      "current_price": 15.43,
-      "pnl": -6.32
-    }
-  ],
+  "positions": [],
   "reconciliation": [
-    {
-      "ticker": "CAI",
-      "ledger_shares": 4.9363,
-      "broker_shares": 4.94,
-      "status": "match"
-    },
-    {
-      "ticker": "SLND",
-      "ledger_shares": 60.4652627,
-      "broker_shares": 60.4652627,
-      "status": "match"
-    },
     {
       "ticker": "YEXT",
       "ledger_shares": 7.8044,
-      "broker_shares": 7.8,
-      "status": "match"
+      "broker_shares": null,
+      "status": "closed_external"
     }
   ]
 }

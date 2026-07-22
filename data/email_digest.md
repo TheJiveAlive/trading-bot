@@ -131,3 +131,17 @@ P/L: -$15.29 (-22.8%)
 why: trailing stop (13%): 27.7% off high
 cash: $513.67
 equity: $632.56
+
+### 17:51 UTC · 🔴 SELL CAI — 4.9363 shares @ $15.50  ·  P/L −$8.34 (-9.8%)
+SELL CAI x4.9363 @ $15.50 ($76.51)
+P/L: -$8.34 (-9.8%)
+why: trailing stop (13%): 13.1% off high
+cash: $536.91
+equity: $616.10
+
+### 17:51 UTC · 🔴 SELL SLND — 60.4653 shares @ $0.67  ·  P/L −$26.87 (-40.0%)
+SELL SLND x60.4653 @ $0.67 ($40.25)
+P/L: -$26.87 (-40.0%)
+why: trailing stop (13%): 43.8% off high
+cash: $577.16
+equity: $616.10
