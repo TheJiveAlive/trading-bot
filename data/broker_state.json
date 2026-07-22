@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-22T17:52:03Z",
+  "generated": "2026-07-22T18:21:02Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -17,12 +17,5 @@
     "blocked": 0
   },
   "positions": [],
-  "reconciliation": [
-    {
-      "ticker": "YEXT",
-      "ledger_shares": 7.8044,
-      "broker_shares": null,
-      "status": "closed_external"
-    }
-  ]
+  "reconciliation": []
 }
