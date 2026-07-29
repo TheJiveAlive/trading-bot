@@ -145,3 +145,7 @@ P/L: -$26.87 (-40.0%)
 why: trailing stop (13%): 43.8% off high
 cash: $577.16
 equity: $616.10
+
+### 15:37 UTC · [bot] BUYING HALTED
+drawdown circuit breaker: 80.6% below peak (limit 12.0%)
+Exits continue to run. Buying resumes when equity recovers.
