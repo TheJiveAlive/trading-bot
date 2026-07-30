@@ -149,3 +149,7 @@ equity: $616.10
 ### 15:37 UTC · [bot] BUYING HALTED
 drawdown circuit breaker: 80.6% below peak (limit 12.0%)
 Exits continue to run. Buying resumes when equity recovers.
+
+### 15:37 UTC · [bot] BUYING HALTED
+drawdown circuit breaker: 80.6% below peak (limit 12.0%)
+Exits continue to run. Buying resumes when equity recovers.
