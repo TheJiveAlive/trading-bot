@@ -1,38 +1,39 @@
 {
- "date": "2026-08-11",
+ "date": "2026-08-12",
  "market_regime": "neutral",
- "regime_reason": "Downgraded from risk_on: indices stalled just off record highs (S&P 500 7,753.11 -0.06%, Nasdaq 26,605.36 -0.32%) while VIX ticked up to 15.54 and the Fed narrative turned hawkish -- chair Kevin Warsh is reportedly open to RAISING rates at the 9/16 FOMC if inflation runs hot, with 30-yr yields near 20-year highs and oil climbing on the US-Iran/Strait of Hormuz standoff, all into Wed 8/12 CPI + Thu 8/13 PPI; trend is still constructive but volatility and event risk no longer clearly support risk_on.",
+ "regime_reason": "July CPI cooled as expected to 3.4% headline / 2.5% core (both -0.1pt) and indices ticked up near record highs on cool inflation + strong CoreWeave/SMCI tech earnings (S&P +0.30%, Nasdaq +0.59%, VIX ~15.3) -- constructive, but a September rate HIKE is still a live ~40% scenario under a hawkish Fed and Thu 8/13 PPI is the next event risk, so trend supports risk_on while the rate/event overhang does not.",
  "sector_bias": {
   "Energy": 0.5,
   "Consumer Defensive": 0.4,
   "Industrials": 0.4,
+  "Consumer Cyclical": 0.2,
   "Basic Materials": 0.2,
-  "Technology": -0.4
+  "Technology": -0.2
  },
  "watchlist": [
   {
-   "ticker": "BV",
-   "note": "BrightView Holdings (~$11.35, NYSE): director William Cornog bought 50,000 sh (~$562k) 8/6 @ ~$11.25 open-market via family/living trusts -- largest insider buy in 3 months (+37% to his stake). Real conviction, but insiders were net sellers by ~$1.8M over the trailing 12mo, so single-buyer signal, not a cluster."
-  },
-  {
    "ticker": "LUMN",
-   "note": "Lumen Technologies (~$6.57, NYSE): CEO Kate Johnson bought 100,000 sh (~$613k) 8/6 @ $6.13 via trust; Q2 beat (-$0.07 adj EPS vs -$0.13 est), Hinshaw added to board 8/4, analyst upgrade to Hold. Note-exchange offers are DEBT restructuring, not equity dilution. Strongest of the three."
+   "note": "Lumen Technologies (~$6.32, NYSE): CEO Kathleen Johnson bought 100,000 sh (~$613k) 8/6 @ $6.07-6.18 via direct/trust; Q2 beat (-$0.07 adj EPS vs -$0.13 est), John Hinshaw added to board 8/4. Note-exchange offers are DEBT restructuring, not equity dilution. Citi cut PT to $8.25 from $10 (8/10) but still above price -- strongest of the set."
   },
   {
    "ticker": "RBKB",
-   "note": "Rhinebeck Bancorp (~$12.40, NASDAQ): completed second-step MHC->stock conversion 7/21 (sold 8.88M sh @ $10, 1.3978 exchange ratio), then insider CLUSTER buy 7/22. Classic thrift-conversion value setup, no toxic dilution; but the catalyst is ~3wk old and it already trades ~24% above the $10 offer -- extension risk."
+   "note": "Rhinebeck Bancorp (~$12.72, NASDAQ): completed second-step MHC->stock conversion 7/21 (8.88M sh @ $10, 1.3978 ratio) + insider CLUSTER buy 7/22. Clean thrift-conversion value setup, no toxic dilution; but the catalyst is now ~3wk old and it trades ~27% above the $10 offer -- extension risk."
   }
  ],
  "avoid": [
-  "ABTC",
   "ATTO",
-  "FLYE"
+  "ABTC",
+  "FLYE",
+  "SUGP",
+  "AFFY"
  ],
  "avoid_evidence": {
-  "ABTC": "WebSearch-verified 8/11: American Bitcoin Corp runs a $2.1B at-the-market equity program (Controlled Equity Sales Agreement 9/3/25) funding BTC purchases -- ~18% drawn, ~82% capacity remaining, $110.5M pulled via ATM in Q1 2026 alone -- STRUCTURAL serial dilution, plus a 1-for-15 reverse split effective 7/2/26. Sits above the radar buy line (8.37) but its +4.75 'insider' score is founder/treasury flow, not clean conviction. Radar already tags it avoid.",
-  "ATTO": "WebSearch-verified 8/11: Attovia Therapeutics IPO'd 8/5/26 at $17 (upsized, closed 8/6 raising ~$332.4M), now ~$19.75 and only 6 days public. The radar +4.75 'insider' score is an IPO-allocation/lockup artifact, NOT open-market conviction; clinical-stage (eczema/pruritus pipeline), no revenue, binary trial risk. Above the line (5.17) -- do not buy the misread signal.",
-  "FLYE": "WebSearch-verified 8/11 (carry-forward, evidence still live): Fly-E Group under an active SEC investigation (company cooperating, disclosed in FY2026 10-K) plus a pending securities class action (filed 9/8/25, 10(b)/20(a)/10b-5) over concealed lithium-battery safety issues that drove an ~87% one-day collapse. Not on the current radar; retained as a hard veto if it resurfaces."
+  "ATTO": "WebSearch-verified 8/12: Attovia Therapeutics IPO'd 8/5 at $17 (upsized to 17M sh + full 2.55M underwriter option = ~$332.4M raised), closed 8/6, now ~$17.44 and only 7 days public. Clinical-stage (eczema/pruritus), no revenue, binary trial risk; any 'insider' score is an IPO-allocation/lockup artifact, NOT open-market conviction. On today's price feed, not on the radar candidate list -- do not buy the misread signal.",
+  "ABTC": "WebSearch-verified 8/12: American Bitcoin Corp ~$6.92 runs an at-the-market equity program with ~82% capacity remaining (per Q2 8/3 call) funding BTC purchases -- STRUCTURAL serial dilution -- plus a 1-for-15 reverse split effective 7/6. Not on today's radar; retained as a do-not-buy serial-diluter veto if it resurfaces.",
+  "FLYE": "WebSearch-verified 8/12 (evidence still live): Fly-E Group under an active SEC investigation (initiated 1/21/26, company cooperating) plus a pending securities-fraud probe (Glancy Prongay, disclosed 9/8/25) over concealed lithium-battery safety issues, atop repeated 2026 Nasdaq compliance/delisting notices (late 10-Q/10-K, missed annual meeting; the 7/21 10-K delinquency was cured 7/23). Fraud/probe overhang unresolved -- hard veto if it resurfaces.",
+  "SUGP": "WebSearch-verified 8/12: SU Group Holdings received a Nasdaq staff delisting determination 8/3 after 30 sessions below $1.00 (6/18-7/31); board/holders approved a 1-for-5 reverse consolidation effective ~8/6 purely for bid-price compliance. Sub-$1 distress / reverse-split compliance play -- not on the radar, added as a veto (could surface in the wildcard penny band).",
+  "AFFY": "WebSearch-verified 8/12: bioAffinity Technologies received a Nasdaq minimum-bid-price non-compliance notice 7/30 (30 sessions <$1.00, 6/16-7/29); intends to appeal 8/6 to stay suspension. Sub-$1 listing-compliance distress -- added as a veto against a wildcard penny-band buy."
  },
- "avoid_rebuilt": "2026-08-11 evidence-first rebuild. data/risk.json is STALE (dated 2026-07-15, ~27 days old -- the risk officer's EDGAR forensics has not refreshed), so per rule (d) none of its flags (incl. critical BOLD/BJDX/PTNM) were carried forward without re-verification; PTNM's 7/16 delisting/suspension has almost certainly resolved, and none of those names appear on today's radar. The list is built from live WebSearch on the names the bot could actually act on: ABTC (8.37) and ATTO (5.17) sit above today's ~4.75 buy line (dilution / IPO-artifact), plus FLYE re-verified as a live fraud-probe veto. PRTA (radar 6.18) is left off both lists -- it's already blocked by the bot's extension/Z guard (Z -0.44), missed Q2 badly (-$0.36 EPS) and shows a 7/29 Form 144 SALE, so its +4.75 insider score looks like an ATTO-style misread; flagged in notes rather than avoid.",
- "notes": "Book is FLAT -- 0 positions, ~$133.74 cash, ledger held=[] -- so no held names to monitor. OPERATIONAL FLAG (persists from 8/10): the radar 'will it buy' panel shows an ACTIVE drawdown circuit breaker (\"80.6% below peak, limit 12.0%\") that is now the ONLY failing gate (weekly budget 0/4, slots 0/20, threshold met, cash ok); at flat reset equity this reads as a stale ledger peak never reset after the 7/14 demo reset -- a human should confirm before it silently blocks fills. Market tone shifted cautious: the week's live risk is Wed 8/12 CPI (July print, 8:30 ET) with a genuine rate-HIKE scenario if hot, then Thu 8/13 PPI; leadership has rotated out of mega-cap tech (Nvidia -2.9%, Apple -1.5%, Intel -4% on a $15B stock offering) into Energy/Consumer Defensive/Industrials."
+ "avoid_rebuilt": "2026-08-12 evidence-first rebuild. data/risk.json is STALE (dated 2026-07-15, ~28 days old -- the risk officer's EDGAR forensics has not refreshed), so per rule (d) none of its flags (incl. critical BOLD/BJDX/PTNM) were carried forward without re-verification; PTNM was suspended 7/16 (gone), and none of those names appear on today's radar. Today's list is built from live WebSearch on the two dilution/IPO names still visible to the bot (ATTO on the price feed; ABTC a known serial diluter), the FLYE fraud/probe hard veto (re-verified live), plus two freshly-verified delisting names (SUGP determination 8/3, AFFY notice 7/30). Held names: NONE (book flat). REPL (Tudriqev/RP1 melanoma FDA approval 8/4, ~$11.20) is deliberately left off BOTH lists -- the catalyst is real but it already ran +107% off the 7/31 panel vote and priced a $150M equity offering 8/7 (fresh dilution + extension), and the bot's 25% extension veto guards it anyway.",
+ "notes": "Book is FLAT -- 0 positions, T212 demo ~$100 (£100)/ledger ~$133.74, held=[] -- so no held names to monitor. OPERATIONAL FLAG (persists since 8/07): the radar 'will it buy' panel still shows an ACTIVE drawdown circuit breaker (\"80.6% below peak, limit 12.0%\") as a failing gate at flat reset equity -- a stale ledger peak never reset after the 7/14 demo reset; a human should confirm before it silently blocks fills (top candidate RBKB 4.2 is below the 5.25 line anyway, so nothing is being missed today). Market tone improved but cautious: July CPI in-line (3.4%/2.5% core) trimmed the worst-case hot print, yet a ~40% September rate-HIKE scenario and Thu 8/13 PPI keep event risk live; leadership stays rotated out of mega-cap tech into Energy/Consumer Defensive/Industrials, with Consumer Discretionary the week's strongest print (+3.29%)."
 }
