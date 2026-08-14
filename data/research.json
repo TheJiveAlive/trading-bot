@@ -1,40 +1,48 @@
 {
- "date": "2026-08-13",
+ "date": "2026-08-14",
  "market_regime": "risk_on",
- "regime_reason": "Both inflation prints are now benign -- July CPI in-line 8/12 (3.4%/2.5% core) and July PPI FLAT 8/13 (vs +0.2% est) -- driving September rate-hike odds down to ~35% (from ~50%), with the S&P (~7,748) and Nasdaq (~26,588) near record highs and VIX at its 2026 low of 14.40, so trend AND volatility now both support risk_on; the only overhang is a hawkish Fed that could still hike in Oct/Dec.",
+ "regime_reason": "Trend AND volatility both support risk_on: the S&P 500 hit a fresh record ~7,808 (Nasdaq ~26,840, also a record) with VIX low at ~14.68, after cool July CPI/flat PPI and a soft July jobs report (-23k, unemployment 4.1%) dialed rate-HIKE fears down and even lifted rate-CUT odds -- optimism around the AI trade broadened the advance; the only overhangs are stretched valuations/mega-cap concentration and a still-hawkish Fed tail (config force_regime=risk_on forces this inside the bot regardless).",
  "sector_bias": {
   "Energy": 0.5,
-  "Consumer Defensive": 0.4,
   "Industrials": 0.4,
-  "Basic Materials": 0.3,
-  "Financial Services": 0.2,
-  "Consumer Cyclical": 0.2,
-  "Technology": -0.2
+  "Healthcare": 0.3,
+  "Financial Services": 0.3,
+  "Basic Materials": 0.2,
+  "Consumer Defensive": 0.2,
+  "Technology": -0.1
  },
  "watchlist": [
   {
-   "ticker": "LUMN",
-   "note": "Lumen Technologies (~$6.4, NYSE): CEO Kathleen Johnson bought 100,000 sh (~$613k) 8/6 @ ~$6.13, Q2 (8/4) beat -$0.07 adj EPS vs -$0.13 est / rev $2.81B vs $2.74B (strategic rev +14% YoY), John Hinshaw added to board 8/4. Re-verified 8/13: NO equity offering/dilution -- note-exchange offers are DEBT restructuring. Goldman trimmed PT to $7.25 (Neutral) but still above price -- strongest, cleanest fresh insider catalyst of the set."
+   "ticker": "EMBC",
+   "note": "Embecta (~$5.12, NASDAQ): fresh open-market insider CLUSTER -- CLO Jeffrey Mann +$99,800 and CEO +30,000 sh (~$150k, reported 8/13) -- atop a Q3 (8/7) beat: EPS $0.56 vs $0.27 est, rev $271.7M vs $254.5M (though -8.1% YoY); Owen Mumford deal expands into the $2.4B auto-injector/GLP-1 space. Cleanest fresh catalyst of the set."
   },
   {
-   "ticker": "RBKB",
-   "note": "Rhinebeck Bancorp (~$12.5, NASDAQ): completed second-step MHC->stock conversion 7/21 (8.9M sh @ $10) + insider CLUSTER buy 7/22; clean thrift-conversion value setup (Piotroski/fundamentals strong on radar), no toxic dilution. BUT the catalyst is now ~3.5wk old, stock trades ~25% above the $10 offer, and a routine exec share sale was noted -- no FRESH catalyst, so extension risk. Radar scores it 4.2 (below the 5.25 line) -- retained as benign watch, not a conviction buy."
+   "ticker": "ALTO",
+   "note": "Alto Ingredients (~$4.22, NASDAQ): director Gilbert Nathan bought 50,000 sh / $207,500 on 8/11 @ ~$4.15 -- his largest insider buy in 3mo and only on-market trade in 12mo, into a ~10% weekly dip. Genuine open-market conviction buy; ethanol/renewables commodity name (single buyer, so not high-conviction)."
+  },
+  {
+   "ticker": "LUMN",
+   "note": "Lumen (~$6.31, NYSE): CEO Kathleen Johnson bought 100k sh/$613k @ ~$6.13 on 8/6 (catalyst now ~1wk old, aging), Q2 (8/4) rev $2.81B beat / strategic rev +14% YoY; re-verified 8/14 NO equity dilution (note-exchange is DEBT). Goldman PT $7.25 / Citi $8.25 both above price -- clean but the insider buy is aging."
+  },
+  {
+   "ticker": "SUJA",
+   "note": "Suja Life (~$6.29, NASDAQ): COO Michael Box bought 2,500 sh @ $6.43 on 8/10 (small, ~$16k) + long-time PE holder Paine Schwartz announced intention to buy in the open market; Q2 sales +11.6%, adj EBITDA +50%. Weakest -- 2026 IPO, FY guidance widened/softened on July grocery-channel weakness, so treat as a speculative watch not conviction."
   }
  ],
  "avoid": [
+  "PNAQ-UN",
+  "OPFI",
   "ATTO",
-  "ABTC",
   "FLYE",
-  "SUGP",
-  "AFFY"
+  "ABTC"
  ],
  "avoid_evidence": {
-  "ATTO": "Attovia Therapeutics IPO'd 8/5 at $17 (~$332M raised), now ~8 days public. Clinical-stage (eczema/pruritus), no revenue, binary trial risk; any high 'insider' score is an IPO-allocation/lockup artifact, NOT open-market conviction. Appeared on the bot's price feed -- veto so the misread signal is not bought.",
-  "ABTC": "American Bitcoin Corp ~$7: at-the-market equity program with ~82% capacity remaining (per Q2 8/3 call) funding BTC purchases -- STRUCTURAL serial dilution -- plus a 1-for-15 reverse split effective 7/6. Off today's radar; retained as a do-not-buy serial-diluter veto if it resurfaces.",
-  "FLYE": "Fly-E Group under an active SEC investigation (initiated 1/21/26) plus a pending securities-fraud probe over concealed lithium-battery safety issues, atop repeated 2026 Nasdaq compliance/delisting notices. Fraud/probe overhang unresolved -- hard veto if it resurfaces.",
-  "SUGP": "WebSearch-verified 8/13 (evidence still live): SU Group Holdings received a Nasdaq staff delisting determination 8/3 after 30 sessions below $1.00 (6/18-7/31); board/holders approved a 1-for-5 reverse consolidation effective ~8/6 purely for bid-price compliance. Sub-$1 distress / reverse-split compliance play -- could surface in the wildcard penny band.",
-  "AFFY": "bioAffinity Technologies received a Nasdaq minimum-bid-price non-compliance notice 7/30 (30 sessions <$1.00, 6/16-7/29) and is appealing; the deficiency is not yet cured. Sub-$1 listing-compliance distress -- veto against a wildcard penny-band buy."
+  "PNAQ-UN": "Pinnacle Acquisition -- blank-check SPAC that IPO'd 8/7 @ $10.00/unit ($200M, NYSE), NO deal/target yet (finance focus). Trades ~$9.95 (at NAV). Its radar insider score (5.70) is a pure SPAC-sponsor/trust artifact, NOT management open-market conviction -- and it sits ABOVE the 4.75 buy line, so veto the misread. Verified 8/14.",
+  "OPFI": "OppFi (~$7.12): Q2 (8/10) MISS -- adj EPS $0.33 vs est (-28%), rev short -- and the stock fell ~25% on 8/11. Insiders were NET SELLERS (5 sales / 0 buys over 6mo, e.g. Moore ~47k sh/$395k), so the radar insider score (4.75) is a MISREAD; it clears the buy line at 6.85, so veto the false signal. Verified 8/14.",
+  "ATTO": "Attovia Therapeutics -- IPO closed 8/6 (~$332M), ~$19.18 and ~8 days public; clinical-stage immuno-derm biotech, no revenue, binary trial risk. The Form 4 'insider' activity is Goldman Sachs market-making/conversion + lockup artifact, NOT open-market conviction -- exactly the IPO-score misread to veto if it hits the price feed. Verified 8/14.",
+  "FLYE": "Fly-E Group -- SEC investigation initiated 1/21/26 STILL open plus a pending securities-fraud probe (Glancy Prongay) over concealed lithium-battery safety issues, atop repeated 2026 Nasdaq compliance notices (late 10-Q/10-K). Fraud/probe overhang unresolved -- durable hard veto if it resurfaces. Verified 8/14.",
+  "ABTC": "American Bitcoin (Trump-backed miner): structural SERIAL DILUTER -- ~$2.1B ATM funding BTC purchases -- plus a 1-for-15 reverse split effective ~7/6 (cut ~1.09B->73M sh) purely to dodge sub-$1 Nasdaq delisting. Reverse split itself is complete, but the ATM dilution is ongoing; off today's radar, retained as a do-not-buy diluter veto if it resurfaces. Verified 8/14."
  },
- "avoid_rebuilt": "2026-08-13 evidence-first rebuild. data/risk.json is STALE (dated 2026-07-15, ~29 days old -- the risk officer's EDGAR forensics has not refreshed), so per rule (d) none of its flags (incl. critical BOLD/BJDX/PTNM) were carried without re-verification; PTNM was suspended 7/16 (gone) and none of those names appear on today's radar. Today's list is the five names the bot could actually buy or misread: ATTO (IPO/lockup insider-score artifact, on the price feed), ABTC (known serial diluter), FLYE (fraud/probe hard veto), SUGP (delisting determination 8/3, re-verified live today) and AFFY (bid-price notice 7/30, unresolved). REPL (Tudriqev/RP1 melanoma FDA approval 8/4) is deliberately left off BOTH lists -- real catalyst but it already ran +107% off the 7/31 panel vote and priced a $150M offering 8/7 (extension + fresh dilution), and the bot's 25% extension veto guards it. Held names: NONE (book flat). Fresh delisting/dilution names surfaced (FBLG, PASI, NOTV, AREB, CIMG, Cenntro) are all off the radar and out of the tradeable set, so not added.",
- "notes": "Book is FLAT -- 0 positions, T212 demo ~$100 (£100) / ledger ~$133.74, held=[] -- so no held names to monitor. OPERATIONAL FLAG (persists since ~7/29, re-confirmed 8/13): the radar 'will it buy' panel still shows an ACTIVE drawdown circuit breaker (\"80.6% below peak, limit 12.0%\") as the sole failing gate at flat reset equity -- a stale ledger peak never reset after the 7/14 demo reset; a human should confirm before it silently blocks fills (top new targets CC 6.9 / AXIAY 6.7 clear the 5.25 line, so real buys are being blocked if the halt is spurious). Market tone constructive: two cool inflation prints (CPI in-line, PPI flat) took the September rate-HIKE scare down to ~35% and pushed VIX to a 2026 low of 14.40; leadership stays rotated out of mega-cap tech into Energy / Consumer Defensive / Industrials / Materials, with financials/cyclicals broadening the advance."
+ "avoid_rebuilt": "2026-08-14 evidence-first rebuild, NOT a carry-forward. data/risk.json is STALE (dated 2026-07-15, ~30 days old, never refreshed), so per rule (d) none of its flags (incl. critical BOLD/BJDX/PTNM -- PTNM suspended 7/16) were carried without re-verification; none appear on today's radar. Today's list targets what the bot could actually buy or MISREAD from the live radar: PNAQ-UN (SPAC unit, insider score is a blank-check artifact, above the buy line) and OPFI (insider score is a misread -- insiders SELLING into an 8/10 earnings miss, -25%) are the two above-line radar names vetoed for false insider signals; ATTO (fresh-IPO insider artifact, <$20), FLYE (live SEC/fraud probe) and ABTC (serial-diluter ATM) are durable off-radar hard-vetoes re-verified today. DROPPED from yesterday: SUGP (its 1-for-5 reverse split completed ~8/6 -> off per rule d) and AFFY (sub-$1 bid-price notice, could not re-verify live today -> dropped). BTDR left OFF: its convertible-note dilution was Feb-2026 (not fresh) and it is already blocked by the bot's Z-guard. Held names: NONE (book flat), so nothing on the list is held.",
+ "notes": "Book is FLAT -- 0 positions, T212 demo account reachable at £100 free / ledger ~$133.74, held=[] -- so no held names to monitor. OPERATIONAL FLAG (persists since ~7/29, re-confirmed 8/14): the radar 'will it buy' panel still shows an ACTIVE drawdown circuit breaker (\"80.6% below peak, limit 12.0%\") as the SOLE failing gate at flat reset equity -- a stale ledger peak never reset after the 7/14 £500 demo reset; with real targets (EMBC 8.1, ALTO 7.4) above the 4.75 line, genuine buys are being blocked if the halt is spurious -- a human should confirm before it silently keeps blocking fills. Market tone constructive: S&P/Nasdaq at record highs, VIX ~14.7, September rate-HIKE scare faded (soft July jobs even lifted CUT odds); leadership is broadening OUT of concentrated mega-cap tech into Energy / Industrials / Healthcare / Financials / cyclicals, though an AI-trade bounce is still lifting the Nasdaq. Two radar insider scores are misfiring (PNAQ-UN SPAC artifact, OPFI insider SALES) -- both vetoed on the avoid list."
 }
