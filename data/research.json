@@ -1,49 +1,55 @@
 {
- "date": "2026-08-17",
+ "date": "2026-08-18",
  "market_regime": "risk_on",
- "regime_reason": "Trend AND volatility both support it: the S&P 500 just posted its third straight weekly gain near record highs and the VIX sits at its 2026 LOW (~14.2 on 8/15), while in-line July inflation (headline +3.4% y/y, core 2.5%) and a soft jobs print pulled September Fed-HIKE odds down to ~30% (a divided 7/29 FOMC held at 3.5-3.75%); only caveats are a small 8/17 wobble into retail-earnings week, Iran-tension headlines and stretched valuations (config force_regime=risk_on forces this regardless).",
+ "regime_reason": "Trend AND volatility both still support it: the S&P 500 (~7,745) and Nasdaq sit just off record highs with the Russell 2000 printing fresh all-time highs (bull-market broadening) and the VIX ~15.2 remains historically low despite a modest 8/18 pullback (S&P -0.5%) as oil topped $85 on Iran/Middle-East tension into retail-earnings week and the late-August Jackson Hole symposium, with a patient Fed keeping a September hold the base case (config force_regime=risk_on forces this regardless).",
  "sector_bias": {
-  "Energy": 0.4,
+  "Energy": 0.5,
   "Industrials": 0.4,
-  "Healthcare": 0.3,
-  "Basic Materials": 0.3,
-  "Consumer Defensive": 0.3,
-  "Financial Services": 0.1,
-  "Consumer Cyclical": -0.1,
-  "Technology": -0.2
+  "Healthcare": 0.2,
+  "Technology": -0.1,
+  "Financial Services": -0.1,
+  "Consumer Cyclical": -0.1
  },
  "watchlist": [
   {
-   "ticker": "SUJA",
-   "note": "Suja Life (~$6.29, NASDAQ): PE sponsor Paine Schwartz (holder since 2021, sold none at IPO) made three OPEN-MARKET buys 8/10-8/12 totalling 332,298 sh @ ~$6.09-6.43 after announcing intent 8/4 -- genuine sponsor conviction buy on the dip; cleanest fresh catalyst of the set. Verified 8/17."
+   "ticker": "ABCL",
+   "note": "AbCellera (~$11.16, NASDAQ): CFO Andrew Booth open-market bought 37,200 sh @ $10.32 on 8/14 into a REAL catalyst -- Phase 2 ABCL635 data sharply cut menopause hot-flash episodes (stock +64%), analysts raising PTs. Caveat: extended after the surge, so the confluence extension gate may still veto. Verified 8/18."
+  },
+  {
+   "ticker": "ANGX",
+   "note": "Angel Studios (~$4.7, NYSE): co-founder/insider Jeffrey Harmon open-market bought ~230k sh (~$948k) 8/13-8/14 after 8/5 Q2 (+28% rev to $111M, Guild members ~2.85M), analyst Strong Buy PT $8. Radar Z-blocks it (Z -0.68) but the insider conviction + growth are genuine. Caveat: ex-SPAC (Southport), still EBITDA-negative. Verified 8/18."
+  },
+  {
+   "ticker": "AHCO",
+   "note": "AdaptHealth (~$5.8, NASDAQ): director CLUSTER -- Dale Wolf 40k sh/$244.6k + Kenneth Samet 23.5k sh/$149.9k in early Aug -- into a favoured Healthcare tape; stock jumped ~10.5% on the buys. Caveat: Q2 EPS missed ($0.08 vs $0.12 est). Verified 8/18."
+  },
+  {
+   "ticker": "BORR",
+   "note": "Borr Drilling (~$4.4, NYSE): directors Tor Olav Troim & Currie made sizable open-market buys 8/14-8/15 into a leading Energy sector (oil >$85). Caveat: weak Q2 (rev $232.3M miss, EBITDA down) and a debt/seller-credit-funded Mexican-JV fleet add. Verified 8/18."
   },
   {
    "ticker": "EMBC",
-   "note": "Embecta (~$5.12, NASDAQ): 8/14 Q3 beat (adj EPS $0.56 vs $0.27, rev $271.7M vs $254.2M) with RAISED FY adj-EPS ($1.80-1.90) and operating-margin (23.5-24%) guides, plus a fresh insider CLUSTER -- CEO Kurdikar and CLO/president Mann open-market buys 8/12-8/13. Verified 8/17."
-  },
-  {
-   "ticker": "ACDC",
-   "note": "ProFrac Holding (~$5.28, NASDAQ): large insider CLUSTER 8/10-8/11 -- CEO Matthew Wilks +80k sh/$401k and Dan Wilks entities +720k sh/$3.61M @ ~$4.86-5.44 -- into a leading Energy sector. Skeptic caveat: the Wilks family already controls ProFrac and Piotroski is weak (-0.5), but $4M+ of fresh on-market buying is real conviction. Verified 8/17."
+   "note": "Embecta (~$4.6, NASDAQ): 8/14 quarter beat with RAISED FY guidance (stock +26% then +9%) plus a fresh insider cluster (CEO Kurdikar + CLO Mann). Caveat: a boilerplate securities class-action solicitation with an 8/17 deadline surfaced -- watch, not yet material. Verified 8/18."
   }
  ],
  "avoid": [
-  "ALTO",
   "VISN",
+  "ALTO",
+  "FLYE",
+  "ABTC",
   "PNAQ-UN",
   "BLSM",
-  "ABTC",
-  "ATTO",
-  "FLYE"
+  "ATTO"
  ],
  "avoid_evidence": {
-  "ALTO": "Alto Ingredients (~$4.22, NASDAQ, radar 7.4 ABOVE the 4.75 line): entered a $50M AT-THE-MARKET sales agreement 8/5 (launched 8/7 via Craig-Hallum/Benchmark/H.C. Wainwright) -- fresh dilution CAPACITY that overhangs an otherwise-solid Q2 ($11.4M net income). The director open-market buy that scores it is outweighed by the ATM. Verified 8/17.",
-  "VISN": "Vistance Networks (~$11.40, NASDAQ, ex-CommScope, radar 6.8 ABOVE the line): board declared a $5.00 special cash distribution (funded by the 7/1 Ruckus sale to Belden), record date 8/17, EX-DATE 8/28 -- because it exceeds 25% of price the quote gaps down ~$5 (~44%) on 8/28, which would trip the bot's 12% trailing stop / drawdown halt as a PHANTOM loss the price-based ledger won't offset with the cash. Verified 8/17.",
-  "PNAQ-UN": "Pinnacle Acquisition (~$9.95, NYSE, radar 7.4 ABOVE the line): blank-check SPAC that priced a $200M IPO ~8/6, NO target/deal yet, trades ~NAV. Its 5.70 insider score is a SPAC-sponsor/trust artifact, NOT management open-market conviction -- veto the misread. Verified 8/17.",
-  "BLSM": "BlossomHill Therapeutics (~$16.55, NASDAQ, radar 6.5, currently Z-blocked): fresh IPO priced $150M @ $16 on 8/7, clinical-stage cancer biotech with no revenue and binary trial risk. The insider 5.70 score is an IPO/underwriter/lockup artifact, not conviction -- veto if the Z-guard clears. Verified 8/17.",
-  "ABTC": "American Bitcoin (~$6.93, Trump-backed miner, off radar): completed a 1-for-15 reverse split 7/2 that consolidated ~1.09B to ~73M shares WITHOUT cutting the authorized share ceiling, leaving a large structural dilution runway to fund BTC purchases -- do-not-buy diluter veto. The reverse split itself is done (no longer the reason); the retained issuance capacity is. Verified 8/17.",
-  "ATTO": "Attovia Therapeutics (~$19.18, NASDAQ, <$20, off radar): fresh IPO priced 17M sh @ $17 on 8/4, ~2 weeks public; clinical-stage immuno-derm biotech, no revenue, binary trial risk. Any Form 4 'insider' activity is underwriter/market-maker + lockup artifact, not conviction -- IPO-score misread to veto if it hits the feed. Verified 8/17.",
-  "FLYE": "Fly-E Group (NASDAQ): SEC investigation opened 1/21/26 STILL OPEN (company cooperating, no determination), plus a 7/21 Nasdaq late-10-K delinquency notice (plan due 9/21, delisting risk if unresolved) -- durable overhang. Hard veto if it resurfaces. Verified 8/17."
+  "VISN": "Vistance Networks (~$11-12, NASDAQ, ex-CommScope): board declared a $5.00 special cash distribution (funded by the 7/1 Ruckus sale to Belden), record date 8/17, EX-DATE ~8/27 -- because it exceeds 25% of price the quote gaps down ~44% on the ex-date, which would trip the bot's 12% trailing stop / drawdown halt as a PHANTOM loss the price-based ledger won't offset with the cash. Live and imminent. Re-verified 8/18.",
+  "ALTO": "Alto Ingredients (~$4, NASDAQ): $50M at-the-market equity program established 8/5 and still active -- fresh dilution CAPACITY overhanging an otherwise-OK Q2. Off today's radar but a live diluter veto. Re-verified 8/18.",
+  "FLYE": "Fly-E Group (NASDAQ): SEC investigation opened 1/21/26 remains OPEN (durable fraud/probe overhang) plus prior Nasdaq late-10-K delinquency risk. Carried from 8/17 on the still-open probe (within freshness); hard veto if it resurfaces.",
+  "ABTC": "American Bitcoin (~$7, off radar): 1-for-15 reverse split (7/2) consolidated shares WITHOUT cutting the authorized-share ceiling, leaving a large structural dilution runway to fund BTC purchases -- do-not-buy serial-diluter veto (structural, durable). Carried from 8/17.",
+  "PNAQ-UN": "Pinnacle Acquisition (~$10, NYSE): blank-check SPAC (priced ~8/6), NO target/deal, trades ~NAV; its insider score is a SPAC-sponsor/trust artifact, NOT management conviction -- veto the misread. Carried from 8/17.",
+  "BLSM": "BlossomHill Therapeutics (~$16.5, NASDAQ): fresh IPO priced $150M @ $16 on 8/7, clinical-stage cancer biotech, no revenue, binary trial risk; the insider score is an IPO/underwriter/lockup artifact -- veto. Carried from 8/17.",
+  "ATTO": "Attovia Therapeutics (~$19, NASDAQ, <$20): IPO priced 17M sh @ $17 on 8/4, clinical-stage immuno-derm biotech, no revenue; any Form 4 is underwriter/market-maker + lockup artifact, not conviction -- veto the misread. Carried from 8/17."
  },
- "avoid_rebuilt": "2026-08-17 evidence-first rebuild, NOT a carry-forward. data/risk.json is STALE (dated 2026-07-15, ~33 days old, never refreshed), so per rule (d) none of its flags (incl. critical BOLD/BJDX/PTNM/PALI) were carried without live re-verification and none appear on today's radar. Today's list targets what the bot could actually buy or MISREAD from the live radar plus durable off-radar diluter/probe vetoes. Re-verified 8/17 via WebSearch: ALTO ($50M ATM 8/5-8/7, radar above line), VISN ($5 special-dividend ex-date 8/28 gaps the quote ~44%), FLYE (live SEC probe + fresh 7/21 late-10-K notice), ABTC (post-split issuance runway retained), plus PNAQ-UN / BLSM / ATTO as SPAC/fresh-IPO insider-score artifacts. Held names: NONE (book flat), so nothing on the list blocks a held position. Note vs yesterday: LUMN dropped from the watchlist -- its 8/6 CEO buy is now ~11 days old and aging past freshness, and GS/Citi trimmed PTs (to $7.25/$8.25), so it no longer clears the fresh-catalyst bar.",
- "notes": "Book is FLAT -- 0/20 position slots filled, exit radar shows nothing to exit, cash ~$133.74, broker demo account free GBP100. OPERATIONAL FLAG (persists since ~7/29, re-confirmed 8/17): the radar 'will it buy' panel STILL shows an active drawdown circuit breaker ('80.6% below peak, limit 12.0%') as the SOLE failing gate at flat reset equity -- a stale ledger peak never reset after the 7/14 GBP500 demo reset -- so genuine signals (SUJA 9.1, EMBC 8.1, ACDC 6.3 above the 4.75 line) are being BLOCKED; a human should reset the peak. Tone constructive: S&P/Nasdaq near records, VIX at a 2026 low ~14, September rate-HIKE odds down to ~30%; leadership keeps rotating OUT of Technology into Energy/Industrials/Healthcare/Materials/Consumer Defensive, though a light 8/17 wobble into retail-earnings week and Iran headlines flag some complacency. Three radar signals are traps vetoed on the avoid list: ALTO (fresh $50M ATM), VISN ($5 special-dividend ex-date 8/28 gaps the price) and PNAQ-UN (SPAC insider artifact)."
+ "avoid_rebuilt": "2026-08-18 evidence-first rebuild, NOT a carry-forward. data/risk.json is STALE (dated 2026-07-15, ~34 days old, never refreshed), so per rule (d) none of its flags (incl. critical BOLD/BJDX/PTNM/PALI) were carried without live re-verification and none appear on today's radar. Today's list targets what the bot could actually buy or MISREAD -- live diluter/probe vetoes plus fresh-IPO/SPAC insider-score artifacts. Re-verified TODAY via WebSearch: VISN ($5 special distribution, ex-date ~8/27 gaps the quote ~44%) and ALTO ($50M ATM active 8/5). FLYE (still-open SEC probe), ABTC (post-split issuance runway retained), PNAQ-UN / BLSM / ATTO (SPAC / fresh-<30-day-IPO insider-score misreads) carried from 8/17 within the ~7-day freshness window. BTDR left OFF: its dilution (Feb-2026 $325M convertible with capped call) is not fresh and it is already Z-blocked. Held names: NONE (book flat), so nothing on the list blocks a held position.",
+ "notes": "Book is FLAT -- 0/20 slots filled, exit radar clear, cash ~$133.74 (Trading 212 demo). OPERATIONAL FLAG (persists since ~7/29, re-confirmed 8/18): the radar 'will it buy' panel STILL shows the drawdown circuit breaker ('80.6% below peak, limit 12.0%') as the SOLE failing gate at flat reset equity -- a stale ledger peak never reset after the 7/14 GBP500 demo reset -- so every signal (ABCL 10.2, BTDR 9.1, ANGX 8.9, BORR 8.5, AHCO 7.5 above the 4.75 line) is being BLOCKED; a human should reset the peak. Regime constructive but softer than 8/17: the S&P/Nasdaq slipped ~0.5% from records on 8/18 with the VIX ticking up to ~15.2 (still low) as oil topped $85 on Iran/Middle-East tension into retail-earnings week and the late-Aug Jackson Hole symposium; leadership rotated toward Energy/Industrials and away from Technology/Financials this week. Dropped SUJA and ACDC from the watchlist -- their 8/10-8/12 insider buys are aging past freshness with no fresh confirmation today. Traps to note: VISN ($5 special-distribution ex-date ~8/27 gaps the quote ~44%) and ALTO (live $50M ATM), both off today's radar but kept on avoid."
 }
