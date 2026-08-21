@@ -1,12 +1,12 @@
 {
-  "generated": "2026-08-21T19:06:52+00:00",
+  "generated": "2026-08-21T19:33:42+00:00",
   "workflows": {
     "trading-scan": {
       "status": "completed",
       "conclusion": "success",
-      "when": "2026-08-21T19:02:05Z",
-      "duration_s": 52,
-      "avg_s": 56
+      "when": "2026-08-21T19:06:31Z",
+      "duration_s": 45,
+      "avg_s": 48
     },
     "hourly-intel": {
       "status": "completed",
