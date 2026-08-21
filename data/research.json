@@ -1,51 +1,48 @@
 {
- "date": "2026-08-20",
- "market_regime": "risk_on",
- "regime_reason": "Constructive: all three indexes posted winning sessions on 8/19 and sit near records, the VIX is historically low (~15.1), and 8/20 futures are modestly higher on a Treasury long-bond buyback that pulled yields back -- trend and low volatility both nominally support it (config force_regime=risk_on forces it regardless); tempered by an intensifying US-Iran economic offensive and event risk into Jackson Hole (8/27-29, new Fed Chair Warsh's first keynote 8/28).",
+ "date": "2026-08-21",
+ "market_regime": "neutral",
+ "regime_reason": "Mixed-to-deteriorating: a bond sell-off this week pushed the 10-yr back toward ~4.71% and hit capital-intensive AI/chip/tech names, all three indexes fell 8/20 (Dow -1.3%, S&P -0.8%, Nasdaq -1.0%) and are set for weekly losses; VIX is historically low (~14.2, a 2026 low) but the trend no longer clearly supports risk-on, and event risk looms into Jackson Hole (8/27-29, Warsh's debut keynote 8/28) with markets now pricing a possible September HIKE (~39%) plus a Trump 'economic warfare' push on Iran -- so neutral despite config force_regime=risk_on, which forces the bot's own regime regardless.",
  "sector_bias": {
   "Energy": 0.5,
   "Healthcare": 0.4,
-  "Industrials": 0.4,
-  "Basic Materials": 0.3,
-  "Consumer Defensive": 0.3,
-  "Technology": -0.2,
-  "Consumer Cyclical": -0.1,
-  "Communication Services": -0.1
+  "Financial Services": 0.4,
+  "Industrials": 0.3,
+  "Technology": -0.3
  },
  "watchlist": [
   {
+   "ticker": "SGRY",
+   "note": "Surgery Partners (~$13.94, NASDAQ, Healthcare): director Teresa DeLuca open-market buy 11,250 sh @ $14.33 (~$161k) 8/18 into a leading Healthcare tape; top radar score 8.3. Clean director conviction. Verified 8/21."
+  },
+  {
    "ticker": "BFLY",
-   "note": "Butterfly Network (~$8.98, NYSE): independent director Phanstiel open-market buy 115,200 sh @ $8.68 (~$999.5k) on 8/14 into record Q2 + RAISED FY26 guide; Healthcare tailwind, no fresh 8/26 offering found. Caveat: offsetting large Robbins-fund sells (1,876,292 sh, 7/31-8/3) + a small deputy-GC sale 8/12 -- the open-market director buy is the signal, the fund selling is portfolio management. Cleanest fundamental story. Verified 8/20."
+   "note": "Butterfly Network (~$9.02, NYSE, Healthcare): raised FY26 revenue guide to $119-123M on record Q2 + narrowed loss, plus a director ~$999.5k open-market buy mid-Aug; NO new offering (last was Jan-2025). Cleanest fundamental story; carried from 8/20. Verified 8/21."
   },
   {
    "ticker": "ANGX",
-   "note": "Angel Studios (~$4.95-5.29, NYSE): insider CLUSTER -- co-founder Harmon 178,700 sh (8/13) + 51,380 (8/14) and director Sarowitz 107,662 sh (8/13, ~$444k) + 57,922 (8/14, ~$247k), all open-market ~$4.08-4.27, after +28% Q2. Radar Z-blocks it (-0.73) but the conviction is genuine (~$1.4M cluster). Caveat: ex-SPAC, EBITDA-negative. Verified 8/20."
+   "note": "Angel Studios (~$4.37, NYSE): fresh insider CLUSTER ~$1.4M open-market ~$3.71-4.26 -- director Sarowitz $1.36M (8/12-14) + CCO Harmon 230,080 sh (8/13-14) + CEO buy, after Q2; stock gapped up. Genuine conviction but ex-SPAC, EBITDA-negative and radar Z-blocked. Verified 8/21."
   },
   {
    "ticker": "BORR",
-   "note": "Borr Drilling (~$4.39, NYSE): director Troim 1.5M sh @ $4.02 (~$6.0M) + director Currie 125k @ $4.01 (~$502k) open-market buys 8/13 into a leading Energy tape (oil elevated on Iran). Caveat: weak Q2 + debt-funded fleet growth. Verified 8/20."
+   "note": "Borr Drilling (~$4.4, NYSE, Energy): director Troim 1.5M sh @ $4.02 (~$6.0M) + director Currie 125k @ $4.01 open-market 8/13 into leadership Energy tape; +9.9% 8/15. Caveat: weak Q2 + debt-funded fleet growth. Verified 8/21."
   }
  ],
  "avoid": [
-  "VISN",
+  "ABCL",
   "ALTO",
   "ENHA",
+  "EVLV",
   "FLYE",
-  "ABTC",
-  "PNAQ-UN",
-  "BLSM",
-  "ATTO"
+  "VISN"
  ],
  "avoid_evidence": {
-  "VISN": "Vistance Networks (NASDAQ, ex-CommScope): $5.00 special cash distribution (funded by the 7/1 Ruckus sale to Belden), record 8/17, payable 8/27, EX-DATE 8/28 -- because it is >=25% of price (Nasdaq Rule 11140(b)(2)) the quote gaps down ~44% on the ex-date, a PHANTOM loss the price-based ledger won't offset with the cash, tripping the 12% trailing stop / drawdown halt. Live and imminent (6 trading days out). Re-verified 8/20.",
-  "ALTO": "Alto Ingredients (~$4-5, NASDAQ): $50M at-the-market equity program opened 8/5 (Craig-Hallum/Benchmark/H.C. Wainwright) and still active; shares -15% on dilution fear despite an OK Q2 ($11.4M net income). Live diluter veto. Re-verified 8/20.",
-  "ENHA": "Enhanced Group / Enhanced Games (~$1.62, NYSE, on today's radar ABOVE the line at 5.37): went public via SPAC reverse-recap and did a $50M chairman-led PIPE @ $3.89 + 12.85M warrants @ $3.89 (heavy dilution); stock now WELL BELOW the PIPE price -- the insider score is a PIPE/sponsor artifact MISREAD, not open-market conviction, atop event-company (doping-games) risk. Re-verified 8/20; live radar misread.",
-  "FLYE": "Fly-E Group (NASDAQ): SEC investigation opened 1/21/26 remains OPEN as of Aug 2026 (durable fraud/probe overhang, company cooperating, no determination); the 7/21 Nasdaq late-10-K deficiency was RESOLVED (10-K filed 7/23) so that leg is off, but the probe stands. Re-verified 8/20; hard veto if it resurfaces.",
-  "ABTC": "American Bitcoin (~$7, off radar): 1-for-15 reverse split (7/2) consolidated shares WITHOUT cutting the authorized-share ceiling, leaving a large structural issuance runway (big ATM) to fund BTC purchases -- serial-diluter veto (structural, durable). Carried within freshness; not on today's radar.",
-  "PNAQ-UN": "Pinnacle Acquisition (~$10, NYSE): blank-check SPAC unit (IPO ~8/6, ~14 days old), NO target/deal, trades ~NAV; any insider score is a SPAC-sponsor/trust artifact, NOT management conviction -- veto the misread. Carried within the ~30-day IPO-freshness window; not on today's radar.",
-  "BLSM": "BlossomHill Therapeutics (~$16, NASDAQ): fresh IPO priced $150M @ $16 on 8/7 (~13 days old), clinical-stage cancer biotech, no revenue, binary trial risk; the insider score is an IPO/underwriter/lockup artifact -- veto. Carried within the ~30-day IPO-freshness window; not on today's radar.",
-  "ATTO": "Attovia Therapeutics (~$19, NASDAQ, <$20): IPO priced 17M sh @ $17 on 8/4 (~16 days old), clinical-stage immuno-derm biotech, no revenue; any Form 4 is underwriter/market-maker + lockup artifact, not conviction -- veto the misread. Carried within the ~30-day IPO-freshness window; not on today's radar."
+  "VISN": "Vistance Networks (NASDAQ, ex-CommScope): $5.00 special cash distribution (funded by the 7/1 Ruckus sale to Belden), record 8/17, payable 8/27, EX-DATE 8/28 -- because it is >=25% of price (Nasdaq Rule 11140(b)(2)) the quote gaps down ~44% on the ex-date, a PHANTOM loss the price-based ledger won't offset with the cash, tripping the trailing stop / drawdown halt. Live and imminent (~5 trading days out). Verified 8/21.",
+  "ALTO": "Alto Ingredients (~$4-5, NASDAQ): $50M at-the-market equity program opened 8/5 (Craig-Hallum/Benchmark/H.C. Wainwright) and still active; shares -15% on dilution fear despite an OK Q2 ($11.4M net income). Live diluter veto. Verified 8/21.",
+  "ABCL": "AbCellera (~$11.58, NASDAQ, on radar at 7.2): priced an oversubscribed $200M offering 17,435,897 sh @ $9.75 + 3,076,926 pre-funded warrants, closed 8/14 -- real, fresh dilution atop the genuine positive Phase-2 ABCL635 menopause read; the buy candidate risks a dilution/confluence veto and belongs off the buy path. Verified 8/21.",
+  "ENHA": "Enhanced Group / Enhanced Games (~$1.75, NYSE, on radar at 6.1): chairman-led (Angermayer/Apeiron) $50M PIPE @ $3.89 + warrants (heavy dilution); stock now WELL BELOW the PIPE price -- the insider score is a PIPE/sponsor artifact MISREAD, not open-market conviction, atop event-company (doping-games/telehealth pivot) risk. Verified 8/21; live radar misread.",
+  "EVLV": "Evolv Technologies (~$5.41, NASDAQ, TOP radar score 8.78 on a +4.75 insider component): SEC Form 4s show 0 open-market BUYS and 8 SELLS over 6 months and ~$22M net insider SELLING over 12 months (CEO Ellenbogen option-exercise sales) -- the insider score is a MISREAD; do not buy as insider conviction. Verified 8/21.",
+  "FLYE": "Fly-E Group (NASDAQ): SEC investigation opened 1/21/26 remains OPEN as of Aug 2026 (durable probe overhang, company cooperating, no determination); the 7/21 Nasdaq late-10-K deficiency was RESOLVED (10-K filed 7/23) so that leg is off, but the probe stands. Not on today's radar. Verified 8/21; hard veto if it resurfaces."
  },
- "avoid_rebuilt": "2026-08-20 evidence-first rebuild, NOT a carry-forward. data/risk.json is STALE (dated 2026-07-15, ~36 days old, never refreshed), so per rule (d) none of its flags (incl. critical BOLD/PTNM/BJDX) were carried without live re-verification and none appear on today's radar (PTNM was slated for 7/16 suspension/delisting, likely off-exchange and untradeable). Today's list targets what the bot could actually BUY or MISREAD. WebSearch-verified TODAY: VISN ($5 special distribution, ex-date 8/28 gaps the quote ~44%), ALTO (live $50M ATM 8/5), ENHA (chairman-led $50M PIPE + warrants, insider-score misread, above the 5.37 radar line), FLYE (SEC probe 1/21/26 still open; late-10-K leg resolved 7/23). ABTC (post-split issuance runway), PNAQ-UN / BLSM / ATTO (SPAC / fresh-<30-day-IPO insider-score artifacts) carried within the ~7-30-day freshness window; none on today's radar. Nothing new was resolved OFF. Held names: NONE (book flat), so nothing here blocks a held position -- it only blocks ADDING.",
- "notes": "Book is FLAT -- 0/20 slots filled, exit radar clear, cash ~$136.46 (Trading 212 demo, GBP100 practice), so there are no held positions to monitor. OPERATIONAL FLAG (persists since ~7/29, re-confirmed 8/20): the radar 'will it buy' panel STILL shows the drawdown circuit breaker ('80.2% below peak, limit 12.0%') as the SOLE failing gate at flat reset equity -- a stale ledger peak never reset after the 7/14 GBP500 demo reset -- so every candidate above the 4.75 line (BFLY 8.3, BORR 8.2, ABCL 8.1, ANGX 10.2 Z-blocked) is being BLOCKED; a human should reset the peak. Regime risk_on and constructive: all three indexes won 8/19 near records, VIX ~15.1, 8/20 futures firmer on a Treasury long-bond buyback -- offset by a US-Iran economic offensive and Jackson Hole event risk (Warsh's first keynote 8/28). Leadership stays in Energy/Healthcare/Industrials/Materials/Defensives and out of Technology (chip-led selling 8/18). DROPPED ABCL from the watchlist despite an 8.1 radar score: genuine Phase-2 ABCL635 catalyst but it priced a fresh oversubscribed ~$200M offering @ $9.75 (17.44M sh + 3.08M pre-funded warrants, closed 8/14) -- real dilution that risks a confluence veto. DROPPED EMBC: 8/7 beat + raised FY guide + CEO 8/13 buy are real but aging (insider now 0.0 on radar, score 3.32) atop the securities class-action overhang. Traps to note: VISN ($5 special-distribution ex-date 8/28 gaps ~44%) and ALTO (live $50M ATM), both off today's radar but kept on avoid; ENHA is a live radar misread now vetoed."
+ "avoid_rebuilt": "2026-08-21 evidence-first rebuild, NOT a carry-forward. data/risk.json is STALE (dated 2026-07-15, ~37 days old, never refreshed), so per rule (d) none of its flags (incl. critical BOLD/PTNM/BJDX) were carried without live re-verification and none appear on today's radar (PTNM was slated for 7/16 suspension/delisting, likely off-exchange). This list targets what the bot could actually BUY or MISREAD today. WebSearch-verified 8/21: VISN ($5 special distribution, ex-date 8/28 gaps ~44%), ALTO (live $50M ATM 8/5), ABCL (fresh $200M offering @ $9.75 closed 8/14, on radar 7.2), ENHA (chairman-led $50M PIPE @ $3.89, insider-score misread, on radar 6.1), EVLV (top radar 8.78 but 0 buys/8 sells -- insider misread), FLYE (SEC probe 1/21/26 still open). DROPPED from prior list vs 8/20: ABTC / PNAQ-UN / BLSM / ATTO (IPO/SPAC insider-score artifacts not on today's radar and not re-verified today -- per rule (a)/(d) not carried unverified). Held names: NONE (book flat), so nothing here forces a sell -- it only blocks ADDING/misreads.",
+ "notes": "Book is FLAT -- 0/20 slots filled, exit radar clear, cash ~$136.46 (Trading 212 demo, GBP100 practice), so there are no held positions to monitor. OPERATIONAL FLAG (persists since ~7/29, re-confirmed 8/21): the radar 'will it buy' panel STILL shows the drawdown circuit breaker ('80.2% below peak, limit 12.0%') as the SOLE failing gate at flat reset equity -- a stale ledger peak never reset after the 7/14 GBP500 demo reset -- so every candidate above the 4.75 line is BLOCKED regardless; a human should reset the peak. Regime downgraded to NEUTRAL from 8/20's risk_on: a bond sell-off hit AI/chip/tech, all three indexes fell 8/20 and are set for weekly losses, and Jackson Hole (Warsh debut 8/28) carries hike/hawkish event risk -- VIX ~14.2 (low) is the only clean risk-on leg, so trend and volatility no longer both support it (config force_regime=risk_on overrides the bot anyway). Leadership broadening into Energy (led, ~+6% WTD), Healthcare, Financials (into leading quadrant) and Industrials, and out of Technology (bond-yield-driven chip selling). New avoid EVLV is a live radar TOP-score misread (net insider selling despite an 8.78); ABCL is a genuine Phase-2 catalyst but a fresh $200M 8/14 dilution -> avoid not watchlist."
 }
