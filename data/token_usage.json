@@ -1969,5 +1969,14 @@
     "cache_read": 117987,
     "cost_usd": 8.366,
     "duration_ms": 25471
+  },
+  {
+    "ts": "2026-08-28T23:09:07+00:00",
+    "label": "research",
+    "input_tokens": 42,
+    "output_tokens": 33237,
+    "cache_read": 2416441,
+    "cost_usd": 8.1245,
+    "duration_ms": 464195
   }
 ]
