@@ -321,3 +321,7 @@ Exits continue to run. Buying resumes when equity recovers.
 ### 19:36 UTC · [bot] BUYING HALTED
 drawdown circuit breaker: 80.2% below peak (limit 12.0%)
 Exits continue to run. Buying resumes when equity recovers.
+
+### 16:40 UTC · [bot] BUYING HALTED
+drawdown circuit breaker: 80.2% below peak (limit 12.0%)
+Exits continue to run. Buying resumes when equity recovers.
