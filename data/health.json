@@ -1,12 +1,12 @@
 {
-  "generated": "2026-09-04T16:33:54+00:00",
+  "generated": "2026-09-04T16:56:56+00:00",
   "workflows": {
     "trading-scan": {
       "status": "completed",
       "conclusion": "success",
-      "when": "2026-09-04T12:14:02Z",
-      "duration_s": 48,
-      "avg_s": 43
+      "when": "2026-09-04T16:33:29Z",
+      "duration_s": 147,
+      "avg_s": 97
     },
     "hourly-intel": {
       "status": "completed",
@@ -18,9 +18,9 @@
     "daily-research": {
       "status": "completed",
       "conclusion": "success",
-      "when": "2026-09-03T16:38:41Z",
-      "duration_s": 664,
-      "avg_s": 585
+      "when": "2026-09-04T16:33:57Z",
+      "duration_s": 562,
+      "avg_s": 622
     },
     "weekly-review": {
       "status": "completed",
