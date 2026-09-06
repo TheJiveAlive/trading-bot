@@ -333,3 +333,67 @@ Exits continue to run. Buying resumes when equity recovers.
 ### 17:35 UTC · [bot] BUYING HALTED
 drawdown circuit breaker: 80.2% below peak (limit 12.0%)
 Exits continue to run. Buying resumes when equity recovers.
+
+### 18:04 UTC · [bot learning] 4 weight adjustment(s)
+Signal performance (closed trades):
+{
+  "ai_news": {
+    "trades": 5,
+    "avg_pnl_pct": -3.9,
+    "enough_evidence": true
+  },
+  "analyst_trend": {
+    "trades": 4,
+    "avg_pnl_pct": -3.8,
+    "enough_evidence": true
+  },
+  "breakout": {
+    "trades": 2,
+    "avg_pnl_pct": -7.07,
+    "enough_evidence": false
+  },
+  "events": {
+    "trades": 5,
+    "avg_pnl_pct": -3.9,
+    "enough_evidence": true
+  },
+  "fundamentals": {
+    "trades": 6,
+    "avg_pnl_pct": -4.89,
+    "enough_evidence": true
+  },
+  "insider": {
+    "trades": 6,
+    "avg_pnl_pct": -4.89,
+    "enough_evidence": true
+  },
+  "insider_sentiment": {
+    "trades": 2,
+    "avg_pnl_pct": -7.07,
+    "enough_evidence": false
+  },
+  "news": {
+    "trades": 1,
+    "avg_pnl_pct": -7.54,
+    "enough_evidence": false
+  },
+  "piotroski": {
+    "trades": 1,
+    "avg_pnl_pct": -0.35,
+    "enough_evidence": false
+  },
+  "sector": {
+    "trades": 6,
+    "avg_pnl_pct": -4.89,
+    "enough_evidence": true
+  },
+  "sector_bias": {
+    "trades": 1,
+    "avg_pnl_pct": -7.54,
+    "enough_evidence": false
+  }
+}
+
+Applied (bounded 50%-150% of defaults):
+insider_weight: 1.9 -> 1.8 (avg P/L -4.9% over 6 trades)
+sector_momentum_weight: 0.95 -> 0.9 (
