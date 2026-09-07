@@ -1,36 +1,36 @@
 {
- "date": "2026-09-04",
- "market_regime": "neutral",
- "regime_reason": "Shifted risk_off -> NEUTRAL: the two-sided tape argues both ways -- large-cap indices sit just below their mid-Aug ATH (S&P ~7,744 vs 7,814.88 high) with a LOW VIX (~14.3) and a 9/3 tech bounce that paused the prior losing streak (constructive), BUT the FRIDAY 9/4 jobs report ran HOT (nonfarm payrolls +162k vs ~54k consensus, unemp 4.1%), lifting Fed SEPT-HIKE odds to ~60% into the 9/15-16 FOMC and hammering small caps (Russell 2000 -1.4% on the day) amid a live US-Iran oil shock (Brent +9% on the week) and a 10-yr near cycle highs (~4.78%, touched 4.81%) ahead of 9/11 CPI; trend and volatility do not BOTH support risk_on, so neutral is the conservative call -- and note it is small-cap-hostile underneath. Config force_regime=risk_on overrides the bot regardless; hard vetoes still apply.",
+ "date": "2026-09-07",
+ "market_regime": "risk_off",
+ "regime_reason": "Risk_off into a hostile data/Fed week (US markets CLOSED today, Labor Day, so this carries the Fri 9/4 tape): trend is rolling over -- S&P 500 ~7,719 (~0.5% off its mid-Aug ATH), Nasdaq/QQQ ~3.5% below its June record -- with a FIRMING VIX (~16, up off the 14.1 Aug low) while a HOT Aug jobs print (+162k vs ~54k consensus) lifted Fed SEPT-HIKE odds to ~60% (CME) into 9/11 CPI + the 9/15-16 FOMC, the 10-yr sits near cycle highs (~4.74%, touched 4.81%), and a live US-Iran oil shock (WTI ~$87 / Brent ~$92) keeps risk suppressed and small caps (Russell 2000, the most rate-exposed) on the back foot; trend and volatility do not BOTH support risk_on, so risk_off is the conservative call. Config force_regime=risk_on overrides the bot regardless; hard vetoes still apply.",
  "sector_bias": {
-  "Energy": 0.7,
+  "Energy": 0.8,
+  "Financial Services": 0.5,
   "Basic Materials": 0.4,
-  "Financial Services": 0.3,
   "Consumer Defensive": 0.3,
   "Industrials": 0.2,
-  "Communication Services": 0.1,
-  "Healthcare": -0.3,
-  "Consumer Cyclical": -0.3,
+  "Communication Services": -0.1,
+  "Healthcare": -0.2,
   "Utilities": -0.3,
   "Technology": -0.4,
-  "Real Estate": -0.5
+  "Real Estate": -0.4,
+  "Consumer Cyclical": -0.4
  },
  "watchlist": [
   {
+   "ticker": "EQPT",
+   "note": "EquipmentShare.com (~$17-19, NASDAQ, Industrials): FRESHEST catalyst + it VALIDATES the bot's 8.52 top scan signal -- CEO Schlacks made 4 open-market buys 8/28-9/2 (~50k sh, all below the $24.50 Jan-2026 IPO) alongside founder buys, on a Q2 beat (rev $1.44B, adj EPS $0.18 vs -$0.08, reported 8/14). No equity dilution. CAVEAT: heavily leveraged ($1.35B 2nd-lien notes) + founder-controlled (Class B supervote) -- a leverage story, not a clean micro-cap, so size small. Verified 9/7."
+  },
+  {
    "ticker": "NPB",
-   "note": "Northpointe Bancshares (~$17.29, NYSE, Financials): FRESH catalyst -- CEO/Chair Charles Williams open-market buy 85,000 sh @ $16.7403 (~$1.42M) on 9/1 atop 8/25 (30,000 @ $16.95) + 8/26 (48,312 @ $16.95). Feb-2025 IPO @ $14.50, no ATM/shelf/reverse split surfaced (not fully cleared vs latest 10-Q). Caveat: it is the controlling ~10% insider buying, not independent directors. Radar 8.73, above the line & UNBLOCKED -- top clean buyable. Verified 9/4."
+   "note": "Northpointe Bancshares (~$17, NYSE, Financials): CEO/Chair Williams open-market CLUSTER -- 30,000 @ $16.95 (8/25) + 48,312 @ $16.95 (8/26) + a fresh 85,000 @ $16.74 (~$1.42M) 9/1, zero sales atop Feb/May 2026 buys; small ~28M float, Feb-2025 IPO @ $14.50, no dilution surfaced. Caveat: controlling ~10% insider, not independent directors. Verified 9/7."
   },
   {
    "ticker": "NOMD",
-   "note": "Nomad Foods (~$11.85, NYSE, Consumer Defensive): cleanest insider CLUSTER -- CEO Dominic Brisby 50,000 sh @ $12.38 (~$619k) 8/24 + CFO Ruben Baldew 28,290 sh @ $11.85 8/19 (repeat buyer, +14k June/70k Q1), backed by an active buyback + ~6% dividend, no offering/ATM. Catalyst is late-Aug (~2wk old). Verified 9/4."
-  },
-  {
-   "ticker": "DLTH",
-   "note": "Duluth Holdings (~$4.00, NASDAQ, Consumer Cyclical): FRESHEST catalyst -- Q2 reported 9/3, RAISED FY adj-EBITDA guide to $38-42M (from $28-32M), EPS $0.50, adj-EBITDA $27M. QUALITY CAVEAT: ~$0.44 of the $0.50 EPS is a one-time tariff refund and net sales fell -7.8% YoY; founder dual-class, not a diluter. Watch, don't chase. Verified 9/4."
+   "note": "Nomad Foods (~$11.85, NYSE, Consumer Defensive): genuine CEO+CFO cluster -- CEO Brisby 50,000 @ $12.38 (~$619k) 8/24 + CFO Baldew 28,290 @ $11.85 8/19 (repeat buyer), backed by an active buyback + ~6% dividend, no offering. Cheap (~7x fwd) defensive frozen-foods turnaround. Verified 9/7."
   },
   {
    "ticker": "CURI",
-   "note": "CuriosityStream (~$2.88, NASDAQ, Comm Services): CEO Stinchcomb open-market buys 30,000 @ $2.55 8/27 + 20,000 @ ~$2.6 8/28 + record Q2 net income $8.9M / adj-EBITDA $11.4M (49% margin) on AI-training-content licensing + raised FY guide + $0.085 Q3 dividend. Caveat: profit surge leans on lumpy AI-licensing deals (durability is the key question); micro-cap. Radar 4.18. Verified 9/4."
+   "note": "CuriosityStream (~$2.56-2.88, NASDAQ, Comm Services): CEO Stinchcomb 20,000 @ $2.56-2.62 8/28 (150k/6mo, no sales) + record Q2 (rev +22%, licensing +48%, NI $8.9M) + raised FY guide + dividend. CAVEATS: token-sized buy (~$52k) and lumpy AI-training-licensing durability; micro-cap. LOW-conviction watch. Verified 9/7."
   }
  ],
  "avoid": [
@@ -48,7 +48,6 @@
   "GEVO",
   "DGXX",
   "ENHA",
-  "ALTO",
   "AIAI",
   "SDOT",
   "NXL",
@@ -58,35 +57,46 @@
   "EYPT",
   "PMVP",
   "PLRZ",
-  "INV"
+  "INV",
+  "FCEL",
+  "BETR",
+  "AARD",
+  "CTSO",
+  "BRTX",
+  "TNON"
  ],
  "avoid_evidence": {
-  "SUJA": "Suja Life (~$10.6, NASDAQ): radar 8.49, above the line & BLOCKED -- the exact misread the list catches. Broken May-2026 IPO ($21, ~$173M raised), -46% on the 8/5 Q2 miss, now >70% below IPO; securities-fraud investigations 'continuing' (Frank R. Cruz 8/19, Robbins LLP 8/25); the 'insider +4.75' is Paine Schwartz PE-affiliate accumulation, not independent conviction. Verified 9/4.",
-  "IMTX": "Immatics (~$9.4, NASDAQ): FRESH $150M underwritten offering priced 8/25, closed 8/26 @ $8.69; ~$161M raised (greenshoe likely exercised) -- only ~9 days old, overhang still live. Verified 9/4.",
-  "RGNX": "REGENXBIO (~$9.5, NASDAQ): serial diluter -- $300M mixed shelf (S-3 filed 11/26/2025) STILL open + a $100M common+pre-funded-warrant follow-on priced ~7/17 @ $9.00 (stock -17%). Verified 9/4.",
-  "TNXP": "Tonix Pharmaceuticals (~$14, NASDAQ): active ATM (drew $53.6M net in H1-2026) + serial reverse-split authorization approved 5/7/2026 up to 1-for-250 within two years (prior 1-for-100 in 2/2025). Verified 9/4.",
-  "HYLN": "Hyliion Holdings (~$3.5, NYSE): live up-to-$100M ATM, sales agreement dated 8/11/2026 (Needham/Northland), against guided $30-35M continued cash burn -- tappable dilution. Verified 9/4.",
-  "BATL": "Battalion Oil (~$1.3, NYSE American): continued-listing NON-COMPLIANCE (1003(a)(i)/(ii)); compliance-plan period runs through 11/30/2026 with delisting risk in the window. Verified 9/4.",
-  "TENX": "Tenax Therapeutics (~$1.9, NASDAQ): radar 6.17 today -- hard AVOID. Phase-3 LEVEL trial of TNX-103 MISSED its primary + key secondary 8/10 (shares ~-90%); Levi & Korsinsky / Johnson Fistel investigations ongoing. A lasting fundamental impairment + live litigation, not an aged-off event. Verified 9/4.",
-  "QFIN": "Qfin/Qifu (~$9.35, NASDAQ): securities-fraud probes after the 8/25 Q2 print (rev -31.6%, NI -76.8% YoY; stock -18.9% on 8/26); Glancy Prongay investigation 'continues' 8/31. Verified 9/4.",
-  "DVLT": "Datavault AI (~sub-$1, NASDAQ): $25M unsecured convertible note + 15M pre-delivery shares via a Streeterville SPA 8/18 + 424B5 8/19; ~950M shares out vs ~$2.46M cash, stockholders' deficit -- active conversion dilution; guards the wildcard sleeve band. Verified 9/4.",
-  "SENS": "Senseonics (~$5-9, NYSE American): $300M S-3 shelf incl. a $100M ATM component, already tapped with an $80M common+pre-funded-warrant offering @ $5.00 (Apr-2026, ~$92M w/ over-allotment); substantial shelf/ATM capacity remains, still disclosed in the Q2 10-Q. Verified 9/4.",
-  "CAPR": "Capricor (~$7, NASDAQ): FDA AdCom voted 9-against/3-for 7/29; PDUFA NOT resolved -- extended from 8/22 to 11/22/2026 (FDA reviewing a BLA amendment), so the binary is still pending; securities class action active, lead-plaintiff deadline 9/28 (reaffirmed 9/4). Verified 9/4.",
-  "GEVO": "Gevo (~$1.6, NASDAQ): serial diluter -- 2026 saw a $350M registered direct + a $150M ATM-priced RD, updated S-3/ATM on file, standing ATM capacity open; Q2-2026 loss ~$177M (mostly one-time impairment, but the dilution overhang is live). Verified 9/4.",
-  "DGXX": "Digi Power X (~$4, NASDAQ): $175M ATM actively drawing -- upsized by $100M to $175M on 5/8 (~$72.4M of the prior $75M tranche already sold before the upsize). Verified 9/4.",
-  "ENHA": "Enhanced Group / Enhanced Games (~$1.7, NYSE): going-concern doubt as of 6/30/2026 (~$19.6M cash, recurring losses, minimal revenue, uncertain 'Third Closing'); insider score is a PIPE/sponsor artifact. Verified 9/4.",
-  "ALTO": "Alto Ingredients (~$4-5, NASDAQ): $50M ATM sales agreement dated 8/5/2026 (Craig-Hallum/Benchmark/H.C. Wainwright) -- a live, ~1-month-old dilution overhang; shares off >15% on the news. Verified 9/4.",
-  "AIAI": "AIAI Holdings (~$5, NASDAQ): faded low-float AI roll-up pump -- Q2-2026 net loss ~$(38.9)M, -68% over 30 days on insider sales / pre-revenue concerns; insider score is an affiliate/issuance artifact. Verified 9/4.",
-  "SDOT": "Sadot Group (NASDAQ): Q2-2026 ZERO revenue + going-concern warning; a Nasdaq minimum-equity compliance test hinges on the 9/30/2026 filing or it faces a delisting hearing. Verified 9/4.",
-  "NXL": "Nexalin Technology (NASDAQ): Nasdaq equity-deficiency notice 8/14 ($1.52M < $2.5M min) UNCURED; the 1-for-30 reverse split effective 8/28 (split-adjusted trading 8/31) fixed only the bid-price rule. Both flags live. Verified 9/4.",
-  "FLZH": "Flash Sports & Media (NASDAQ): Nasdaq Staff Determination 8/19; trading SUSPENDED at the 8/26 open; hearing requested, now OTC-quoted -- suspension still live. Verified 9/4.",
-  "DAIC": "Dot Ai / CID HoldCo (~$0.4, NASDAQ): Nasdaq delisting determination 8/6 (failed the $50M MVLS test) + a third notice 8/27 (missed Q2 10-Q); under appeal, unresolved, still trading during the appeal. Verified 9/4.",
-  "SION": "Sionna Therapeutics (~$4-6, NASDAQ): SION-719 PreciSION CF Phase-2a MISSED 8/10 (shares ~-91%); multiple securities-fraud investigations (Pomerantz added 9/1). A failed trial is a lasting impairment, not an aging offering. Verified 9/4.",
-  "EYPT": "EyePoint Pharmaceuticals (~$4.5, NASDAQ): pivotal Phase-3 LUGANO (DURAVYU) MISSED its primary mid-Aug (shares ~-67%); securities-fraud probes still opening (Kessler Topaz / Kirby McInerney, alerts 9/3-9/4). Impairment + live litigation. Verified 9/4.",
-  "PMVP": "PMV Pharmaceuticals (~$1.2, NASDAQ): ~$50M oversubscribed public offering priced 8/31 (22.05M sh + pre-funded + warrants), closed ~9/2 -- severe fresh dilution on a sub-$2 clinical name, days old. Verified 9/4.",
-  "PLRZ": "Polyrizon (~$12, NASDAQ): $4.0M registered direct + concurrent private placement announced 9/3, closed 9/4 with common warrants -- fresh dilutive micro-cap raise, one day old. Verified 9/4.",
-  "INV": "NEW -- Innventure (~$1.62, NASDAQ): securities-fraud class action, stock -55% on 8/14 after the DarkNX data-center order was pulled and guidance suspended; multiple firm alerts 9/2-9/4, lead-plaintiff deadline 10/27. WebSearch-verified 9/4."
+  "SUJA": "Suja Life (~$7.70, NASDAQ): broken May-2026 IPO ($21, now ~-70% after the 8/5 Q2 crash); fresh Rosen securities-fraud class-action solicitation 9/4 atop the Frank Cruz 8/19 probe; the 'insider' is Paine Schwartz PE-affiliate accumulation, not conviction. Verified 9/7.",
+  "IMTX": "Immatics (~$9.1-9.6, NASDAQ): $150M share+warrant offering @ $8.69 closed 8/26 (~12 days old); overhang still fresh though shares reclaimed the deal price -- BORDERLINE, re-check mid-Sept and remove if no successor raise. Verified 9/7.",
+  "RGNX": "REGENXBIO (~$9.01, NASDAQ): $100M follow-on @ $9.00 closed ~7/20 with the stock still pinned at the deal price; live S-3 shelf + open ~$131M Leerink ATM capacity keeps the dilution overhang active. Verified 9/7.",
+  "TNXP": "Tonix Pharmaceuticals (NASDAQ): 5/7/2026 shareholder authority for a reverse split up to 1-for-250 (2-yr window, not yet executed) + chronic ATM dilution -- serial-diluter split/dilution catalyst live. Verified 9/7.",
+  "HYLN": "Hyliion Holdings (NYSE): $100M ATM sales agreement signed 8/11 (Needham/Northland), program open against continued cash burn -- tappable dilution. Verified 9/7.",
+  "BATL": "Battalion Oil (~$1.3, NYSE American): continued-listing non-compliance (Sec.1003(a)(i)/(ii)); compliance-plan period runs through 11/30/2026 -- delisting risk unresolved. Verified 9/7.",
+  "TENX": "Tenax Therapeutics (~$1.83, NASDAQ): Phase-3 LEVEL miss 8/10 (~-89%) unresolved -- only an enriched LEVEL-2 retrial underway, downgrades stacked, near 52-wk low. A lasting impairment, not an aged event. Verified 9/7.",
+  "QFIN": "Qfin/Qifu (~$8.42, NASDAQ): multiple securities-fraud investigations still 'continuing' as of 9/3 after the 8/25 Q2 miss (rev -31.6%, NI -76.8%); near 52-wk low. Verified 9/7.",
+  "DVLT": "Datavault AI (~$0.20, NASDAQ): dilution worsening -- $25M Streeterville convertible 8/18-19, ~950M shares out, Nasdaq bid-price non-compliance (grace to 2/22/27), class-action deadline 10/5; guards the wildcard sleeve band. Verified 9/7.",
+  "SENS": "Senseonics (~$9.58, NYSE American): $300M shelf incl. a $100M ATM stays live atop a dilutive ~$80-92M offering @ $5.00 (Apr-2026) + heavy cash burn -- further dilution risk active. Verified 9/7.",
+  "CAPR": "Capricor (~$7-8, NASDAQ): deramiocel PDUFA extended to 11/22 (after the 9-against 7/29 AdCom) so the binary is still pending; securities class-action lead-plaintiff deadline 9/28. Verified 9/7.",
+  "GEVO": "Gevo (NASDAQ): open ATM / registered-direct capacity persists after the 2026 $350M RD + $150M ATM-RD; Q2 loss ~$177M on impairments -- dilution overhang live. Verified 9/7.",
+  "DGXX": "Digi Power X (~$6, NASDAQ): $175M ATM upsized 5/8 (from $75M, ~$72.4M already sold via A.G.P.); program open and actively drawn. Verified 9/7.",
+  "ENHA": "Enhanced Group / Enhanced Games (~$1.55, NYSE): going-concern LIVE -- Q2 (filed 8/13) shows a $78.4M H1 loss, $110.4M accumulated deficit, only $19.6M cash at 6/30; near 52-wk low. Verified 9/7.",
+  "AIAI": "AIAI Holdings (~$4.10, NASDAQ): pre-revenue AI roll-up, Q2/Q3 net loss ~$39-41M, sub-10% gross margin, -68% over 30 days amid insider selling. Verified 9/7.",
+  "SDOT": "Sadot Group (NASDAQ): Q2 ZERO revenue + $141.4M deficit + going-concern doubt; Nasdaq compliance hinges on the 9/30 filing evidencing minimum equity -- unresolved. Verified 9/7.",
+  "NXL": "Nexalin Technology (NASDAQ): equity deficiency 8/14 (SE $1.52M vs $2.5M min) UNCURED; the 1-for-30 reverse split 8/28 fixed only the bid-price rule; Hearings Panel met ~9/1, no decision reported. Verified 9/7.",
+  "FLZH": "Flash Sports & Media (~$0.25, OTC): Nasdaq Staff Determination 8/19, trading SUSPENDED 8/26, now OTC-quoted; appeal pending, no reinstatement. Verified 9/7.",
+  "DAIC": "Dot Ai / CID HoldCo (~$3-5, NASDAQ): 8/6 delisting determination (MVLS <$50M) + 8/27 additional determination for the missed Q2 10-Q; stay/hearing pending. Verified 9/7.",
+  "SION": "Sionna Therapeutics (~$4.5-6, NASDAQ): SION-719 CF Phase-2a miss 8/10 (~-91%), program discontinued; multiple securities-fraud probes active/expanding 8/31-9/2. Verified 9/7.",
+  "EYPT": "EyePoint Pharmaceuticals (~$4.63, NASDAQ): LUGANO Phase-3 primary miss (topline 8/17, ~-67%); law-firm probes through 9/4; another binary (LUCIA) still ahead Q4. Verified 9/7.",
+  "PMVP": "PMV Pharmaceuticals (~$1.3, NASDAQ): $50.8M oversubscribed offering priced 8/31 @ $1.21, closed ~9/2, + 41.95M warrants -- fresh dilution days old. Verified 9/7.",
+  "PLRZ": "Polyrizon (~$11-13, NASDAQ): $4.0M registered direct + PIPE closed 9/4 @ $12/unit -- fresh raise, though trading at/above the deal price so the impact is mild. Verified 9/7.",
+  "INV": "Innventure (~$1.1-1.6, NASDAQ): securities-fraud class action (Labed v. Innventure, filed 8/28 SDNY) over DarkNX; guidance suspended; lead-plaintiff deadline 10/27. Verified 9/7.",
+  "FCEL": "NEW -- FuelCell Energy (~$14.40, NASDAQ): multiple securities-fraud probes opened 9/2-9/4 over its July $21 offering; the 9/2 10-Q disclosed ~$17M of charges; shares -15.7% on 9/2. WebSearch-verified 9/7.",
+  "BETR": "NEW -- Better Home & Finance (~$17.32, NASDAQ): securities-fraud investigation continuing into 9/3-9/7 after -36.6% on 8/3-8/4 following the abrupt CEO change (founder Garg replaced). WebSearch-verified 9/7.",
+  "AARD": "NEW -- Aardvark Therapeutics (~$10.55, NASDAQ): securities-fraud class action, lead-plaintiff deadline 10/13; clinical trials paused Feb-2026 on a safety review. WebSearch-verified 9/7.",
+  "CTSO": "NEW -- CytoSorbents (sub-$1 pre-split, NASDAQ): 1-for-20 reverse split effective 9/8 to cure the Nasdaq $1.00 minimum-bid deficiency -- compliance-driven distress. WebSearch-verified 9/7.",
+  "BRTX": "NEW -- BioRestorative Therapies (sub-$1 pre-split, NASDAQ): 1-for-20 reverse split effective ~9/7-9/8 for Nasdaq minimum-bid compliance. WebSearch-verified 9/7.",
+  "TNON": "NEW -- Tenon Medical (NASDAQ): the 10-Q flagged going-concern doubt even after a $3.6M July raise; 1-for-35 reverse split Aug-2026 for bid-price compliance. WebSearch-verified 9/7."
  },
- "avoid_rebuilt": "2026-09-04 EVIDENCE-FIRST rebuild, NOT a carry-forward -- every entry re-verified today with dated WebSearch evidence; no name carried on inertia. FRESH-VERIFIED off the radar / above the buy line as misreads the list catches: SUJA 8.49 (broken IPO -70% + fraud probes 8/19-8/25 + Paine Schwartz PE-affiliate accumulation) and TENX 6.17 (Phase-3 LEVEL failure 8/10 -90% + live litigation). Priority names re-verified live: IMTX ($150M offering 8/25-26 @ $8.69, ~9d old), RGNX ($300M shelf + $100M follow-on 7/17), TNXP (active ATM + 5/7 reverse-split authorization to 1-for-250), HYLN ($100M ATM 8/11 + burn), BATL (NYSE American 1003 non-compliance, plan to 11/30/2026). Carried batch ALL re-verified still-live: QFIN (fraud probes post-8/25 Q2), DVLT (Streeterville $25M convertible + 424B5 8/18-19, ~950M sh vs $2.46M cash), SENS ($300M shelf incl. $100M ATM, tapped Apr-2026), CAPR (AdCom-against 7/29 + PDUFA extended to 11/22 + class action, 9/28 deadline), GEVO (2026 $350M RD + $150M ATM-RD + open ATM capacity), DGXX ($175M ATM drawing, upsized 5/8), ENHA (going concern 6/30), ALTO ($50M ATM 8/5), AIAI (Q2 loss ~$39M + -68%/30d faded pump), SDOT (zero-rev + going concern + 9/30 Nasdaq test), NXL (equity deficiency 8/14 UNCURED; 8/28 1-for-30 split fixed only bid-price), FLZH (trading suspension 8/26), DAIC (delisting 8/6 + third notice 8/27), SION (Phase-2a miss 8/10 + probes), EYPT (Phase-3 LUGANO miss mid-Aug + probes), PMVP (~$50M offering 8/31 closed ~9/2), PLRZ ($4M RD 9/3 closed 9/4). NEW ADD (WebSearch-verified today, rule 4b): INV (Innventure ~$1.62 -- fraud class action, -55% 8/14, guidance suspended). VETTED & LEFT OFF: PLAB (Photronics -- securities class action w/ 9/4 lead-plaintiff deadline surfaced this week, but trades ~$28.63, OVER the $20 screen). risk.json STALE: data/risk.json is dated 2026-07-15 (~51 days old) -- per rules (a)/(d) its flags were NOT carried without live re-verification; its critical names (BOLD reverse-merger, PTNM pump/suspension, BJDX going concern) are all >7 weeks stale and NONE appear on today's radar, so none added -- a fresh risk-officer EDGAR run is warranted. No removals this cycle (every prior entry still has a live overhang, active litigation/investigation, or unresolved listing deficiency); one add (INV). Book is FLAT so nothing here forces a sell -- the list only blocks ADDING/misreads. Every ticker carries a dated reason in avoid_evidence.",
- "notes": "Book is FLAT -- 0/20 slots, 0 broker positions, exit radar clear, ~$136.46 buying power / broker free GBP100 (Trading 212 demo) -- so there are NO held positions to monitor for negative news. Regime moved risk_off -> NEUTRAL: the feared Fri 9/4 jobs report resolved HOT (+162k vs ~54k consensus), pushing Fed Sept-HIKE odds to ~60% into the 9/15-16 FOMC and knocking small caps (Russell 2000 -1.4% on the day) even as large-cap indices held near their ATH with a low VIX (~14.3) and a 9/3 tech bounce -- a genuinely two-sided tape that is small-cap-hostile underneath; a live US-Iran oil shock (Brent +9% wk) and a 10-yr near cycle highs (~4.78%) into 9/11 CPI keep the caution on. Leadership stays value/defensive/commodity: Energy strongly bid (oil shock), Basic Materials/Financials/Consumer-Defensive/Industrials firm on the value rotation; rate-sensitive Real Estate/Tech/Utilities and this-week-laggard Healthcare/Consumer-Cyclical soft. THE AVOID LIST IS EARNING ITS KEEP: SUJA 8.49 sits ABOVE the 6.25 buy line UNBLOCKED (broken-IPO + fraud-probe + PE-affiliate-accumulation misread) and TENX 6.17 is the exact trial-failure misread the list catches. The clean UNBLOCKED buyable is watchlist NPB 8.73 (fresh 9/1 CEO ~$1.42M open-market buy). Also above the line and sound but LEFT OFF the watchlist (no FRESH this-week catalyst): GRNT 8.05 (Energy, Q2 beat 8/6 + ~9% dividend); MIR 7.03 was NOT added -- its thesis's insider 'cluster' is a SINGLE CFO buy (20k @ $15.60 9/2) against some insider selling. Watchlist trimmed to 4 (NPB, NOMD, DLTH, CURI); dropped MG (catalyst ~3wk old + ~$19.16 near the $20 cap). OPERATIONAL FLAG (persists since ~7/29): the radar 'will it buy' panel STILL shows the drawdown circuit breaker ('80.2% below peak, limit 12.0%') as the SOLE failing gate at flat reset equity -- a stale ledger peak never reset after the 7/14 GBP500 demo reset -- so every candidate is BLOCKED regardless; a lucky backstop today against the SUJA/TENX misreads, but a human should reset the peak."
+ "avoid_rebuilt": "2026-09-07 EVIDENCE-FIRST rebuild, NOT a carry-forward -- every entry re-verified today with dated WebSearch evidence. ONE REMOVAL vs 9/4: ALTO comes OFF -- its 8/5 $50M ATM sits atop a PROFITABLE Q2 (reported 8/5: +$11.4M net income, 4th straight profitable quarter) and is routine flexibility, not distress. SIX NEW ADDS (rule 4b, WebSearch-verified today): FCEL (fraud probes 9/2-9/4 over the July $21 offering, -15.7% 9/2), BETR (fraud probe continuing 9/3-9/7 after the -36.6% CEO-change break), AARD (fraud class action + Feb-2026 trial pause), CTSO (1-for-20 compliance reverse split eff. 9/8), BRTX (1-for-20 compliance reverse split ~9/7-9/8), TNON (going-concern + 1-for-35 compliance split). All 24 other prior entries re-verified STILL-LIVE: SUJA (fresh Rosen class action 9/4 + broken IPO -70%), IMTX (offering @ $8.69 closed 8/26, borderline), RGNX ($100M follow-on + open ATM), TNXP (1:250 split authority + ATM), HYLN ($100M ATM 8/11), BATL (NYSE Amer 1003 non-compliance to 11/30), TENX (Phase-3 LEVEL miss 8/10), QFIN (fraud probes post-8/25 Q2), DVLT (Streeterville convertible 8/18-19, ~950M sh), SENS ($300M shelf incl $100M ATM), CAPR (PDUFA to 11/22 + 9/28 class-action deadline), GEVO (open ATM/RD capacity), DGXX ($175M ATM drawing), ENHA (going concern, Q2 8/13), AIAI (Q2 loss ~$39M + faded pump), SDOT (zero-rev + going concern + 9/30 test), NXL (equity deficiency 8/14 uncured), FLZH (suspension 8/26), DAIC (delisting 8/6 + third notice 8/27), SION (Phase-2a miss 8/10 + probes), EYPT (Phase-3 miss 8/17 + probes), PMVP (offering 8/31 @ $1.21), PLRZ ($4M RD closed 9/4), INV (fraud class action filed 8/28). VETTED & LEFT OFF: ENOV (Enovis ~$19.69, above the buy line but a FALSE ALARM -- no dilution/offering/probe/delisting; the weakness is fundamental (a ~45% drawdown to near 52-wk low), the only 'fraud' hit was for Enovix/ENVX, a different company -- safe to leave unblocked); CCB/CDNL/CCOI (fraud probes this week but all trade OVER the $20 screen); Prenetics/PRE (CEO+CFO $1M cluster is a POSITIVE, but an unverified foreign ADR -- neither list). risk.json STALE: data/risk.json is dated 2026-07-15 (~54 days old) -- per rules (a)/(c)/(d) its flags were NOT carried without live re-verification; its critical names (BOLD reverse-merger, PTNM pump/suspension, BJDX going concern) are all >7 weeks stale and NONE appear on today's radar, so none added -- a fresh risk-officer EDGAR run is warranted. Book is FLAT so nothing here forces a sell -- the list only blocks ADDING/misreads. Every ticker carries a dated reason in avoid_evidence.",
+ "notes": "Book is FLAT -- 0/20 slots, 0 broker positions, exit radar clear, ~$136.46 buying power / broker free GBP100 (Trading 212 demo) -- so there are NO held positions to monitor for negative news. Regime moved NEUTRAL -> RISK_OFF: US markets are CLOSED today (Labor Day) so the tape carries Fri 9/4, but the setup is hostile -- the HOT Aug jobs print (+162k vs ~54k) pushed Fed Sept-HIKE odds to ~60% into 9/11 CPI + the 9/15-16 FOMC, the 10-yr sits near cycle highs (~4.74%), a live US-Iran oil shock keeps risk suppressed, and small caps are the most rate-exposed cohort into that repricing; trend is rolling over with a firming VIX (~16), so trend and vol do not BOTH support risk_on. Leadership stays value/defensive/commodity: Energy strongly bid (oil shock, XLE ATH), Financials/Basic Materials/Consumer-Defensive/Industrials firm on the value rotation; rate-sensitive Real Estate/Tech/Utilities and laggards Healthcare/Consumer-Cyclical soft. TODAY'S CLEAN BUYABLE is watchlist EQPT 8.52 (the bot's top scan candidate, above the line and unblocked but for the drawdown breaker) -- an independently VALIDATED clean signal (fresh CEO+founder open-market cluster + Q2 beat, no dilution), not a misread. ENOV 7.92 is BLOCKED by its own Z-gate anyway and is a fundamental-weakness false alarm (see avoid_rebuilt). ALTO removed from avoid (routine ATM on a profitable quarter); 6 fresh fraud/compliance names added. OPERATIONAL FLAG (persists since ~7/29): the radar 'will it buy' panel STILL shows the drawdown circuit breaker ('80.2% below peak, limit 12.0%') as the SOLE failing gate at flat reset equity -- a stale ledger peak never reset after the 7/14 GBP500 demo reset -- so every candidate is BLOCKED regardless; a human should reset the peak."
 }
