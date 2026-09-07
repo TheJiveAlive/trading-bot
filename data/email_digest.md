@@ -397,3 +397,7 @@ Signal performance (closed trades):
 Applied (bounded 50%-150% of defaults):
 insider_weight: 1.9 -> 1.8 (avg P/L -4.9% over 6 trades)
 sector_momentum_weight: 0.95 -> 0.9 (
+
+### 13:41 UTC · [bot] BUYING HALTED
+drawdown circuit breaker: 80.2% below peak (limit 12.0%)
+Exits continue to run. Buying resumes when equity recovers.
