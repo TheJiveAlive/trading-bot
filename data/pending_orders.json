@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "ts": "2026-09-16T17:41:15+00:00",
+    "side": "sell",
+    "ticker": "DVLT",
+    "shares": 43000,
+    "limit_price_hint": 0.18,
+    "reason": "trailing stop (8%): 51.3% off high",
+    "status": "pending",
+    "error": "order value $7662.60 exceeds max_order_value_usd $100.00"
+  },
+  {
+    "ts": "2026-09-16T17:43:27+00:00",
+    "side": "buy",
+    "ticker": "ALTO",
+    "shares": 24.5399,
+    "limit_price_hint": 4.07,
+    "reason": "score 4.89 (parts {'insider': 1.8, 'sector': 0.36, 'fundamentals': 1.35, 'news': 0.0, 'piotroski': 0.25, 'insider_sentiment': 0.13, 'analyst_trend': 0.35, 'events': 0.6, 'sector_bias': 0.05}); risk-sized 24.5399 sh at 13% stop; confluence: 7/10 pass | momentum | tight_spread | price_action | news_ok | options_flow | rsi_ok | no_insider_selling | FAIL: unusual_volume,above_vwap,clean_dilution_history",
+    "status": "pending",
+    "error": "order value $100.00 exceeds max_order_value_usd $100.00"
+  }
+]

@@ -1,20 +1,20 @@
 {
-  "generated": "2026-09-16T17:35:29Z",
+  "generated": "2026-09-16T17:43:44Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
   "mode": "live",
   "account_currency": "GBP",
   "ok": true,
-  "detail": "demo account reachable: 5 position(s), free \u00a31070.65",
+  "detail": "demo account reachable: 7 position(s), free \u00a3843.28",
   "cash": {
-    "free": 1070.65,
-    "total": 48671.04,
-    "ppl": -1255.62,
+    "free": 843.28,
+    "total": 48837.89,
+    "ppl": -1088.54,
     "result": 0,
-    "invested": 48856.01,
+    "invested": 49005.09,
     "pieCash": 0,
-    "blocked": 0
+    "blocked": 78.07
   },
   "positions": [
     {
@@ -22,16 +22,24 @@
       "t212_ticker": "WISA_US_EQ",
       "shares": 43000.0,
       "avg_price": 0.1661,
-      "current_price": 0.179,
-      "pnl": 417.86
+      "current_price": 0.1781,
+      "pnl": 388.9
     },
     {
       "ticker": "TPST",
       "t212_ticker": "MLND_US_EQ",
       "shares": 9629.0,
       "avg_price": 1.07,
-      "current_price": 1.0192,
-      "pnl": -356.16
+      "current_price": 1.0407,
+      "pnl": -202.39
+    },
+    {
+      "ticker": "GRNT",
+      "t212_ticker": "ENPC_US_EQ",
+      "shares": 19.92,
+      "avg_price": 5.04016064,
+      "current_price": 5.03,
+      "pnl": -0.15
     },
     {
       "ticker": "RZLV",
@@ -39,26 +47,46 @@
       "shares": 5000.0,
       "avg_price": 2.27,
       "current_price": 2.24,
-      "pnl": -102.73
+      "pnl": -102.98
+    },
+    {
+      "ticker": "ECVT",
+      "t212_ticker": "PQG_US_EQ",
+      "shares": 9.21,
+      "avg_price": 10.85993485,
+      "current_price": 10.85,
+      "pnl": -0.07
     },
     {
       "ticker": "IQST",
       "t212_ticker": "IQST_US_EQ",
       "shares": 15551.86863425,
       "avg_price": 1.08000012,
-      "current_price": 1.04,
-      "pnl": -450.47
+      "current_price": 1.035,
+      "pnl": -508.66
     },
     {
       "ticker": "MVIS",
       "t212_ticker": "MVIS_US_EQ",
       "shares": 13002.69246774,
       "avg_price": 1.54999974,
-      "current_price": 1.47,
-      "pnl": -759.82
+      "current_price": 1.48,
+      "pnl": -663.53
     }
   ],
   "reconciliation": [
+    {
+      "ticker": "ALTO",
+      "ledger_shares": 24.5399,
+      "broker_shares": null,
+      "status": "removed_phantom"
+    },
+    {
+      "ticker": "ASYS",
+      "ledger_shares": 7.1531,
+      "broker_shares": null,
+      "status": "ledger_only"
+    },
     {
       "ticker": "DVLT",
       "ledger_shares": 43000.0,
@@ -66,28 +94,40 @@
       "status": "adopted"
     },
     {
+      "ticker": "ECVT",
+      "ledger_shares": 9.2123,
+      "broker_shares": 9.21,
+      "status": "match"
+    },
+    {
+      "ticker": "GRNT",
+      "ledger_shares": 19.9203,
+      "broker_shares": 19.92,
+      "status": "match"
+    },
+    {
       "ticker": "IQST",
       "ledger_shares": 15551.86863425,
       "broker_shares": 15551.86863425,
-      "status": "adopted"
+      "status": "match"
     },
     {
       "ticker": "MVIS",
       "ledger_shares": 13002.69246774,
       "broker_shares": 13002.69246774,
-      "status": "adopted"
+      "status": "match"
     },
     {
       "ticker": "RZLV",
-      "ledger_shares": 5000.0,
+      "ledger_shares": 5000,
       "broker_shares": 5000.0,
-      "status": "adopted"
+      "status": "match"
     },
     {
       "ticker": "TPST",
-      "ledger_shares": 9629.0,
+      "ledger_shares": 9629,
       "broker_shares": 9629.0,
-      "status": "adopted"
+      "status": "match"
     }
   ]
 }
