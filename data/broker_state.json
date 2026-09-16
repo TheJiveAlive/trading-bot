@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-16T21:24:26Z",
+  "generated": "2026-09-16T21:32:41Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 8 position(s), free \u00a3846.88",
   "cash": {
     "free": 846.88,
-    "total": 50684.54,
-    "ppl": 758.21,
+    "total": 50518.09,
+    "ppl": 591.76,
     "result": 0,
     "invested": 49079.45,
     "pieCash": 0,
@@ -22,8 +22,8 @@
       "t212_ticker": "WISA_US_EQ",
       "shares": 43000.0,
       "avg_price": 0.1661,
-      "current_price": 0.1731,
-      "pnl": 246.83
+      "current_price": 0.1762,
+      "pnl": 346.3
     },
     {
       "ticker": "TPST",
@@ -70,8 +70,8 @@
       "t212_ticker": "MVIS_US_EQ",
       "shares": 13002.69246774,
       "avg_price": 1.54999974,
-      "current_price": 1.62,
-      "pnl": 741.0
+      "current_price": 1.6,
+      "pnl": 546.94
     },
     {
       "ticker": "ASYS",
