@@ -440,3 +440,10 @@ BUY ASYS x7.1531 @ $13.98 ($100.00)
 why: score 4.8 (parts {'insider': 1.8, 'sector': 0.54, 'fundamentals': 2.03, 'news': 0.0, 'insider_sentiment': 0.19, 'analyst_trend': 0.34, 'sector_bias': -0.1}); risk-sized 7.1531 sh at 13% stop; confluence: 5/10 pass | tight_spread | news_ok | options_flow | rsi_ok | no_insider_selling | FAIL: unusual_volume,above_vwap,momentum,price_action,clean_dilution_history
 cash: $8,701.99
 equity: $64,925.88
+
+### 17:34 UTC · 🔴 SELL DVLT — 43000 shares @ $0.16  ·  P/L −$86.00 (-1.2%)
+SELL DVLT x43000 @ $0.16 ($7,056.30)
+P/L: -$86.00 (-1.2%)
+why: trailing stop (8%): 55.2% off high
+cash: $8,189.95
+equity: $67,305.33
