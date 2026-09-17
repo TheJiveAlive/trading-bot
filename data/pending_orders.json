@@ -1,15 +1,5 @@
 [
   {
-    "ts": "2026-09-16T17:41:15+00:00",
-    "side": "sell",
-    "ticker": "DVLT",
-    "shares": 43000,
-    "limit_price_hint": 0.18,
-    "reason": "trailing stop (8%): 51.3% off high",
-    "status": "pending",
-    "error": "order value $7662.60 exceeds max_order_value_usd $100.00"
-  },
-  {
     "ts": "2026-09-16T17:43:27+00:00",
     "side": "buy",
     "ticker": "ALTO",
