@@ -78,5 +78,15 @@
     "reason": "score 8.44 (parts {'insider': 4.5, 'sector': 0.9, 'fundamentals': 2.03, 'news': 0.0, 'insider_sentiment': -0.05, 'analyst_trend': 0.31, 'events': 0.4, 'sector_bias': 0.35}); risk-sized 9.1533 sh at 13% stop; confluence: 4/10 pass | tight_spread | news_ok | rsi_ok | no_insider_selling | FAIL: unusual_volume,above_vwap,momentum,price_action,options_flow,clean_dilution_history",
     "status": "pending",
     "error": "ticker MNR not found in Trading 212 instrument list"
+  },
+  {
+    "ts": "2026-09-18T19:32:43+00:00",
+    "side": "sell",
+    "ticker": "DVLT",
+    "shares": 43000,
+    "limit_price_hint": 0.15,
+    "reason": "trailing stop (8%): 58.1% off high",
+    "status": "pending",
+    "error": "order value $6591.90 exceeds max_order_value_usd $100.00"
   }
 ]

@@ -513,3 +513,10 @@ BUY MNR x9.1533 @ $10.93 ($100.00)
 why: score 8.44 (parts {'insider': 4.5, 'sector': 0.9, 'fundamentals': 2.03, 'news': 0.0, 'insider_sentiment': -0.05, 'analyst_trend': 0.31, 'events': 0.4, 'sector_bias': 0.35}); risk-sized 9.1533 sh at 13% stop; confluence: 4/10 pass | tight_spread | news_ok | rsi_ok | no_insider_selling | FAIL: unusual_volume,above_vwap,momentum,price_action,options_flow,clean_dilution_history
 cash: $16,883.23
 equity: $66,626.07
+
+### 19:32 UTC · 🔴 SELL DVLT — 43000 shares @ $0.15  ·  P/L −$550.40 (-7.7%)
+SELL DVLT x43000 @ $0.15 ($6,591.90)
+P/L: -$550.40 (-7.7%)
+why: trailing stop (8%): 58.1% off high
+cash: $7,525.32
+equity: $66,644.24
