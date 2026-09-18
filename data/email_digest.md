@@ -479,3 +479,17 @@ BUY PLAY x14.9925 @ $6.67 ($100.00)
 why: score 5.65 (parts {'insider': 3.6, 'sector': 0.72, 'fundamentals': 0.0, 'news': 0.3, 'piotroski': 0.25, 'ai_news': -0.45, 'insider_sentiment': 0.23, 'analyst_trend': 0.2, 'events': 1.0, 'sector_bias': -0.2}); risk-sized 14.9925 sh at 13% stop; confluence: 5/10 pass | tight_spread | news_ok | options_flow | rsi_ok | no_insider_selling | FAIL: unusual_volume,above_vwap,momentum,price_action,clean_dilution_history
 cash: $17,021.69
 equity: $66,456.73
+
+### 17:01 UTC · 🔴 SELL DVLT — 43000 shares @ $0.16  ·  P/L −$288.10 (-4.0%)
+SELL DVLT x43000 @ $0.16 ($6,854.20)
+P/L: -$288.10 (-4.0%)
+why: trailing stop (8%): 56.4% off high
+cash: $7,787.04
+equity: $66,671.70
+
+### 17:01 UTC · 🔴 SELL TPST — 9629 shares @ $0.96  ·  P/L −$1038.01 (-10.1%)
+SELL TPST x9629 @ $0.96 ($9,265.02)
+P/L: -$1038.01 (-10.1%)
+why: trailing stop (8%): 10.1% off high
+cash: $17,052.06
+equity: $66,671.70
