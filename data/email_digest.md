@@ -447,3 +447,35 @@ P/L: -$86.00 (-1.2%)
 why: trailing stop (8%): 55.2% off high
 cash: $8,189.95
 equity: $67,305.33
+
+### 16:40 UTC · 🔴 SELL DVLT — 43000 shares @ $0.16  ·  P/L −$292.40 (-4.1%)
+SELL DVLT x43000 @ $0.16 ($6,849.90)
+P/L: -$292.40 (-4.1%)
+why: trailing stop (8%): 56.5% off high
+cash: $7,980.60
+equity: $66,456.72
+
+### 16:40 UTC · 🔴 SELL TPST — 9629 shares @ $0.97  ·  P/L −$961.94 (-9.3%)
+SELL TPST x9629 @ $0.97 ($9,341.09)
+P/L: -$961.94 (-9.3%)
+why: trailing stop (8%): 9.3% off high
+cash: $17,321.69
+equity: $66,456.72
+
+### 16:43 UTC · 🟢 BUY MNR — 9.1491 shares @ $10.93
+BUY MNR x9.1491 @ $10.93 ($100.00)
+why: score 8.49 (parts {'insider': 4.5, 'sector': 0.9, 'fundamentals': 2.03, 'news': 0.0, 'insider_sentiment': -0.05, 'analyst_trend': 0.31, 'events': 0.4, 'sector_bias': 0.4}); risk-sized 9.1491 sh at 13% stop; confluence: 5/10 pass | tight_spread | price_action | news_ok | rsi_ok | no_insider_selling | FAIL: unusual_volume,above_vwap,momentum,options_flow,clean_dilution_history
+cash: $17,221.69
+equity: $66,456.58
+
+### 16:43 UTC · 🟢 BUY EQPT — 5.585 shares @ $17.91
+BUY EQPT x5.585 @ $17.91 ($100.00)
+why: score 7.36 (parts {'insider': 4.5, 'sector': 0.09, 'fundamentals': 1.35, 'news': 0.0, 'piotroski': 0.25, 'insider_sentiment': 0.24, 'analyst_trend': 0.28, 'events': 0.4, 'sector_bias': 0.25}); risk-sized 5.585 sh at 13% stop; confluence: 6/10 pass | above_vwap | tight_spread | news_ok | rsi_ok | clean_dilution_history | no_insider_selling | FAIL: unusual_volume,momentum,price_action,options_flow
+cash: $17,121.69
+equity: $66,456.58
+
+### 16:43 UTC · 🟢 BUY PLAY — 14.9925 shares @ $6.67
+BUY PLAY x14.9925 @ $6.67 ($100.00)
+why: score 5.65 (parts {'insider': 3.6, 'sector': 0.72, 'fundamentals': 0.0, 'news': 0.3, 'piotroski': 0.25, 'ai_news': -0.45, 'insider_sentiment': 0.23, 'analyst_trend': 0.2, 'events': 1.0, 'sector_bias': -0.2}); risk-sized 14.9925 sh at 13% stop; confluence: 5/10 pass | tight_spread | news_ok | options_flow | rsi_ok | no_insider_selling | FAIL: unusual_volume,above_vwap,momentum,price_action,clean_dilution_history
+cash: $17,021.69
+equity: $66,456.73

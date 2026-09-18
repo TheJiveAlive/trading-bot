@@ -8,5 +8,35 @@
     "reason": "trailing stop (8%): 55.2% off high",
     "status": "pending",
     "error": "order value $7056.30 exceeds max_order_value_usd $100.00"
+  },
+  {
+    "ts": "2026-09-18T16:40:47+00:00",
+    "side": "sell",
+    "ticker": "DVLT",
+    "shares": 43000,
+    "limit_price_hint": 0.16,
+    "reason": "trailing stop (8%): 56.5% off high",
+    "status": "pending",
+    "error": "order value $6849.90 exceeds max_order_value_usd $100.00"
+  },
+  {
+    "ts": "2026-09-18T16:40:53+00:00",
+    "side": "sell",
+    "ticker": "TPST",
+    "shares": 9629,
+    "limit_price_hint": 0.97,
+    "reason": "trailing stop (8%): 9.3% off high",
+    "status": "pending",
+    "error": "order value $9341.09 exceeds max_order_value_usd $100.00"
+  },
+  {
+    "ts": "2026-09-18T16:43:18+00:00",
+    "side": "buy",
+    "ticker": "MNR",
+    "shares": 9.1491,
+    "limit_price_hint": 10.93,
+    "reason": "score 8.49 (parts {'insider': 4.5, 'sector': 0.9, 'fundamentals': 2.03, 'news': 0.0, 'insider_sentiment': -0.05, 'analyst_trend': 0.31, 'events': 0.4, 'sector_bias': 0.4}); risk-sized 9.1491 sh at 13% stop; confluence: 5/10 pass | tight_spread | price_action | news_ok | rsi_ok | no_insider_selling | FAIL: unusual_volume,above_vwap,momentum,options_flow,clean_dilution_history",
+    "status": "pending",
+    "error": "order value $100.01 exceeds max_order_value_usd $100.00"
   }
 ]
