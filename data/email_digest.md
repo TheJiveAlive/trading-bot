@@ -493,3 +493,23 @@ P/L: -$1038.01 (-10.1%)
 why: trailing stop (8%): 10.1% off high
 cash: $17,052.06
 equity: $66,671.70
+
+### 17:38 UTC · 🔴 SELL DVLT — 43000 shares @ $0.16  ·  P/L −$356.90 (-5.0%)
+SELL DVLT x43000 @ $0.16 ($6,785.40)
+P/L: -$356.90 (-5.0%)
+why: trailing stop (8%): 56.9% off high
+cash: $7,718.21
+equity: $66,601.56
+
+### 17:38 UTC · 🔴 SELL TPST — 9629 shares @ $0.96  ·  P/L −$1038.01 (-10.1%)
+SELL TPST x9629 @ $0.96 ($9,265.02)
+P/L: -$1038.01 (-10.1%)
+why: trailing stop (8%): 10.1% off high
+cash: $16,983.23
+equity: $66,601.41
+
+### 17:40 UTC · 🟢 BUY MNR — 9.1533 shares @ $10.93
+BUY MNR x9.1533 @ $10.93 ($100.00)
+why: score 8.44 (parts {'insider': 4.5, 'sector': 0.9, 'fundamentals': 2.03, 'news': 0.0, 'insider_sentiment': -0.05, 'analyst_trend': 0.31, 'events': 0.4, 'sector_bias': 0.35}); risk-sized 9.1533 sh at 13% stop; confluence: 4/10 pass | tight_spread | news_ok | rsi_ok | no_insider_selling | FAIL: unusual_volume,above_vwap,momentum,price_action,options_flow,clean_dilution_history
+cash: $16,883.23
+equity: $66,626.07
