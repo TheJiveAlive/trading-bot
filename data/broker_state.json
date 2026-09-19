@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-18T22:44:49Z",
+  "generated": "2026-09-19T00:33:25Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 10 position(s), free \u00a3696.95",
   "cash": {
     "free": 696.95,
-    "total": 48959.19,
-    "ppl": -966.92,
+    "total": 49957.34,
+    "ppl": 31.23,
     "result": 0,
     "invested": 49229.16,
     "pieCash": 0,
@@ -22,16 +22,16 @@
       "t212_ticker": "WISA_US_EQ",
       "shares": 43000.0,
       "avg_price": 0.1661,
-      "current_price": 0.1569,
-      "pnl": -272.65
+      "current_price": 0.1575,
+      "pnl": -253.39
     },
     {
       "ticker": "TPST",
       "t212_ticker": "MLND_US_EQ",
       "shares": 9629.0,
       "avg_price": 1.07,
-      "current_price": 0.9502,
-      "pnl": -828.17
+      "current_price": 0.9513,
+      "pnl": -820.27
     },
     {
       "ticker": "GRNT",
@@ -62,40 +62,40 @@
       "t212_ticker": "PLAY_US_EQ",
       "shares": 14.99,
       "avg_price": 6.69979987,
-      "current_price": 6.74,
-      "pnl": 0.36
+      "current_price": 6.75,
+      "pnl": 0.47
     },
     {
       "ticker": "IQST",
       "t212_ticker": "IQST_US_EQ",
       "shares": 15551.86863425,
       "avg_price": 1.08000012,
-      "current_price": 0.9701,
-      "pnl": -1222.48
+      "current_price": 1.02,
+      "pnl": -643.35
     },
     {
       "ticker": "MVIS",
       "t212_ticker": "MVIS_US_EQ",
       "shares": 13002.69246774,
       "avg_price": 1.54999974,
-      "current_price": 1.68,
-      "pnl": 1324.26
+      "current_price": 1.72,
+      "pnl": 1712.4
     },
     {
       "ticker": "ASYS",
       "t212_ticker": "ASYS_US_EQ",
       "shares": 7.15,
       "avg_price": 13.98041958,
-      "current_price": 14.03,
-      "pnl": 0.5
+      "current_price": 14.48,
+      "pnl": 2.9
     },
     {
       "ticker": "EQPT",
       "t212_ticker": "EQPT_US_EQ",
       "shares": 5.58,
       "avg_price": 17.91039427,
-      "current_price": 17.78,
-      "pnl": -0.63
+      "current_price": 18.07,
+      "pnl": 0.58
     }
   ],
   "reconciliation": [
