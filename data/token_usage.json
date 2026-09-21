@@ -2212,5 +2212,14 @@
     "cache_read": 0,
     "cost_usd": 0.0,
     "duration_ms": 477
+  },
+  {
+    "ts": "2026-09-21T22:26:59+00:00",
+    "label": "research",
+    "input_tokens": 20,
+    "output_tokens": 31201,
+    "cache_read": 1222088,
+    "cost_usd": 10.5596,
+    "duration_ms": 397043
   }
 ]
