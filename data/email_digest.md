@@ -520,3 +520,17 @@ P/L: -$550.40 (-7.7%)
 why: trailing stop (8%): 58.1% off high
 cash: $7,525.32
 equity: $66,644.24
+
+### 18:35 UTC · 🔴 SELL DVLT — 43000 shares @ $0.16  ·  P/L −$176.30 (-2.5%)
+SELL DVLT x43000 @ $0.16 ($6,966.00)
+P/L: -$176.30 (-2.5%)
+why: trailing stop (8%): 55.7% off high
+cash: $7,899.60
+equity: $64,783.95
+
+### 18:35 UTC · 🔴 SELL TPST — 9629 shares @ $0.78  ·  P/L −$2777.97 (-27.0%)
+SELL TPST x9629 @ $0.78 ($7,525.06)
+P/L: -$2777.97 (-27.0%)
+why: trailing stop (8%): 27.0% off high
+cash: $15,424.66
+equity: $64,783.95
