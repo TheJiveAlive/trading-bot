@@ -1,25 +1,5 @@
 [
   {
-    "ts": "2026-09-21T18:35:45+00:00",
-    "side": "sell",
-    "ticker": "DVLT",
-    "shares": 43000,
-    "limit_price_hint": 0.16,
-    "reason": "trailing stop (8%): 55.7% off high",
-    "status": "pending",
-    "error": "order value $6966.00 exceeds max_order_value_usd $100.00"
-  },
-  {
-    "ts": "2026-09-21T18:35:52+00:00",
-    "side": "sell",
-    "ticker": "TPST",
-    "shares": 9629,
-    "limit_price_hint": 0.78,
-    "reason": "trailing stop (8%): 27.0% off high",
-    "status": "pending",
-    "error": "order value $7525.06 exceeds max_order_value_usd $100.00"
-  },
-  {
     "ts": "2026-09-22T17:36:11+00:00",
     "side": "sell",
     "ticker": "DVLT",
