@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-24T21:42:07Z",
+  "generated": "2026-09-24T21:51:46Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 9 position(s), free \u00a3766.7",
   "cash": {
     "free": 766.7,
-    "total": 48844.45,
-    "ppl": -1076.74,
+    "total": 48899.1,
+    "ppl": -1022.09,
     "result": -4.82,
     "invested": 49154.49,
     "pieCash": 0,
@@ -22,16 +22,16 @@
       "t212_ticker": "WISA_US_EQ",
       "shares": 43000.0,
       "avg_price": 0.1661,
-      "current_price": 0.152,
-      "pnl": -363.29
+      "current_price": 0.1519,
+      "pnl": -366.54
     },
     {
       "ticker": "TPST",
       "t212_ticker": "MLND_US_EQ",
       "shares": 9629.0,
       "avg_price": 1.07,
-      "current_price": 0.872,
-      "pnl": -1304.55
+      "current_price": 0.88,
+      "pnl": -1246.27
     },
     {
       "ticker": "GRNT",
