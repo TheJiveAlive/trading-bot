@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-24T17:54:55Z",
+  "generated": "2026-09-24T18:23:38Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 9 position(s), free \u00a3766.7",
   "cash": {
     "free": 766.7,
-    "total": 48703.92,
-    "ppl": -1217.27,
+    "total": 48759.89,
+    "ppl": -1161.3,
     "result": -4.82,
     "invested": 49154.49,
     "pieCash": 0,
@@ -22,40 +22,40 @@
       "t212_ticker": "WISA_US_EQ",
       "shares": 43000.0,
       "avg_price": 0.1661,
-      "current_price": 0.1531,
-      "pnl": -325.09
+      "current_price": 0.1534,
+      "pnl": -316.12
     },
     {
       "ticker": "TPST",
       "t212_ticker": "MLND_US_EQ",
       "shares": 9629.0,
       "avg_price": 1.07,
-      "current_price": 0.8551,
-      "pnl": -1424.63
+      "current_price": 0.855,
+      "pnl": -1426.34
     },
     {
       "ticker": "GRNT",
       "t212_ticker": "ENPC_US_EQ",
       "shares": 19.92,
       "avg_price": 5.04016064,
-      "current_price": 4.56,
-      "pnl": -5.93
+      "current_price": 4.55,
+      "pnl": -6.1
     },
     {
       "ticker": "RZLV",
       "t212_ticker": "AACI_US_EQ",
       "shares": 5000.0,
       "avg_price": 2.27,
-      "current_price": 2.22,
-      "pnl": -33.02
+      "current_price": 2.25,
+      "pnl": 79.15
     },
     {
       "ticker": "ECVT",
       "t212_ticker": "PQG_US_EQ",
       "shares": 9.21,
       "avg_price": 10.85993485,
-      "current_price": 10.14,
-      "pnl": -3.72
+      "current_price": 10.19,
+      "pnl": -3.38
     },
     {
       "ticker": "PLAY",
@@ -63,15 +63,15 @@
       "shares": 14.99,
       "avg_price": 6.69979987,
       "current_price": 6.59,
-      "pnl": -0.28
+      "pnl": -0.29
     },
     {
       "ticker": "IQST",
       "t212_ticker": "IQST_US_EQ",
       "shares": 15551.86863425,
       "avg_price": 1.08000012,
-      "current_price": 1.01,
-      "pnl": -593.6
+      "current_price": 1.005,
+      "pnl": -654.33
     },
     {
       "ticker": "MVIS",
@@ -79,15 +79,15 @@
       "shares": 13002.69246774,
       "avg_price": 1.54999974,
       "current_price": 1.64,
-      "pnl": 1161.22
+      "pnl": 1158.66
     },
     {
       "ticker": "ASYS",
       "t212_ticker": "ASYS_US_EQ",
       "shares": 7.15,
       "avg_price": 13.98041958,
-      "current_price": 15.18,
-      "pnl": 7.78
+      "current_price": 15.12,
+      "pnl": 7.45
     }
   ],
   "reconciliation": [
