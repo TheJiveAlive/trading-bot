@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-25T21:45:16Z",
+  "generated": "2026-09-25T21:51:55Z",
   "environment": "demo",
   "configured": true,
   "live_orders_enabled": true,
@@ -9,8 +9,8 @@
   "detail": "demo account reachable: 9 position(s), free \u00a3766.7",
   "cash": {
     "free": 766.7,
-    "total": 48217.28,
-    "ppl": -1703.91,
+    "total": 48210.79,
+    "ppl": -1710.4,
     "result": -4.82,
     "invested": 49154.49,
     "pieCash": 0,
@@ -22,8 +22,8 @@
       "t212_ticker": "WISA_US_EQ",
       "shares": 43000.0,
       "avg_price": 0.1661,
-      "current_price": 0.1536,
-      "pnl": -324.21
+      "current_price": 0.1534,
+      "pnl": -330.7
     },
     {
       "ticker": "TPST",
