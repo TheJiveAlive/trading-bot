@@ -1,1 +1,42 @@
-[]
+[
+  {
+    "ts": "2026-09-29T18:33:42+00:00",
+    "side": "sell",
+    "ticker": "DVLT",
+    "shares": 43000,
+    "limit_price_hint": 0.15,
+    "reason": "trailing stop (8%): 58.1% off high",
+    "status": "pending",
+    "error": "order value $6591.90 exceeds max_order_value_usd $100.00"
+  },
+  {
+    "ts": "2026-09-29T18:33:45+00:00",
+    "side": "sell",
+    "ticker": "IQST",
+    "shares": 15551.86863425,
+    "limit_price_hint": 0.98,
+    "reason": "trailing stop (8%): 9.1% off high",
+    "status": "pending",
+    "error": "order value $15262.61 exceeds max_order_value_usd $100.00"
+  },
+  {
+    "ts": "2026-09-29T18:33:47+00:00",
+    "side": "sell",
+    "ticker": "MVIS",
+    "shares": 13002.69246774,
+    "limit_price_hint": 1.46,
+    "reason": "trailing stop (13%): 17.3% off high",
+    "status": "pending",
+    "error": "order value $18983.93 exceeds max_order_value_usd $100.00"
+  },
+  {
+    "ts": "2026-09-29T18:33:50+00:00",
+    "side": "sell",
+    "ticker": "TPST",
+    "shares": 9629,
+    "limit_price_hint": 0.85,
+    "reason": "trailing stop (8%): 20.7% off high",
+    "status": "pending",
+    "error": "order value $8170.21 exceeds max_order_value_usd $100.00"
+  }
+]

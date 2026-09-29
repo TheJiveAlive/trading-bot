@@ -604,3 +604,38 @@ P/L: -$2359.11 (-22.9%)
 why: trailing stop (8%): 22.9% off high
 cash: $15,622.03
 equity: $63,124.74
+
+### 18:33 UTC · 🔴 SELL DVLT — 43000 shares @ $0.15  ·  P/L −$550.40 (-7.7%)
+SELL DVLT x43000 @ $0.15 ($6,591.90)
+P/L: -$550.40 (-7.7%)
+why: trailing stop (8%): 58.1% off high
+cash: $7,607.37
+equity: $61,091.02
+
+### 18:33 UTC · 🔴 SELL IQST — 15551.8686 shares @ $0.98  ·  P/L −$1533.42 (-9.1%)
+SELL IQST x15551.8686 @ $0.98 ($15,262.60)
+P/L: -$1533.42 (-9.1%)
+why: trailing stop (8%): 9.1% off high
+cash: $22,869.97
+equity: $61,091.01
+
+### 18:33 UTC · 🔴 SELL MVIS — 13002.6925 shares @ $1.46  ·  P/L −$1170.24 (-5.8%)
+SELL MVIS x13002.6925 @ $1.46 ($18,983.93)
+P/L: -$1170.24 (-5.8%)
+why: trailing stop (13%): 17.3% off high
+cash: $41,853.90
+equity: $61,091.01
+
+### 18:33 UTC · 🔴 SELL TPST — 9629 shares @ $0.85  ·  P/L −$2132.82 (-20.7%)
+SELL TPST x9629 @ $0.85 ($8,170.21)
+P/L: -$2132.82 (-20.7%)
+why: trailing stop (8%): 20.7% off high
+cash: $50,024.11
+equity: $61,091.01
+
+### 18:33 UTC · 🔴 SELL GRNT — 19.9203 shares @ $4.28  ·  P/L −$14.74 (-14.7%)
+SELL GRNT x19.9203 @ $4.28 ($85.26)
+P/L: -$14.74 (-14.7%)
+why: trailing stop (13%): 14.7% off high
+cash: $50,109.37
+equity: $61,091.01
