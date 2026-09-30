@@ -660,3 +660,42 @@ P/L: -$2322.51 (-22.5%)
 why: trailing stop (8%): 22.5% off high
 cash: $35,488.10
 equity: $63,100.04
+
+### 18:31 UTC · 🔴 SELL DVLT — 43000 shares @ $0.15  ·  P/L −$550.40 (-7.7%)
+SELL DVLT x43000 @ $0.15 ($6,591.90)
+P/L: -$550.40 (-7.7%)
+why: trailing stop (8%): 58.1% off high
+cash: $7,694.28
+equity: $63,140.73
+
+### 18:31 UTC · 🔴 SELL MVIS — 13002.6925 shares @ $1.52  ·  P/L −$325.06 (-1.6%)
+SELL MVIS x13002.6925 @ $1.52 ($19,829.11)
+P/L: -$325.06 (-1.6%)
+why: trailing stop (13%): 13.6% off high
+cash: $27,523.39
+equity: $63,140.74
+
+### 18:31 UTC · 🔴 SELL TPST — 9629 shares @ $0.83  ·  P/L −$2322.51 (-22.5%)
+SELL TPST x9629 @ $0.83 ($7,980.52)
+P/L: -$2322.51 (-22.5%)
+why: trailing stop (8%): 22.5% off high
+cash: $35,503.91
+equity: $63,140.74
+
+### 18:34 UTC · 🟢 BUY COUR — 19.7601 shares @ $5.06
+BUY COUR x19.7601 @ $5.06 ($100.00)
+why: score 8.57 (parts {'insider': 4.5, 'sector': 0.54, 'fundamentals': 2.03, 'news': 0.3, 'piotroski': 0.25, 'gtrends': 0.25, 'ai_news': 0.45, 'insider_sentiment': -0.03, 'analyst_trend': 0.28}); risk-sized 19.7601 sh at 13% stop; confluence: 7/10 pass | above_vwap | tight_spread | price_action | news_ok | rsi_ok | clean_dilution_history | no_insider_selling | FAIL: unusual_volume,momentum,options_flow
+cash: $35,403.91
+equity: $63,063.51
+
+### 18:34 UTC · 🟢 BUY GRNT — 23.0415 shares @ $4.34
+BUY GRNT x23.0415 @ $4.34 ($100.00)
+why: score 5.66 (parts {'insider': 0.0, 'sector': 0.81, 'fundamentals': 2.7, 'news': 0.0, 'piotroski': 0.25, 'insider_sentiment': 0.3, 'analyst_trend': 0.3, 'events': 0.4, 'watchlist': 1.0, 'sector_bias': -0.1}); risk-sized 23.0415 sh at 13% stop; confluence: 6/10 pass | tight_spread | price_action | news_ok | options_flow | rsi_ok | no_insider_selling | FAIL: unusual_volume,above_vwap,momentum,clean_dilution_history
+cash: $35,303.91
+equity: $63,063.63
+
+### 18:35 UTC · 🟢 BUY BPRE — 7.9428 shares @ $12.59
+BUY BPRE x7.9428 @ $12.59 ($100.00)
+why: score 5.3 (parts {'insider': 4.5, 'sector': 0.45, 'fundamentals': 0.0, 'news': 0.0, 'gtrends': 0.25, 'insider_sentiment': 0.3, 'sector_bias': -0.2}); risk-sized 7.9428 sh at 13% stop; confluence: 5/9 pass | momentum | news_ok | rsi_ok | clean_dilution_history | no_insider_selling | FAIL: unusual_volume,above_vwap,tight_spread,price_action
+cash: $35,203.91
+equity: $63,063.63
