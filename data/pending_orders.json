@@ -38,5 +38,35 @@
     "reason": "trailing stop (8%): 20.7% off high",
     "status": "pending",
     "error": "order value $8170.21 exceeds max_order_value_usd $100.00"
+  },
+  {
+    "ts": "2026-09-30T18:21:37+00:00",
+    "side": "sell",
+    "ticker": "DVLT",
+    "shares": 43000,
+    "limit_price_hint": 0.15,
+    "reason": "trailing stop (8%): 58.2% off high",
+    "status": "pending",
+    "error": "order value $6579.00 exceeds max_order_value_usd $100.00"
+  },
+  {
+    "ts": "2026-09-30T18:21:39+00:00",
+    "side": "sell",
+    "ticker": "MVIS",
+    "shares": 13002.69246774,
+    "limit_price_hint": 1.52,
+    "reason": "trailing stop (13%): 13.6% off high",
+    "status": "pending",
+    "error": "order value $19829.10 exceeds max_order_value_usd $100.00"
+  },
+  {
+    "ts": "2026-09-30T18:21:40+00:00",
+    "side": "sell",
+    "ticker": "TPST",
+    "shares": 9629,
+    "limit_price_hint": 0.83,
+    "reason": "trailing stop (8%): 22.5% off high",
+    "status": "pending",
+    "error": "order value $7980.52 exceeds max_order_value_usd $100.00"
   }
 ]
