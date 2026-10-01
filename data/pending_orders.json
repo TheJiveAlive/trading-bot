@@ -1,72 +1,32 @@
 [
   {
-    "ts": "2026-09-30T18:21:37+00:00",
+    "ts": "2026-10-01T18:47:19+00:00",
     "side": "sell",
     "ticker": "DVLT",
     "shares": 43000,
-    "limit_price_hint": 0.15,
-    "reason": "trailing stop (8%): 58.2% off high",
+    "limit_price_hint": 0.16,
+    "reason": "trailing stop (8%): 57.2% off high",
     "status": "pending",
-    "error": "order value $6579.00 exceeds max_order_value_usd $100.00"
+    "error": "order value $6729.50 exceeds max_order_value_usd $100.00"
   },
   {
-    "ts": "2026-09-30T18:21:39+00:00",
+    "ts": "2026-10-01T18:47:22+00:00",
     "side": "sell",
     "ticker": "MVIS",
     "shares": 13002.69246774,
-    "limit_price_hint": 1.52,
-    "reason": "trailing stop (13%): 13.6% off high",
+    "limit_price_hint": 1.51,
+    "reason": "trailing stop (13%): 14.4% off high",
     "status": "pending",
-    "error": "order value $19829.10 exceeds max_order_value_usd $100.00"
+    "error": "order value $19634.06 exceeds max_order_value_usd $100.00"
   },
   {
-    "ts": "2026-09-30T18:21:40+00:00",
+    "ts": "2026-10-01T18:47:23+00:00",
     "side": "sell",
     "ticker": "TPST",
     "shares": 9629,
-    "limit_price_hint": 0.83,
-    "reason": "trailing stop (8%): 22.5% off high",
+    "limit_price_hint": 0.8,
+    "reason": "trailing stop (8%): 25.2% off high",
     "status": "pending",
-    "error": "order value $7980.52 exceeds max_order_value_usd $100.00"
-  },
-  {
-    "ts": "2026-09-30T18:31:03+00:00",
-    "side": "sell",
-    "ticker": "DVLT",
-    "shares": 43000,
-    "limit_price_hint": 0.15,
-    "reason": "trailing stop (8%): 58.1% off high",
-    "status": "pending",
-    "error": "order value $6591.90 exceeds max_order_value_usd $100.00"
-  },
-  {
-    "ts": "2026-09-30T18:31:10+00:00",
-    "side": "sell",
-    "ticker": "MVIS",
-    "shares": 13002.69246774,
-    "limit_price_hint": 1.52,
-    "reason": "trailing stop (13%): 13.6% off high",
-    "status": "pending",
-    "error": "order value $19829.10 exceeds max_order_value_usd $100.00"
-  },
-  {
-    "ts": "2026-09-30T18:31:14+00:00",
-    "side": "sell",
-    "ticker": "TPST",
-    "shares": 9629,
-    "limit_price_hint": 0.83,
-    "reason": "trailing stop (8%): 22.5% off high",
-    "status": "pending",
-    "error": "order value $7980.52 exceeds max_order_value_usd $100.00"
-  },
-  {
-    "ts": "2026-09-30T18:35:02+00:00",
-    "side": "buy",
-    "ticker": "BPRE",
-    "shares": 7.9428,
-    "limit_price_hint": 12.59,
-    "reason": "score 5.3 (parts {'insider': 4.5, 'sector': 0.45, 'fundamentals': 0.0, 'news': 0.0, 'gtrends': 0.25, 'insider_sentiment': 0.3, 'sector_bias': -0.2}); risk-sized 7.9428 sh at 13% stop; confluence: 5/9 pass | momentum | news_ok | rsi_ok | clean_dilution_history | no_insider_selling | FAIL: unusual_volume,above_vwap,tight_spread,price_action",
-    "status": "pending",
-    "error": "ticker BPRE not found in Trading 212 instrument list"
+    "error": "order value $7707.05 exceeds max_order_value_usd $100.00"
   }
 ]

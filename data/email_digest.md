@@ -699,3 +699,24 @@ BUY BPRE x7.9428 @ $12.59 ($100.00)
 why: score 5.3 (parts {'insider': 4.5, 'sector': 0.45, 'fundamentals': 0.0, 'news': 0.0, 'gtrends': 0.25, 'insider_sentiment': 0.3, 'sector_bias': -0.2}); risk-sized 7.9428 sh at 13% stop; confluence: 5/9 pass | momentum | news_ok | rsi_ok | clean_dilution_history | no_insider_selling | FAIL: unusual_volume,above_vwap,tight_spread,price_action
 cash: $35,203.91
 equity: $63,063.63
+
+### 18:47 UTC · 🔴 SELL DVLT — 43000 shares @ $0.16  ·  P/L −$412.80 (-5.8%)
+SELL DVLT x43000 @ $0.16 ($6,729.50)
+P/L: -$412.80 (-5.8%)
+why: trailing stop (8%): 57.2% off high
+cash: $7,631.32
+equity: $62,049.97
+
+### 18:47 UTC · 🔴 SELL MVIS — 13002.6925 shares @ $1.51  ·  P/L −$520.10 (-2.6%)
+SELL MVIS x13002.6925 @ $1.51 ($19,634.07)
+P/L: -$520.10 (-2.6%)
+why: trailing stop (13%): 14.4% off high
+cash: $27,265.39
+equity: $62,049.98
+
+### 18:47 UTC · 🔴 SELL TPST — 9629 shares @ $0.80  ·  P/L −$2595.98 (-25.2%)
+SELL TPST x9629 @ $0.80 ($7,707.05)
+P/L: -$2595.98 (-25.2%)
+why: trailing stop (8%): 25.2% off high
+cash: $34,972.44
+equity: $62,049.98
