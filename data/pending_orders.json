@@ -28,5 +28,45 @@
     "reason": "trailing stop (8%): 25.2% off high",
     "status": "pending",
     "error": "order value $7707.05 exceeds max_order_value_usd $100.00"
+  },
+  {
+    "ts": "2026-10-02T18:19:53+00:00",
+    "side": "sell",
+    "ticker": "DVLT",
+    "shares": 43000,
+    "limit_price_hint": 0.16,
+    "reason": "trailing stop (8%): 56.7% off high",
+    "status": "pending",
+    "error": "order value $6815.50 exceeds max_order_value_usd $100.00"
+  },
+  {
+    "ts": "2026-10-02T18:19:58+00:00",
+    "side": "sell",
+    "ticker": "MVIS",
+    "shares": 13002.69246774,
+    "limit_price_hint": 1.48,
+    "reason": "trailing stop (13%): 16.1% off high",
+    "status": "pending",
+    "error": "order value $19243.98 exceeds max_order_value_usd $100.00"
+  },
+  {
+    "ts": "2026-10-02T18:20:01+00:00",
+    "side": "sell",
+    "ticker": "TPST",
+    "shares": 9629,
+    "limit_price_hint": 0.82,
+    "reason": "trailing stop (8%): 23.7% off high",
+    "status": "pending",
+    "error": "order value $7860.15 exceeds max_order_value_usd $100.00"
+  },
+  {
+    "ts": "2026-10-02T18:20:04+00:00",
+    "side": "sell",
+    "ticker": "ASYS",
+    "shares": 7.1531,
+    "limit_price_hint": 17.88,
+    "reason": "take profit: +27.9%",
+    "status": "pending",
+    "error": "order value $127.84 exceeds max_order_value_usd $100.00"
   }
 ]
