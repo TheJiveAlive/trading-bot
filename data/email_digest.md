@@ -748,3 +748,31 @@ P/L: +$27.90 (+27.9%)
 why: take profit: +27.9%
 cash: $34,944.78
 equity: $62,171.51
+
+### 18:35 UTC · 🔴 SELL DVLT — 43000 shares @ $0.16  ·  P/L −$369.80 (-5.2%)
+SELL DVLT x43000 @ $0.16 ($6,772.50)
+P/L: -$369.80 (-5.2%)
+why: trailing stop (8%): 57.0% off high
+cash: $7,672.51
+equity: $62,041.07
+
+### 18:35 UTC · 🔴 SELL MVIS — 13002.6925 shares @ $1.48  ·  P/L −$975.20 (-4.8%)
+SELL MVIS x13002.6925 @ $1.48 ($19,178.97)
+P/L: -$975.20 (-4.8%)
+why: trailing stop (13%): 16.4% off high
+cash: $26,851.48
+equity: $62,041.07
+
+### 18:35 UTC · 🔴 SELL TPST — 9629 shares @ $0.82  ·  P/L −$2442.88 (-23.7%)
+SELL TPST x9629 @ $0.82 ($7,860.15)
+P/L: -$2442.88 (-23.7%)
+why: trailing stop (8%): 23.7% off high
+cash: $34,711.63
+equity: $62,041.06
+
+### 18:35 UTC · 🔴 SELL ASYS — 7.15 shares @ $17.91  ·  P/L +$28.13 (+28.1%)
+SELL ASYS x7.15 @ $17.91 ($128.09)
+P/L: +$28.13 (+28.1%)
+why: take profit: +28.1%
+cash: $34,839.72
+equity: $62,041.06
